@@ -121,7 +121,7 @@ public class ArticleList {
 		tblArticles.getColumnModel().getColumn(0).setPreferredWidth(190);
 		tblArticles.getColumnModel().getColumn(2).setPreferredWidth(60);
 		tblArticles.getColumnModel().getColumn(3).setPreferredWidth(60);
-		scrollPane.setViewportView(tblArticles);
+		scrollPane.setColumnHeaderView(tblArticles);
 		
 		JLabel lblNewLabel = new JLabel("List Of Articles:");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -130,6 +130,7 @@ public class ArticleList {
 		lblAbstract.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JTextArea textArea = new JTextArea();
+		textArea.setEditable(false);
 		
 		JButton btnDownloadPdf = new JButton("Download PDF");
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
