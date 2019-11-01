@@ -13,6 +13,8 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class LoginScreen {
 
@@ -65,6 +67,14 @@ public class LoginScreen {
 		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JButton btnLogin = new JButton("Login");
+		btnLogin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Hash hash1 = PasswordEncryption.generateHash(new String(passwordField.getPassword()));
+				System.out.println(hash1.getPassword());
+				System.out.println(PasswordEncryption.generateHash(new String(passwordField.getPassword()), hash1.getSalt()));
+				
+			}
+		});
 		btnLogin.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
