@@ -48,7 +48,7 @@ public class LoginScreen {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 548, 370);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JLabel lblUsername = new JLabel("Username:");
@@ -75,29 +75,43 @@ public class LoginScreen {
 		JLabel lblWelcomeBack = new JLabel("Welcome Back!");
 		lblWelcomeBack.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWelcomeBack.setFont(new Font("Tahoma", Font.PLAIN, 25));
+		
+		JButton btnLoginAsA = new JButton("Login as a Reader");
+		btnLoginAsA.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JButton btnChiefEditor = new JButton("Chief-Editor Registration");
+		btnChiefEditor.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
+			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(82)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(usernameField, GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
-						.addComponent(passwordField, GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
+						.addComponent(usernameField, GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
+						.addComponent(passwordField, GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblPassword, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(lblPassword, GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
 							.addGap(214))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblUsername, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addGap(208))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(82)
-							.addComponent(btnLogin, GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-							.addGap(98)))
-					.addGap(72))
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+							.addComponent(lblUsername, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+							.addGap(208)))
+					.addGap(82))
+				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(43)
-					.addComponent(lblWelcomeBack, GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
+					.addComponent(lblWelcomeBack, GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
 					.addGap(43))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(179)
+					.addComponent(btnLogin, GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
+					.addGap(179))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(157)
+					.addComponent(btnLoginAsA, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
+					.addGap(157))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap(433, Short.MAX_VALUE)
+					.addComponent(btnChiefEditor)
+					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -112,9 +126,13 @@ public class LoginScreen {
 					.addComponent(lblPassword)
 					.addGap(5)
 					.addComponent(passwordField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(10)
-					.addComponent(btnLogin, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(53, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(btnLogin, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
+					.addGap(15)
+					.addComponent(btnLoginAsA, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
+					.addComponent(btnChiefEditor, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+					.addGap(10))
 		);
 		frame.getContentPane().setLayout(groupLayout);
 	}

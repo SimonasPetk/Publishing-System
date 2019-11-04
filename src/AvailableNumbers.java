@@ -17,6 +17,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JToolBar;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.JButton;
 import javax.swing.JPopupMenu;
@@ -89,10 +90,22 @@ public class AvailableNumbers {
 		);
 		
 		tblJournal = new JTable();
+		tblJournal.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				
+				tblJournal.setValueAt("Press Again", 0, 0);
+
+				if (arg0.getClickCount() == 2 && tblJournal.rowAtPoint(arg0.getPoint()) == 0) {
+
+			        JOptionPane.showMessageDialog(tblJournal, "row #" + 0 + " is clicked");
+				}
+			} 
+		});
+		tblJournal.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		tblJournal.setModel(new DefaultTableModel(
 			new Object[][] {
-				{null, null, null},
 				{null, null, null},
 				{null, null, null},
 				{null, null, null},
@@ -124,12 +137,13 @@ public class AvailableNumbers {
 			}
 		) {
 			boolean[] columnEditables = new boolean[] {
-				true, true, false
+				false, false, false
 			};
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
 			}
 		});
+		
 		scrollPanelJournal.setViewportView(tblJournal);
 		frmAvailable.getContentPane().setLayout(groupLayout);
 		
@@ -138,22 +152,5 @@ public class AvailableNumbers {
 		
 		JButton btnLogOut = new JButton("Log Out");
 		menuBar.add(btnLogOut);
-	}
-	private static void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			private void showMenu(MouseEvent e) {
-				popup.show(e.getComponent(), e.getX(), e.getY());
-			}
-		});
 	}
 }
