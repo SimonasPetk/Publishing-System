@@ -20,6 +20,8 @@ import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.Window;
+
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import java.awt.event.MouseAdapter;
@@ -73,6 +75,12 @@ public class EditorMainWindow {
 		
 		JLabel lblAbstract = new JLabel("Abstract:");
 		lblAbstract.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JButton btnPublishArticle = new JButton("Publish Article");
+		btnPublishArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JButton btnRejectArticle = new JButton("Reject Article");
+		btnRejectArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -85,9 +93,14 @@ public class EditorMainWindow {
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(lblArticlesList)
 							.addGap(509)))
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblAbstract, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
-						.addComponent(txtrAbstract, GroupLayout.PREFERRED_SIZE, 342, GroupLayout.PREFERRED_SIZE))
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+							.addComponent(lblAbstract, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
+							.addComponent(txtrAbstract, GroupLayout.PREFERRED_SIZE, 342, GroupLayout.PREFERRED_SIZE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(btnRejectArticle)
+							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(btnPublishArticle)))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
@@ -99,7 +112,13 @@ public class EditorMainWindow {
 						.addComponent(lblAbstract, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(txtrAbstract, GroupLayout.PREFERRED_SIZE, 369, GroupLayout.PREFERRED_SIZE)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(txtrAbstract, GroupLayout.PREFERRED_SIZE, 369, GroupLayout.PREFERRED_SIZE)
+							.addGap(10)
+							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(btnPublishArticle)
+								.addComponent(btnRejectArticle))
+							.addGap(10))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 673, Short.MAX_VALUE)
 							.addGap(20))))
@@ -189,6 +208,15 @@ public class EditorMainWindow {
 		mnEditorsMenu.add(mntmRetireFromEditors);
 		
 		JMenuItem mntmChangePassword = new JMenuItem("Change Password");
+		mntmChangePassword.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				System.out.print(0);
+				new ChangePassword();
+				
+			}
+		});
+
 		mnEditorsMenu.add(mntmChangePassword);
 		
 		JMenuItem mntmLogOut = new JMenuItem("Log Out");
