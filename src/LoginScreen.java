@@ -88,56 +88,42 @@ public class LoginScreen {
 		});
 		btnLoginAsA.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JButton btnChiefEditor = new JButton("Chief-Editor Registration");
-		btnChiefEditor.addMouseListener(new MouseAdapter() {
+		JButton btnAcademicRegister = new JButton("Register as an Author");
+		btnAcademicRegister.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				new RegistrationWindow();
 			}
 		});
-		btnChiefEditor.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
-		JButton btnAuthorRegister = new JButton("Register as an Author");
-		btnAuthorRegister.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				new RegistrationWindow();
-			}
-		});
-		btnAuthorRegister.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		btnAcademicRegister.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(frmLogInScreen.getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(100)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(usernameField, GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
-						.addComponent(passwordField, GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblPassword, GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
-							.addGap(214))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblUsername, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
-							.addGap(208)))
-					.addGap(100))
+			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(43)
-					.addComponent(lblWelcomeBack, GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
-					.addGap(43))
+					.addComponent(lblWelcomeBack, GroupLayout.PREFERRED_SIZE, 643, GroupLayout.PREFERRED_SIZE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(100)
+					.addComponent(lblUsername, GroupLayout.PREFERRED_SIZE, 321, GroupLayout.PREFERRED_SIZE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(100)
+					.addComponent(usernameField, GroupLayout.PREFERRED_SIZE, 529, GroupLayout.PREFERRED_SIZE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(100)
+					.addComponent(lblPassword, GroupLayout.PREFERRED_SIZE, 315, GroupLayout.PREFERRED_SIZE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(100)
+					.addComponent(passwordField, GroupLayout.PREFERRED_SIZE, 529, GroupLayout.PREFERRED_SIZE))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(300)
-					.addComponent(btnLogin, GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
-					.addGap(300))
+					.addComponent(btnLogin, GroupLayout.PREFERRED_SIZE, 129, GroupLayout.PREFERRED_SIZE))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(290)
-					.addComponent(btnLoginAsA, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
-					.addGap(290))
+					.addComponent(btnLoginAsA))
 				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(298, Short.MAX_VALUE)
-					.addComponent(btnAuthorRegister, GroupLayout.PREFERRED_SIZE, 185, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnChiefEditor)
-					.addGap(55))
+					.addGap(480)
+					.addComponent(btnAcademicRegister, GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
+					.addGap(20))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -152,15 +138,13 @@ public class LoginScreen {
 					.addComponent(lblPassword)
 					.addGap(5)
 					.addComponent(passwordField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGap(11)
 					.addComponent(btnLogin, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
 					.addGap(15)
 					.addComponent(btnLoginAsA, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 172, Short.MAX_VALUE)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnChiefEditor, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnAuthorRegister, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap())
+					.addPreferredGap(ComponentPlacement.RELATED, 173, Short.MAX_VALUE)
+					.addComponent(btnAcademicRegister, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+					.addGap(10))
 		);
 		frmLogInScreen.getContentPane().setLayout(groupLayout);
 	}
