@@ -14,6 +14,9 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JMenu;
 
 public class ArticleList {
 
@@ -167,5 +170,17 @@ public class ArticleList {
 					.addGap(32))
 		);
 		frmAvailableJournalArticles.getContentPane().setLayout(groupLayout);
+		
+		JMenuBar menuBar = new JMenuBar();
+		frmAvailableJournalArticles.setJMenuBar(menuBar);
+		
+		JMenu mnMenu = new JMenu("Menu");
+		menuBar.add(mnMenu);
+		
+		JMenuItem mntmBackToJournals = new JMenuItem("Back To Journals");
+		mnMenu.add(mntmBackToJournals);
+		
+		JMenuItem mntmLogOut = new JMenuItem("Log Out");
+		mnMenu.add(mntmLogOut);
 	}
 }

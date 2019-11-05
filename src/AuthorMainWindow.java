@@ -8,7 +8,16 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
+/* NOTE TO DO
+ * 
+ * 
+ * MAKE CONDITIONAL STATEMENTS FOR MAIN AUTHORS THAT WOULD CREATE A MENU BUTTON AND WOULD ALLOW TO ADD NOT MAIN AUTHORS TO THE SYSTEM. 
+ * THIS ONLY HAPPENS WHEN A PERSON UPLOADS THE ARTICLE (THE MAIN ARTICLE AUTHOR)
+ * 
+ * 
+ * 
+ * 
+ */
 public class AuthorMainWindow {
 
 	private JFrame frmAuthorsDashboard;
