@@ -29,7 +29,7 @@ import java.awt.event.MouseEvent;
 
 public class EditorMainWindow {
 
-	private JFrame frame;
+	private JFrame frmDashboard;
 	private JTable tblEditor;
 
 	/**
@@ -40,7 +40,7 @@ public class EditorMainWindow {
 			public void run() {
 				try {
 					EditorMainWindow window = new EditorMainWindow();
-					window.frame.setVisible(true);
+					window.frmDashboard.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -59,9 +59,10 @@ public class EditorMainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 1000, 795);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmDashboard = new JFrame();
+		frmDashboard.setTitle("Editor's Dashboard");
+		frmDashboard.setBounds(100, 100, 1000, 795);
+		frmDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
@@ -81,7 +82,7 @@ public class EditorMainWindow {
 		
 		JButton btnRejectArticle = new JButton("Reject Article");
 		btnRejectArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
+		GroupLayout groupLayout = new GroupLayout(frmDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
@@ -196,10 +197,10 @@ public class EditorMainWindow {
 			}
 		));
 		scrollPane.setViewportView(tblEditor);
-		frame.getContentPane().setLayout(groupLayout);
+		frmDashboard.getContentPane().setLayout(groupLayout);
 		
 		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
+		frmDashboard.setJMenuBar(menuBar);
 		
 		JMenu mnEditorsMenu = new JMenu("Menu");
 		menuBar.add(mnEditorsMenu);
@@ -220,6 +221,27 @@ public class EditorMainWindow {
 		mnEditorsMenu.add(mntmChangePassword);
 		
 		JMenuItem mntmLogOut = new JMenuItem("Log Out");
+		mntmLogOut.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				System.exit(0);
+			}
+		});
 		mnEditorsMenu.add(mntmLogOut);
+		
+		JMenu mnChangeMyRole = new JMenu("Change My Role");
+		menuBar.add(mnChangeMyRole);
+
+		JMenuItem mntmAuthors = new JMenuItem("Author");
+		mnChangeMyRole.add(mntmAuthors);
+		
+		JMenuItem mntmEditor = new JMenuItem("Chief Editor");
+		mnChangeMyRole.add(mntmEditor);
+		
+		JMenuItem mntmReader = new JMenuItem("Reader");
+		mnChangeMyRole.add(mntmReader);
+		
+		JMenuItem mntmReviewer = new JMenuItem("Reviewer");
+		mnChangeMyRole.add(mntmReviewer);
 	}
 }

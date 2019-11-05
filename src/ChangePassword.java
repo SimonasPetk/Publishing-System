@@ -13,7 +13,7 @@ import javax.swing.JPasswordField;
 
 public class ChangePassword {
 
-	private JFrame frame;
+	private JFrame frmChangePassword;
 	private JPasswordField pwdOldPassword;
 	private JPasswordField pwdNewPassword;
 
@@ -25,7 +25,7 @@ public class ChangePassword {
 			public void run() {
 				try {
 					ChangePassword window = new ChangePassword();
-					window.frame.setVisible(true);
+					window.frmChangePassword.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -44,9 +44,10 @@ public class ChangePassword {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frmChangePassword = new JFrame();
+		frmChangePassword.setTitle("Change Password");
+		frmChangePassword.setBounds(100, 100, 450, 300);
+		frmChangePassword.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		JLabel lblChangeYourPassword = new JLabel("Change Your Password");
 		lblChangeYourPassword.setHorizontalAlignment(SwingConstants.CENTER);
@@ -66,7 +67,7 @@ public class ChangePassword {
 		
 		pwdNewPassword = new JPasswordField();
 		pwdNewPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
+		GroupLayout groupLayout = new GroupLayout(frmChangePassword.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
@@ -107,7 +108,7 @@ public class ChangePassword {
 					.addComponent(btnChange)
 					.addContainerGap(64, Short.MAX_VALUE))
 		);
-		frame.getContentPane().setLayout(groupLayout);
-		frame.setVisible(true);
+		frmChangePassword.getContentPane().setLayout(groupLayout);
+		frmChangePassword.setVisible(true);
 	}
 }

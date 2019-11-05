@@ -17,7 +17,7 @@ import javax.swing.JButton;
 
 public class ArticleList {
 
-	private JFrame frame;
+	private JFrame frmAvailableJournalArticles;
 	private JTable tblArticles;
 
 	/**
@@ -28,7 +28,7 @@ public class ArticleList {
 			public void run() {
 				try {
 					ArticleList window = new ArticleList();
-					window.frame.setVisible(true);
+					window.frmAvailableJournalArticles.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -47,9 +47,10 @@ public class ArticleList {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 850, 700);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmAvailableJournalArticles = new JFrame();
+		frmAvailableJournalArticles.setTitle("Available Article");
+		frmAvailableJournalArticles.setBounds(100, 100, 850, 700);
+		frmAvailableJournalArticles.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
@@ -121,7 +122,7 @@ public class ArticleList {
 		tblArticles.getColumnModel().getColumn(0).setPreferredWidth(190);
 		tblArticles.getColumnModel().getColumn(2).setPreferredWidth(60);
 		tblArticles.getColumnModel().getColumn(3).setPreferredWidth(60);
-		scrollPane.setColumnHeaderView(tblArticles);
+		scrollPane.setViewportView(tblArticles);
 		
 		JLabel lblNewLabel = new JLabel("List Of Articles:");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -133,7 +134,7 @@ public class ArticleList {
 		textArea.setEditable(false);
 		
 		JButton btnDownloadPdf = new JButton("Download PDF");
-		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
+		GroupLayout groupLayout = new GroupLayout(frmAvailableJournalArticles.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
@@ -165,6 +166,6 @@ public class ArticleList {
 							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE)))
 					.addGap(32))
 		);
-		frame.getContentPane().setLayout(groupLayout);
+		frmAvailableJournalArticles.getContentPane().setLayout(groupLayout);
 	}
 }

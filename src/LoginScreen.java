@@ -16,7 +16,7 @@ import java.awt.event.MouseEvent;
 
 public class LoginScreen {
 
-	private JFrame frame;
+	private JFrame frmLogInScreen;
 	private JTextField usernameField;
 	private JPasswordField passwordField;
 
@@ -28,7 +28,7 @@ public class LoginScreen {
 			public void run() {
 				try {
 					LoginScreen window = new LoginScreen();
-					window.frame.setVisible(true);
+					window.frmLogInScreen.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -47,9 +47,10 @@ public class LoginScreen {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 548, 370);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmLogInScreen = new JFrame();
+		frmLogInScreen.setTitle("Log In Screen");
+		frmLogInScreen.setBounds(100, 100, 700, 500);
+		frmLogInScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JLabel lblUsername = new JLabel("Username:");
 		lblUsername.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -68,6 +69,7 @@ public class LoginScreen {
 		btnLogin.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
+				
 			}
 		});
 		btnLogin.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -77,15 +79,37 @@ public class LoginScreen {
 		lblWelcomeBack.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		
 		JButton btnLoginAsA = new JButton("Login as a Reader");
+		btnLoginAsA.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				new ArticleList();
+				frmLogInScreen.dispose();
+			}
+		});
 		btnLoginAsA.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JButton btnChiefEditor = new JButton("Chief-Editor Registration");
+		btnChiefEditor.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				new RegistrationWindow();
+			}
+		});
 		btnChiefEditor.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		GroupLayout groupLayout = new GroupLayout(frame.getContentPane());
+		
+		JButton btnAuthorRegister = new JButton("Register as an Author");
+		btnAuthorRegister.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				new RegistrationWindow();
+			}
+		});
+		btnAuthorRegister.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		GroupLayout groupLayout = new GroupLayout(frmLogInScreen.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(82)
+					.addGap(100)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(usernameField, GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
 						.addComponent(passwordField, GroupLayout.DEFAULT_SIZE, 368, Short.MAX_VALUE)
@@ -95,23 +119,25 @@ public class LoginScreen {
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(lblUsername, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
 							.addGap(208)))
-					.addGap(82))
+					.addGap(100))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(43)
 					.addComponent(lblWelcomeBack, GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE)
 					.addGap(43))
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(179)
+					.addGap(300)
 					.addComponent(btnLogin, GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
-					.addGap(179))
+					.addGap(300))
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(157)
+					.addGap(290)
 					.addComponent(btnLoginAsA, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
-					.addGap(157))
+					.addGap(290))
 				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(433, Short.MAX_VALUE)
+					.addContainerGap(298, Short.MAX_VALUE)
+					.addComponent(btnAuthorRegister, GroupLayout.PREFERRED_SIZE, 185, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnChiefEditor)
-					.addContainerGap())
+					.addGap(55))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -130,10 +156,12 @@ public class LoginScreen {
 					.addComponent(btnLogin, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
 					.addGap(15)
 					.addComponent(btnLoginAsA, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
-					.addComponent(btnChiefEditor, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-					.addGap(10))
+					.addPreferredGap(ComponentPlacement.RELATED, 172, Short.MAX_VALUE)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnChiefEditor, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnAuthorRegister, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap())
 		);
-		frame.getContentPane().setLayout(groupLayout);
+		frmLogInScreen.getContentPane().setLayout(groupLayout);
 	}
 }

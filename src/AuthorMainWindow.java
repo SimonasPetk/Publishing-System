@@ -1,10 +1,17 @@
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class AuthorMainWindow {
 
-	private JFrame frame;
+	private JFrame frmAuthorsDashboard;
 
 	/**
 	 * Launch the application.
@@ -14,7 +21,7 @@ public class AuthorMainWindow {
 			public void run() {
 				try {
 					AuthorMainWindow window = new AuthorMainWindow();
-					window.frame.setVisible(true);
+					window.frmAuthorsDashboard.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -33,9 +40,64 @@ public class AuthorMainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmAuthorsDashboard = new JFrame();
+		frmAuthorsDashboard.setTitle("Author's Dashboard");
+		frmAuthorsDashboard.setBounds(100, 100, 450, 300);
+		frmAuthorsDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		GroupLayout groupLayout = new GroupLayout(frmAuthorsDashboard.getContentPane());
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGap(0, 434, Short.MAX_VALUE)
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGap(0, 261, Short.MAX_VALUE)
+		);
+		frmAuthorsDashboard.getContentPane().setLayout(groupLayout);
+		
+		JMenuBar menuBar = new JMenuBar();
+		frmAuthorsDashboard.setJMenuBar(menuBar);
+		
+		JMenu menu = new JMenu("Menu");
+		menuBar.add(menu);
+		
+		JMenuItem mntmChangePassword = new JMenuItem("Change Password");
+		mntmChangePassword.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				new ChangePassword();
+			}
+		});
+		menu.add(mntmChangePassword);
+		
+		JMenuItem mntmLogOut = new JMenuItem("Log Out");
+		mntmLogOut.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				System.out.println(0);
+				System.exit(0); 
+			}
+		});
+		menu.add(mntmLogOut);
+		
+		JMenu mnChangeMyRole = new JMenu("Change My Role");
+		menuBar.add(mnChangeMyRole);
+		
+		JMenuItem mntmChiefEditor = new JMenuItem("Chief Editor");
+		mnChangeMyRole.add(mntmChiefEditor);
+		
+		JMenuItem mntmEditor = new JMenuItem("Editor");
+		mnChangeMyRole.add(mntmEditor);
+		
+		JMenuItem mntmReader = new JMenuItem("Reader");
+		mnChangeMyRole.add(mntmReader);
+		
+		JMenuItem mntmReviewer= new JMenuItem("Reviewer");
+		mnChangeMyRole.add(mntmReviewer);
+		
 	}
+	
+	
+	
 
 }
