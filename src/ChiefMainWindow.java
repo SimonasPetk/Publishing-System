@@ -164,16 +164,6 @@ public class ChiefMainWindow {
 		JMenu mnMenu = new JMenu("Menu");
 		menuBar.add(mnMenu);
 		
-		JMenuItem mntmAppointNewEditors = new JMenuItem("Appoint New Editors");
-		mntmAppointNewEditors.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				new RegistrationWindow();
-				
-			}
-		});
-		mnMenu.add(mntmAppointNewEditors);
-		
 		JMenuItem mntmRetireFromChief = new JMenuItem("Retire From Chief Editors");
 		mnMenu.add(mntmRetireFromChief);
 		
@@ -193,6 +183,16 @@ public class ChiefMainWindow {
 				System.exit(0);
 			}
 		});
+		
+		JMenuItem mntmAppointNewEditors = new JMenuItem("Appoint New Editors");
+		mntmAppointNewEditors.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				new RegistrationWindow();
+				
+			}
+		});
+		mnMenu.add(mntmAppointNewEditors);
 		mnMenu.add(mntmLogOut);
 		
 		JMenu mnChangeMyRole = new JMenu("Change My Role");

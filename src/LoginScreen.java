@@ -81,8 +81,8 @@ public class LoginScreen {
 		JButton btnLoginAsA = new JButton("Login as a Reader");
 		btnLoginAsA.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				new ArticleList();
+			public void mousePressed(MouseEvent arg0) {
+				new AvailableNumbers();
 				frmLogInScreen.dispose();
 			}
 		});

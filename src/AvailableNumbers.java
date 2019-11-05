@@ -61,6 +61,7 @@ public class AvailableNumbers {
 		frmAvailable.setTitle("Available Journals, Volumes & Editions");
 		frmAvailable.setBounds(100, 100, 540, 331);
 		frmAvailable.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmAvailable.setVisible(true);
 		
 		JLabel lblAvailabeJournals = new JLabel("Choose which journal, volume or edition you would like to read:");
 		lblAvailabeJournals.setFont(new Font("Tahoma", Font.PLAIN, 13));
