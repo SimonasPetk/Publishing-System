@@ -11,6 +11,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.SwingConstants;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class AcademicWindow {
 
@@ -49,6 +51,13 @@ public class AcademicWindow {
 		frmAcademicDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JButton btnAddJournal = new JButton("Add a Journal");
+		btnAddJournal.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				
+				new AddJournal();
+			}
+		});
 		btnAddJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JButton btnSubmitArticle = new JButton("Submit an Article");
