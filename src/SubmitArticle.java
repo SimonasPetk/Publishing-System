@@ -17,6 +17,7 @@ import javax.swing.JTextArea;
 import javax.swing.JFormattedTextField;
 import javax.swing.JComboBox;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.JButton;
 
 public class SubmitArticle {
 
@@ -52,7 +53,7 @@ public class SubmitArticle {
 	private void initialize() {
 		frmSubmitAnArticle = new JFrame();
 		frmSubmitAnArticle.setTitle("Submit an Article");
-		frmSubmitAnArticle.setBounds(100, 100, 700, 600);
+		frmSubmitAnArticle.setBounds(100, 100, 700, 552);
 		frmSubmitAnArticle.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -84,46 +85,47 @@ public class SubmitArticle {
 		scrollPane_2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		JLabel lblNewLabel_2 = new JLabel("Please Enter Every New Name in a New Line.");
+		
+		JButton btnUploadPdf = new JButton("Upload PDF");
+		btnUploadPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JLabel lblPdfIsNot = new JLabel("PDF is not yet uploaded");
+		
+		JButton btnNewButton = new JButton("Submit");
+		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 15));
 		GroupLayout groupLayout = new GroupLayout(frmSubmitAnArticle.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(100)
+					.addGap(80)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblNewLabel_2, GroupLayout.PREFERRED_SIZE, 266, GroupLayout.PREFERRED_SIZE)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(lblAuthors)
-									.addPreferredGap(ComponentPlacement.RELATED, 211, GroupLayout.PREFERRED_SIZE)))
-							.addContainerGap())
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-							.addGroup(groupLayout.createSequentialGroup()
-								.addComponent(lblAbstract)
-								.addContainerGap())
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(lblNewLabel_1)
-									.addContainerGap())
-								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-									.addGroup(groupLayout.createSequentialGroup()
-										.addComponent(lblChooseAJournal)
-										.addContainerGap())
-									.addGroup(groupLayout.createSequentialGroup()
-										.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-											.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
-											.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
-											.addComponent(textField, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
-											.addComponent(scrollPane_1, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE)
-											.addComponent(scrollPane_2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE))
-										.addGap(100)))))))
+							.addComponent(btnUploadPdf)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblPdfIsNot))
+						.addComponent(lblNewLabel_2, GroupLayout.PREFERRED_SIZE, 266, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblAuthors)
+						.addComponent(lblAbstract)
+						.addComponent(lblNewLabel_1)
+						.addComponent(lblChooseAJournal)
+						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+							.addComponent(lblNewLabel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
+							.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
+							.addComponent(textField, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 552, Short.MAX_VALUE)
+							.addComponent(scrollPane_1, Alignment.LEADING)
+							.addComponent(scrollPane_2, Alignment.LEADING)))
+					.addGap(80))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(290)
+					.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 81, Short.MAX_VALUE)
+					.addGap(290))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
 					.addComponent(lblNewLabel)
-					.addGap(15)
+					.addPreferredGap(ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
 					.addComponent(lblChooseAJournal)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 77, GroupLayout.PREFERRED_SIZE)
@@ -141,7 +143,13 @@ public class SubmitArticle {
 					.addComponent(lblNewLabel_2)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(127, Short.MAX_VALUE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnUploadPdf)
+						.addComponent(lblPdfIsNot))
+					.addGap(10)
+					.addComponent(btnNewButton)
+					.addGap(60))
 		);
 		
 		JEditorPane editorPane_1 = new JEditorPane();

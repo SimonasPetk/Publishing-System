@@ -61,6 +61,12 @@ public class AcademicWindow {
 		btnAddJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JButton btnSubmitArticle = new JButton("Submit an Article");
+		btnSubmitArticle.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				new SubmitArticle();
+			}
+		});
 		btnSubmitArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JLabel lblAcademicDashboard = new JLabel("Academic Dashboard");
