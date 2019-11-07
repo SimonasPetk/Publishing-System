@@ -1,2 +1,4 @@
 
 *.class
+src/.classpath
+src/.project
