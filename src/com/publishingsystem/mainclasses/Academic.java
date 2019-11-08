@@ -1,3 +1,4 @@
+package com.publishingsystem.mainclasses;
 
 public class Academic {
 	protected int academicId;

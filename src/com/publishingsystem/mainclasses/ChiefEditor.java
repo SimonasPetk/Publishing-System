@@ -1,3 +1,4 @@
+package com.publishingsystem.mainclasses;
 
 public class ChiefEditor extends Editor{
 	public ChiefEditor(int academicId, String forename, String surname, String emailId, String university) {

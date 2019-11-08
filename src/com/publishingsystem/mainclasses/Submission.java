@@ -1,3 +1,4 @@
+package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Submission extends Article{

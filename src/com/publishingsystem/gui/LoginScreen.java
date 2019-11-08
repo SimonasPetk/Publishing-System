@@ -1,6 +1,6 @@
 package com.publishingsystem.gui;
 import java.awt.EventQueue;
-
+import com.publishingsystem.mainclasses.*;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
@@ -12,6 +12,9 @@ import javax.swing.JButton;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+
+import com.publishingsystem.mainclasses.Hash;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -104,7 +107,7 @@ public class LoginScreen {
 		});
 		btnLoginAsA.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JButton btnAcademicRegister = new JButton("Register as an Author");
+		JButton btnAcademicRegister = new JButton("Register as an Academic");
 		btnAcademicRegister.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {

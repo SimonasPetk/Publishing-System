@@ -1,3 +1,4 @@
+package com.publishingsystem.mainclasses;
 
 public class Editor extends Academic{
 	public Editor(int academicId, String forename, String surname, String emailId, String university) {
