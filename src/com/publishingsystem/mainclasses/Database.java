@@ -93,7 +93,7 @@ public class Database {
 		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
 			Statement statement = con.createStatement();
 			statement.executeUpdate("USE team022");
-			//statement.executeUpdate("DROP TABLE Submission");
+			statement.executeUpdate("DROP TABLE Submission");
             statement.executeUpdate("CREATE TABLE Submission ("
             		+ "submissionID INT PRIMARY KEY, "
             		+ "title TEXT, "
@@ -106,6 +106,177 @@ public class Database {
 		}
 	}
 	
+	public static void createTableChiefEditorOf () {
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			Statement statement = con.createStatement();
+			statement.executeUpdate("USE team022");
+			statement.executeUpdate("DROP TABLE ChiefEditorOf");
+            statement.executeUpdate("CREATE TABLE ChiefEditorOf ("
+            		+ "academicID INT references Academic(academicID),"
+            		+ "ISSN INT references Journal(ISSN),"
+            		+ "PRIMARY KEY (academicID,ISSN))");
+			statement.close();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createTableEditorOf () {
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			Statement statement = con.createStatement();
+			statement.executeUpdate("USE team022");
+			statement.executeUpdate("DROP TABLE EditorOf");
+            statement.executeUpdate("CREATE TABLE EditorOf ("
+            		+ "academicID INT references Academic(academicID),"
+            		+ "ISSN INT references Journal(ISSN),"
+            		+ "PRIMARY KEY (academicID,ISSN))");
+			statement.close();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createTableArticle () {
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			Statement statement = con.createStatement();
+			statement.executeUpdate("USE team022");
+			statement.executeUpdate("DROP TABLE Article");
+            statement.executeUpdate("CREATE TABLE Article ("
+            		+ "edNum INT references Edition(edNum),"
+            		+ "articleID INT PRIMARY KEY,"
+            		+ "title TEXT,"
+            		+ "abstract TEXT,"
+            		+ "pdf TEXT,"
+            		+ "pageRange INT,"
+            		+ "mainAuthorID INT references Academic(academicID))");
+			statement.close();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createTableMainAuthorOf () {
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			Statement statement = con.createStatement();
+			statement.executeUpdate("USE team022");
+			statement.executeUpdate("DROP TABLE MainAuthorOf");
+            statement.executeUpdate("CREATE TABLE MainAuthorOf ("
+            		+ "academicID INT references Academic(academicID),"
+            		+ "articleID INT references Article(articleID),"
+            		+ "PRIMARY KEY (academicID,articleID))");
+			statement.close();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createTableCoAuthorOf () {
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			Statement statement = con.createStatement();
+			statement.executeUpdate("USE team022");
+			statement.executeUpdate("DROP TABLE CoAuthorOf");
+            statement.executeUpdate("CREATE TABLE CoAuthorOf ("
+            		+ "academicID INT references Academic(academicID),"
+            		+ "articleID INT references Article(articleID),"
+            		+ "PRIMARY KEY (academicID,articleID))");
+			statement.close();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createTableReviewerOf () {
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			Statement statement = con.createStatement();
+			statement.executeUpdate("USE team022");
+			statement.executeUpdate("DROP TABLE ReviewerOf");
+            statement.executeUpdate("CREATE TABLE ReviewerOf ("
+            		+ "academicID INT references Academic(academicID),"
+            		+ "articleID INT references Article(articleID),"
+            		+ "PRIMARY KEY (academicID,articleID))");
+			statement.close();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createTableReview () {
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			Statement statement = con.createStatement();
+			statement.executeUpdate("USE team022");
+			statement.executeUpdate("DROP TABLE Review");
+            statement.executeUpdate("CREATE TABLE Review ("
+            		+ "reviewerID INT references Academic(academicID),"
+            		+ "submissionID INT references Submission(submissionID),"
+            		+ "summary TEXT,"
+            		+ "typingErrors TEXT,"
+            		+ "verdict TEXT,"
+            		+ "PRIMARY KEY (ReviewerID,SubmissionID))");
+			statement.close();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createTableResponse () {
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			Statement statement = con.createStatement();
+			statement.executeUpdate("USE team022");
+			statement.executeUpdate("DROP TABLE Response");
+            statement.executeUpdate("CREATE TABLE Response ("
+            		+ "responseID INT PRIMARY KEY,"
+            		+ "reviewID INT references Review(reviewID),"
+            		+ "authorID INT references Academic(academicID))");
+			statement.close();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createTableInteractions () {
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			Statement statement = con.createStatement();
+			statement.executeUpdate("USE team022");
+			statement.executeUpdate("DROP TABLE Interactions");
+            statement.executeUpdate("CREATE TABLE Interactions ("
+            		+ "criticismID INT PRIMARY KEY,"
+            		+ "reviewerID INT references Academic(academicID),"
+            		+ "submissionID INT references Submission(submissionID),"
+            		+ "criticism TEXT,"
+            		+ "answer TEXT)");
+			statement.close();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createTables() {
+		createTableAcademic();
+		createTableJournal();
+		createTableVolume();
+		createTableEdition();
+		createTablePDF();
+		createTableSubmission();
+		createTableChiefEditorOf();
+		createTableEditorOf();
+		createTableArticle();
+		createTableMainAuthorOf();
+		createTableCoAuthorOf();
+		createTableReviewerOf();
+		createTableReview();
+		createTableResponse();
+		createTableInteractions();
+	}
+	
 	public static void main(String[] args) {
 		System.out.println("\nDrivers loaded as properties:");
 		System.out.println(System.getProperty("jdbc.drivers"));
@@ -115,12 +286,7 @@ public class Database {
 			System.out.println(list.nextElement());
 		
 		//try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")){
-		createTableAcademic();
-		createTableJournal();
-		createTableVolume();
-		createTableEdition();
-		createTablePDF();
-		createTableSubmission();
+		createTables();
 		//}
 		//catch (SQLException ex) {
 		 //ex.printStackTrace();
