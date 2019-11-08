@@ -70,7 +70,22 @@ public class LoginScreen {
 		btnLogin.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				
+			    // get username and passwords entered
+			    String username = usernameField.getText();
+			    String password = new String(passwordField.getPassword());
+			    
+			    System.out.println(Hash.generate());
+			    
+			    // get stored hash and salt from database for given username
+			    String actualHash = "(a hash that is 256 characters)";
+			    byte[] salt = {'a', 'b'};
+			    
+			    // generate hash based on fetched salt and entered password
+			    Hash newHash = new Hash(password, salt);
+			    boolean equal = newHash.getHash().equals(actualHash);
+			    
+			    // check if this hash is same as stored hash
+			    System.out.println(equal);
 			}
 		});
 		btnLogin.setFont(new Font("Tahoma", Font.PLAIN, 15));
