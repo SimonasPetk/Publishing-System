@@ -41,6 +41,15 @@ public class DatabaseLocalhost {
 					+ h.getSalt()
 					+"'"
 					+");");
+			
+			ResultSet res = statement.executeQuery("SELECT passwordHash, salt FROM Academic WHERE academicId = 1;");
+			while(res.next()) {
+				String hash = res.getString("passwordHash");
+				String salt = res.getString("salt");
+				Hash newH = new Hash("generic", salt);
+				System.out.println(newH.getHash()+" "+hash+" "+ (newH.getHash().equals(hash)));
+			}
+			
 			statement.close();
 		}
 		catch (SQLException ex) {
