@@ -55,7 +55,8 @@ public class SubmitArticle {
 		frmSubmitAnArticle = new JFrame();
 		frmSubmitAnArticle.setTitle("Submit an Article");
 		frmSubmitAnArticle.setBounds(100, 100, 700, 552);
-		frmSubmitAnArticle.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmSubmitAnArticle.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frmSubmitAnArticle.setVisible(true);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		

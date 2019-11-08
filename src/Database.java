@@ -11,7 +11,7 @@ public class Database {
 		while (list.hasMoreElements())
 			System.out.println(list.nextElement());
 		
-		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team022/6b78cf2f")){
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")){
 			
 			// use the open connection
 			// for several queries
