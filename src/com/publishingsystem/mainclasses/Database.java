@@ -5,13 +5,11 @@ import javax.sql.*;
 
 public class Database {
 	
-	public static void create () { 
+	public static void createTableAcademic () { 
 		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")){
-			System.out.println(con);
 			Statement statement = con.createStatement();
-			
 			statement.executeUpdate("USE team022");
-			//statement.executeUpdate("DROP TABLE Academic");
+			statement.executeUpdate("DROP TABLE Academic");
             statement.executeUpdate("CREATE TABLE Academic ("
             		+ "academicId INT PRIMARY KEY, "
             		+ "title TEXT, "
@@ -21,7 +19,86 @@ public class Database {
             		+ "emailAddress TEXT, "
             		+ "passwordHash TEXT, "
             		+ "salt VARBINARY(256))");
-			//statement.executeUpdate("CREATE DATABASE team022");
+			statement.close();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createTableJournal () {
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			Statement statement = con.createStatement();
+			statement.executeUpdate("USE team022");
+			statement.executeUpdate("DROP TABLE Journal");
+            statement.executeUpdate("CREATE TABLE Journal ("
+            		+ "ISSN INT PRIMARY KEY, "
+            		+ "name TEXT, "
+            		+ "numberOfPages INT");
+			statement.close();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createTableVolume () {
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			Statement statement = con.createStatement();
+			statement.executeUpdate("USE team022");
+			statement.executeUpdate("DROP TABLE Volume");
+            statement.executeUpdate("CREATE TABLE Volume ("
+            		+ "ISSN INT FOREIGN KEY, "
+            		+ "year DATE, "
+            		+ "volNum INT PRIMARY KEY");
+			statement.close();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createTableEdition () {
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			Statement statement = con.createStatement();
+			statement.executeUpdate("USE team022");
+			//statement.executeUpdate("DROP TABLE Edition");
+            statement.executeUpdate("CREATE TABLE Edition ("
+            		+ "volNum INT FOREIGN KEY, "
+            		+ "month DATE, "
+            		+ "edNum INT PRIMARY KEY");
+			statement.close();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createTablePDF () {
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			Statement statement = con.createStatement();
+			statement.executeUpdate("USE team022");
+			//statement.executeUpdate("DROP TABLE PDF");
+            statement.executeUpdate("CREATE TABLE PDF ("
+            		+ "pdfId INT PRIMARY KEY, "
+            		+ "pdfLink TEXT");
+			statement.close();
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void createTableSubmission () {
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			Statement statement = con.createStatement();
+			statement.executeUpdate("USE team022");
+			//statement.executeUpdate("DROP TABLE Submission");
+            statement.executeUpdate("CREATE TABLE Submission ("
+            		+ "submissionID INT PRIMARY KEY, "
+            		+ "title TEXT, "
+            		+ "abstract Text"
+            		+ "pdfID INT FOREIGN KEY");
 			statement.close();
 		}
 		catch (SQLException ex) {
@@ -38,7 +115,12 @@ public class Database {
 			System.out.println(list.nextElement());
 		
 		//try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")){
-		create();
+		createTableAcademic();
+		createTableJournal();
+		createTableVolume();
+		createTableEdition();
+		createTablePDF();
+		createTableSubmission();
 		//}
 		//catch (SQLException ex) {
 		 //ex.printStackTrace();
