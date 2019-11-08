@@ -11,6 +11,7 @@ public class Database {
 			Statement statement = con.createStatement();
 			
 			statement.executeUpdate("USE team022");
+			//statement.executeUpdate("DROP TABLE Academic");
             statement.executeUpdate("CREATE TABLE Academic ("
             		+ "academicId INT PRIMARY KEY, "
             		+ "title TEXT, "
@@ -18,8 +19,8 @@ public class Database {
             		+ "surname TEXT, "
             		+ "university TEXT, "
             		+ "emailAddress TEXT, "
-            		+ "passwordHash TEXT, ");
-            		//+ "salt BYTE[256])");
+            		+ "passwordHash TEXT, "
+            		+ "salt VARBINARY(256))");
 			//statement.executeUpdate("CREATE DATABASE team022");
 			statement.close();
 		}
