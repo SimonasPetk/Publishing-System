@@ -1,29 +1,29 @@
-package com.publishingsystem.gui;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-class Hash{
-	String password;
+public class Hash{
+	String hash;
 	byte[] salt;
 	
-	public Hash(String password, byte[] salt) {
-		this.password = password;
-		this.salt = salt;
+	public Hash(String password) {
+		this.generateHash(password);
 	}
 	
-	public String getPassword() {
-		return this.password;
+	public Hash(String password, byte[] salt) {
+		this.generateHash(password, salt);
+	}
+	
+	public String getHash() {
+		return this.hash;
 	}
 	
 	public byte[] getSalt() {
 		return this.salt;
 	}
-}
-
-public class PasswordEncryption{
-	public static Hash generateHash(String p) {
+	
+	public void generateHash(String p) {
 		String password = p;
         MessageDigest md;
         try{
@@ -45,15 +45,14 @@ public class PasswordEncryption{
             for (byte b : hashedPassword)
                 sb.append(String.format("%02x", b));
             
-            return new Hash(sb.toString(), salt);
+            this.hash = sb.toString();
+            this.salt = salt;
         } catch (NoSuchAlgorithmException e){
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return null;
 	}
 	
-	public static String generateHash(String p, byte[] salt) {
+	public void generateHash(String p, byte[] salt) {
 		String password = p;
 
         MessageDigest md;
@@ -71,17 +70,18 @@ public class PasswordEncryption{
             for (byte b : hashedPassword)
                 sb.append(String.format("%02x", b));
             
-            return sb.toString();
+            this.hash = sb.toString();
         } catch (NoSuchAlgorithmException e){
             e.printStackTrace();
         }
-        return "";
+       
 	}
 	
-    public static void main(String[] args){
-    	Hash hash1 = PasswordEncryption.generateHash("password");
-    	System.out.println(hash1.getPassword());
-    	System.out.println(PasswordEncryption.generateHash("password", hash1.getSalt()));
-        
-    }
+	 public static void main(String[] args){
+		 Hash hash1 = new Hash("password");
+		 System.out.println(hash1.getHash());
+		 System.out.println(new Hash("password", hash1.getSalt()).getHash());
+
+	 }
+	
 }
