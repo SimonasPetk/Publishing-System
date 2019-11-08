@@ -1,3 +1,4 @@
+package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Review {
@@ -6,6 +7,7 @@ public class Review {
 	private String summary;
 	private String typingErrors;
 	private ArrayList<String> criticisms;
+	private Verdict verdict;
 	
 	public Review(int reviewerId, int submissionId, String summary, String typingErrors,ArrayList<String> criticisms) {
 		this.reviewerId = reviewerId;
@@ -29,6 +31,10 @@ public class Review {
 
 	public String getTypingErrors() {
 		return typingErrors;
+	}
+	
+	public Verdict getVerdict() {
+		return this.verdict;
 	}
 
 	public ArrayList<String> getCriticisms() {
