@@ -11,7 +11,7 @@ public class Database {
 			statement.executeUpdate("USE team022");
 			statement.executeUpdate("DROP TABLE Academic");
             statement.executeUpdate("CREATE TABLE Academic ("
-            		+ "academicId INT PRIMARY KEY, "
+            		+ "academicID INT PRIMARY KEY, "
             		+ "title TEXT, "
             		+ "forenames TEXT, "
             		+ "surname TEXT, "
@@ -34,7 +34,7 @@ public class Database {
             statement.executeUpdate("CREATE TABLE Journal ("
             		+ "ISSN INT PRIMARY KEY, "
             		+ "name TEXT, "
-            		+ "numberOfPages INT");
+            		+ "numberOfPages INT)");
 			statement.close();
 		}
 		catch (SQLException ex) {
@@ -48,9 +48,9 @@ public class Database {
 			statement.executeUpdate("USE team022");
 			statement.executeUpdate("DROP TABLE Volume");
             statement.executeUpdate("CREATE TABLE Volume ("
-            		+ "ISSN INT FOREIGN KEY, "
+            		+ "volNum INT PRIMARY KEY,"
             		+ "year DATE, "
-            		+ "volNum INT PRIMARY KEY");
+            		+ "ISSN INT references Journal(ISSN))");
 			statement.close();
 		}
 		catch (SQLException ex) {
@@ -62,11 +62,11 @@ public class Database {
 		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
 			Statement statement = con.createStatement();
 			statement.executeUpdate("USE team022");
-			//statement.executeUpdate("DROP TABLE Edition");
+			statement.executeUpdate("DROP TABLE Edition");
             statement.executeUpdate("CREATE TABLE Edition ("
-            		+ "volNum INT FOREIGN KEY, "
+            		+ "volNum INT references Volume(volNum), "
             		+ "month DATE, "
-            		+ "edNum INT PRIMARY KEY");
+            		+ "edNum INT PRIMARY KEY)");
 			statement.close();
 		}
 		catch (SQLException ex) {
@@ -78,10 +78,10 @@ public class Database {
 		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
 			Statement statement = con.createStatement();
 			statement.executeUpdate("USE team022");
-			//statement.executeUpdate("DROP TABLE PDF");
+			statement.executeUpdate("DROP TABLE PDF");
             statement.executeUpdate("CREATE TABLE PDF ("
-            		+ "pdfId INT PRIMARY KEY, "
-            		+ "pdfLink TEXT");
+            		+ "pdfID INT PRIMARY KEY, "
+            		+ "pdfLink TEXT)");
 			statement.close();
 		}
 		catch (SQLException ex) {
@@ -97,8 +97,8 @@ public class Database {
             statement.executeUpdate("CREATE TABLE Submission ("
             		+ "submissionID INT PRIMARY KEY, "
             		+ "title TEXT, "
-            		+ "abstract Text"
-            		+ "pdfID INT FOREIGN KEY");
+            		+ "abstract Text,"
+            		+ "pdfID INT references PDF(pdfID))");
 			statement.close();
 		}
 		catch (SQLException ex) {
@@ -126,3 +126,4 @@ public class Database {
 		 //ex.printStackTrace();
 		//}
 	}
+}
