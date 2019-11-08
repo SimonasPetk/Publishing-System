@@ -11,16 +11,22 @@ public class Database {
 			Statement statement = con.createStatement();
 			
 			statement.executeUpdate("USE team022");
-            statement.executeUpdate("CREATE TABLE Academic ("
+/*            statement.executeUpdate("CREATE TABLE Academic ("
             		+ "academicId INT PRIMARY KEY, "
             		+ "title TEXT, "
             		+ "forenames TEXT, "
             		+ "surname TEXT, "
             		+ "university TEXT, "
             		+ "emailAddress TEXT, "
-            		+ "passwordHash TEXT, ");
+            		+ "passwordHash TEXT)");
             		//+ "salt BYTE[256])");
-			//statement.executeUpdate("CREATE DATABASE team022");
+	*/		//statement.executeUpdate("CREATE DATABASE team022");
+			ResultSet rs = statement.executeQuery("Show tables");
+			while(rs.next()) {
+		         System.out.print(rs.getString(1));
+		         System.out.println();
+		    }
+			System.out.println("fin");
 			statement.close();
 		}
 		catch (SQLException ex) {
