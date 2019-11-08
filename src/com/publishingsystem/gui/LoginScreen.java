@@ -89,7 +89,7 @@ public class LoginScreen {
 		});
 		btnLoginAsA.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JButton btnAcademicRegister = new JButton("Register as an Author");
+		JButton btnAcademicRegister = new JButton("Register as an Academic");
 		btnAcademicRegister.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
