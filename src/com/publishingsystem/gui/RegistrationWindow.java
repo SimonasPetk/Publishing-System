@@ -1,5 +1,6 @@
 package com.publishingsystem.gui;
 import java.awt.EventQueue;
+import com.publishingsystem.mainclasses.Academic;
 
 import javax.swing.JFrame;
 import javax.swing.GroupLayout;
@@ -11,6 +12,8 @@ import javax.swing.SwingConstants;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class RegistrationWindow {
 
@@ -101,6 +104,15 @@ public class RegistrationWindow {
 		txtfldEmail.setColumns(10);
 		
 		JButton btnRegister = new JButton("Register");
+		btnRegister.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				Academic test = new Academic(1, txtfldTitle.getText() , txtfldForename.getText(), txtfldSurname.getText(), txtfldEmail.getText(), txtfldUniAffiliation..getText());
+				
+				System.out.println(test.getTitle());
+			}
+		});
 		btnRegister.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(frmRegistrationForm.getContentPane());
 		groupLayout.setHorizontalGroup(

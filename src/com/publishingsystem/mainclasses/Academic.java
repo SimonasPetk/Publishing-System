@@ -2,13 +2,15 @@ package com.publishingsystem.mainclasses;
 
 public class Academic {
 	protected int academicId;
+	protected String title;
 	protected String forename;
 	protected String surname;
 	protected String emailId;
 	protected String university;
 	
-	public Academic(int academicId, String forename, String surname, String emailId, String university) {
+	public Academic(int academicId, String title, String forename, String surname, String emailId, String university) {
 		this.academicId = academicId;
+		this.title = title;
 		this.forename = forename;
 		this.surname = surname;
 		this.emailId = emailId;
@@ -19,6 +21,10 @@ public class Academic {
 
 	public int getAcademicId() {
 		return academicId;
+	}
+	
+	public String getTitle() {
+		return title;
 	}
 
 	public String getForename() {
