@@ -76,19 +76,24 @@ public class LoginScreen {
 			    // get username and passwords entered
 			    String username = usernameField.getText();
 			    String password = new String(passwordField.getPassword());
-			    
-			    System.out.println(Hash.generate());
+			    			    
+			    //System.out.println(new Hash(password).getSalt().toString());
 			    
 			    // get stored hash and salt from database for given username
-			    String actualHash = "(a hash that is 256 characters)";
-			    byte[] salt = {'a', 'b'};
+			    //String actualHash = "(a hash that is 256 characters)";
+			    //byte[] salt = {'a', 'b'};
 			    
 			    // generate hash based on fetched salt and entered password
-			    Hash newHash = new Hash(password, salt);
-			    boolean equal = newHash.getHash().equals(actualHash);
+			    //Hash newHash = new Hash(password, salt);
+			    //boolean correctPassword = newHash.getHash().equals(actualHash);
+			    boolean correctPassword = true;
 			    
 			    // check if this hash is same as stored hash
-			    System.out.println(equal);
+			    if (correctPassword) {
+			        //System.out.println("Login successful");
+			        new AuthorMainWindow();
+			        frmLogInScreen.dispose();
+			    }
 			}
 		});
 		btnLogin.setFont(new Font("Tahoma", Font.PLAIN, 15));

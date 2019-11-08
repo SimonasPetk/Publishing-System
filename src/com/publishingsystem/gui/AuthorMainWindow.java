@@ -54,6 +54,8 @@ public class AuthorMainWindow {
 		frmAuthorsDashboard.setTitle("Author's Dashboard");
 		frmAuthorsDashboard.setBounds(100, 100, 450, 300);
 		frmAuthorsDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmAuthorsDashboard.setVisible(true);
+        
 		GroupLayout groupLayout = new GroupLayout(frmAuthorsDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
