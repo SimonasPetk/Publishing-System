@@ -4,8 +4,8 @@ import java.util.ArrayList;
 public class Author extends Academic{
 	private ArrayList<Article> articles;
 	
-	public Author(ArrayList<Article> articles, int academicId, String forename, String surname, String emailId, String university) {
-		super(academicId, forename, surname, emailId, university);
+	public Author(ArrayList<Article> articles, int academicId, String title ,String forename, String surname, String emailId, String university) {
+		super(academicId, title, forename, surname, emailId, university);
 		this.articles = articles;
 	}
 

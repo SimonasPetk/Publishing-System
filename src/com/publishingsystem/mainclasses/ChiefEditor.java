@@ -1,8 +1,8 @@
 package com.publishingsystem.mainclasses;
 
 public class ChiefEditor extends Editor{
-	public ChiefEditor(int academicId, String forename, String surname, String emailId, String university) {
-		super(academicId, forename, surname, emailId, university);
+	public ChiefEditor(int academicId, String title, String forename, String surname, String emailId, String university) {
+		super(academicId, title, forename, surname, emailId, university);
 	}
 	
 	public void assignEditor(Editor e, Journal j) {
