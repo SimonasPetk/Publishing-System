@@ -6,12 +6,12 @@ import javax.sql.*;
 public class Database {
 
 	public static void createTableAcademic () { 
-		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")){
+	    try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")){
 			Statement statement = con.createStatement();
 			statement.executeUpdate("USE team022");
 			statement.executeUpdate("DROP TABLE Academic");
             statement.executeUpdate("CREATE TABLE Academic ("
-            		+ "academicID INT PRIMARY KEY, "
+            		+ "academicID INT PRIMARY KEY AUTO_INCREMENT, "
             		+ "title TEXT, "
             		+ "forenames TEXT, "
             		+ "surname TEXT, "
@@ -259,6 +259,24 @@ public class Database {
 		}
 	}
 	
+	/*
+	public static void showTables() {
+	    try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+	        Statement statement = con.createStatement();
+            statement.executeUpdate("USE team022");
+            DatabaseMetaData dbmd = con.getMetaData();
+            String[] types = {"TABLE"};
+            ResultSet rs = dbmd.getTables(null, null, "%", types);
+            while (rs.next()) {
+                System.out.println(rs);
+            }
+        }
+	    catch (SQLException ex) {
+	        ex.printStackTrace();
+	    }
+	}
+	*/
+	
 	public static void createTables() {
 		createTableAcademic();
 		createTableJournal();
@@ -275,6 +293,7 @@ public class Database {
 		createTableReview();
 		createTableResponse();
 		createTableInteractions();
+		//showTables();
 	}
 	
 	public static void main(String[] args) {
@@ -283,13 +302,8 @@ public class Database {
 		System.out.println("\nDrivers loaded by DriverManager:");
 		Enumeration<Driver> list = DriverManager.getDrivers();
 		while (list.hasMoreElements())
-			System.out.println(list.nextElement());
-		
-		//try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")){
+			System.out.println(list.nextElement());	
 		createTables();
-		//}
-		//catch (SQLException ex) {
-		 //ex.printStackTrace();
-		//}
+		System.out.println("Success");
 	}
 }

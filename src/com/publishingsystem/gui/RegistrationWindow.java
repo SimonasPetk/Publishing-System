@@ -1,6 +1,7 @@
 package com.publishingsystem.gui;
 import java.awt.EventQueue;
 import com.publishingsystem.mainclasses.Academic;
+import com.publishingsystem.mainclasses.Hash;
 
 import javax.swing.JFrame;
 import javax.swing.GroupLayout;
@@ -14,13 +15,14 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.*;
 
 public class RegistrationWindow {
 
 	private JFrame frmRegistrationForm;
 	private JPasswordField pwdfldPassword;
 	private JTextField txtfldTitle;
-	private JTextField txtfldForename;
+	private JTextField txtfldForenames;
 	private JTextField txtfldSurname;
 	private JTextField txtfldUniAffiliation;
 	private JTextField txtfldEmail;
@@ -87,9 +89,9 @@ public class RegistrationWindow {
 		txtfldTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		txtfldTitle.setColumns(10);
 		
-		txtfldForename = new JTextField();
-		txtfldForename.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		txtfldForename.setColumns(10);
+		txtfldForenames = new JTextField();
+		txtfldForenames.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		txtfldForenames.setColumns(10);
 		
 		txtfldSurname = new JTextField();
 		txtfldSurname.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -107,13 +109,63 @@ public class RegistrationWindow {
 		btnRegister.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				
-				Academic test = new Academic(1, txtfldTitle.getText() , txtfldForename.getText(), txtfldSurname.getText(), txtfldEmail.getText(), txtfldUniAffiliation..getText());
-				
-				System.out.println(test.getTitle());
+				// 1. Get entered details
+			    String title = txtfldTitle.getText();
+			    String forenames = txtfldForenames.getText();
+			    String surname = txtfldSurname.getText();
+			    String university = txtfldUniAffiliation.getText();
+			    String email = txtfldEmail.getText();
+			    String password = new String(pwdfldPassword.getPassword());
+			    
+			    // 2. Calculate password hash and salt
+			    Hash pwdHash = new Hash(password);
+			    System.out.println(pwdHash);
+			    String salt = pwdHash.getSalt();
+			    String hash = pwdHash.getHash();
+			    
+			    // 3. Add academic's details to database
+			    try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			        Statement statement = con.createStatement();
+			        //String query = ;
+			        //System.out.println(query);
+			        statement.executeUpdate("USE team022");
+			        statement.executeUpdate("INSERT INTO Academic VALUES("
+                            + "null, "
+                            + "'" + title + "', "
+                            + "'" + forenames + "', "
+                            + "'" + surname + "', "
+                            + "'" + university + "', "
+                            + "'" + email + "', "
+                            + "'" + hash + "', "
+                            + "'" + salt + "'"
+                            +");");
+                    /*ResultSet rs = statement.executeQuery("SELECT * FROM Academic");
+                    while (rs.next()) System.out.println(rs.);
+                    statement.close();
+                    //System.out.println(result);
+                    /*
+                      "title TEXT, "
+                    + "forenames TEXT, "
+                    + "surname TEXT, "
+                    + "university TEXT, "
+                    + "emailAddress TEXT, "
+                    + "passwordHash TEXT, "
+                    + "salt TEXT");
+                     */
+		        }
+		        catch (SQLException ex) {
+		            ex.printStackTrace();
+		        }
+			    
+			    // 4. Create Academic object
+                
+			    
+			    //Academic test = new Academic(1, txtfldTitle.getText() , txtfldForename.getText(), txtfldSurname.getText(), txtfldEmail.getText(), txtfldUniAffiliation.getText());
+				//System.out.println(test.getTitle());
 			}
 		});
 		btnRegister.setFont(new Font("Tahoma", Font.PLAIN, 15));
+
 		GroupLayout groupLayout = new GroupLayout(frmRegistrationForm.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -123,7 +175,7 @@ public class RegistrationWindow {
 						.addComponent(lblYourTitle)
 						.addComponent(txtfldTitle, Alignment.TRAILING, 467, 500, Short.MAX_VALUE)
 						.addComponent(lblYourForenames)
-						.addComponent(txtfldForename, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
+						.addComponent(txtfldForenames, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
 						.addComponent(lblYourSurname)
 						.addComponent(txtfldSurname, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
 						.addComponent(lblCurrentUniversityAffiliation)
@@ -154,7 +206,7 @@ public class RegistrationWindow {
 					.addGap(10)
 					.addComponent(lblYourForenames)
 					.addGap(10)
-					.addComponent(txtfldForename, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+					.addComponent(txtfldForenames, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
 					.addComponent(lblYourSurname)
 					.addGap(10)

@@ -13,7 +13,8 @@ public class DatabaseLocalhost {
 		while (list.hasMoreElements()) {
 			System.out.println(list.nextElement());
 		}
-		try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/publishing_system?user=root&password=password")){
+		//try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/publishing_system?user=root&password=password")){
+		try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/publishing_system", "root", "password")) {
 			//Academic
 			Statement statement = con.createStatement();
 			statement.executeUpdate("USE publishing_system");

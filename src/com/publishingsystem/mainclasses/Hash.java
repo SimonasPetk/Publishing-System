@@ -5,12 +5,39 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-public class Hash{
+public class Hash {
+    // instance variables
 	String hash;
 	String salt;
 	
+	// constructors
+    public Hash(String password) {
+	    this.generateHash(password);
+	}
+	    
+	public Hash(String password, String s) {
+	    byte [] salt = hexToByteArray(s);
+    	this.generateHash(password, salt);
+    }
+	
+	// accessors
+    public String getHash() {
+	    return this.hash;
+	}
+	    
+	public String getSalt(){
+	    return this.salt;
+    }
+	
+	// methods
+	/** 
+	 * bytesToHex
+	 * Convert a byte array to a string
+	 * @param bytes The byte array to be converted
+	 * @return The corresponding string hex value
+	 */
 	private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
-	public static String bytesToHex(byte[] bytes) {
+	private static String bytesToHex(byte[] bytes) {
 	    char[] hexChars = new char[bytes.length * 2];
 	    for (int j = 0; j < bytes.length; j++) {
 	        int v = bytes[j] & 0xFF;
@@ -20,6 +47,12 @@ public class Hash{
 	    return new String(hexChars);
 	}
 	
+	/**
+	 * hexToByteArray
+	 * Converts a string to a byte array
+	 * @param s Hex value to be converted
+	 * @return Corresponding byte array
+	 */
 	private static byte[] hexToByteArray(String s) {
 	    int len = s.length();
 	    byte[] data = new byte[len / 2];
@@ -30,28 +63,15 @@ public class Hash{
 	    return data;
 	}
 	
-	public Hash(String password) {
-		this.generateHash(password);
-	}
-	
-	public Hash(String password, String s) {
-		byte [] salt = hexToByteArray(s);
-		this.generateHash(password, salt);
-	}
-	
-	public String getHash() {
-		return this.hash;
-	}
-	
-	
-	public String getSalt(){
-		return this.salt;
-	}
-	
+	/**
+	 * generateHash
+	 * Given a password, generate a salt and hashed password and update the instance's values
+	 * @param p The password to use
+	 */
 	public void generateHash(String p) {
 		String password = p;
         MessageDigest md;
-        try{
+        try {
             // Select the message digest for the hash computation -> SHA-256
             md = MessageDigest.getInstance("SHA-256");
 
@@ -77,6 +97,12 @@ public class Hash{
         }
 	}
 	
+	/**
+	 * generateHash
+	 * Generate a hashed password when given the password and a salt and update this instance's hashed password
+	 * @param p Password to be hashed
+	 * @param salt Salt to use in the hashing process
+	 */
 	public void generateHash(String p, byte[] salt) {
 		String password = p;
 
@@ -102,11 +128,13 @@ public class Hash{
        
 	}
 	
-	 public static void main(String[] args){
-		 Hash hash1 = new Hash("password");
-		 System.out.println(hash1.getHash());
-		 System.out.println(new Hash("password", hash1.getSalt()).getHash());
-
-	 }
+	public String toString() {
+	    return "Password hash: " + this.getHash() + "\nPassword salt: " + this.getSalt();
+	}
 	
+	public static void main(String[] args){
+	    Hash hash1 = new Hash("password");
+		System.out.println(hash1.getHash());
+		System.out.println(new Hash("password", hash1.getSalt()).getHash());
+    }
 }
