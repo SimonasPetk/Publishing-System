@@ -83,6 +83,9 @@ public class EditorMainWindow {
 		
 		JButton btnRejectArticle = new JButton("Reject Article");
 		btnRejectArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JButton btnDelayPublishing = new JButton("Delay Publishing");
+		btnDelayPublishing.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(frmDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -101,8 +104,10 @@ public class EditorMainWindow {
 							.addComponent(txtrAbstract, GroupLayout.PREFERRED_SIZE, 342, GroupLayout.PREFERRED_SIZE))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(btnRejectArticle)
-							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(btnPublishArticle)))
+							.addPreferredGap(ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(btnDelayPublishing, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)
+								.addComponent(btnPublishArticle, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE))))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
@@ -120,7 +125,9 @@ public class EditorMainWindow {
 							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 								.addComponent(btnPublishArticle)
 								.addComponent(btnRejectArticle))
-							.addGap(10))
+							.addGap(10)
+							.addComponent(btnDelayPublishing)
+							.addContainerGap())
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 673, Short.MAX_VALUE)
 							.addGap(20))))

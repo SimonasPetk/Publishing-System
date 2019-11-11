@@ -108,7 +108,7 @@ public class RegistrationWindow {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				
-				Academic test = new Academic(1, txtfldTitle.getText() , txtfldForename.getText(), txtfldSurname.getText(), txtfldEmail.getText(), txtfldUniAffiliation..getText());
+				Academic test = new Academic(1, txtfldTitle.getText() , txtfldForename.getText(), txtfldSurname.getText(), txtfldEmail.getText(), txtfldUniAffiliation.getText());
 				
 				System.out.println(test.getTitle());
 			}
