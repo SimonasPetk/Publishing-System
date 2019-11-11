@@ -59,52 +59,52 @@ public class RegistrationWindow {
 		frmRegistrationForm.setBounds(100, 100, 653, 559);
 		frmRegistrationForm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmRegistrationForm.setVisible(true);
-		
+
 		JLabel lblYourTitle = new JLabel("Your Title:");
 		lblYourTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JLabel lblYourForenames = new JLabel("Your Forenames:");
 		lblYourForenames.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JLabel lblYourSurname = new JLabel("Your Surname:");
 		lblYourSurname.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JLabel lblCurrentUniversityAffiliation = new JLabel("Current University Affiliation:");
 		lblCurrentUniversityAffiliation.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JLabel lblYourEmailAddress = new JLabel("Your Email Address:");
 		lblYourEmailAddress.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JLabel lblYourPassword = new JLabel("Your Password:");
 		lblYourPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JLabel lblMainAuthorRegistration = new JLabel("Registration Form");
 		lblMainAuthorRegistration.setHorizontalAlignment(SwingConstants.CENTER);
 		lblMainAuthorRegistration.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		
+
 		pwdfldPassword = new JPasswordField();
 		pwdfldPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		txtfldTitle = new JTextField();
 		txtfldTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		txtfldTitle.setColumns(10);
-		
+
 		txtfldForenames = new JTextField();
 		txtfldForenames.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		txtfldForenames.setColumns(10);
-		
+
 		txtfldSurname = new JTextField();
 		txtfldSurname.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		txtfldSurname.setColumns(10);
-		
+
 		txtfldUniAffiliation = new JTextField();
 		txtfldUniAffiliation.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		txtfldUniAffiliation.setColumns(10);
-		
+
 		txtfldEmail = new JTextField();
 		txtfldEmail.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		txtfldEmail.setColumns(10);
-		
+
 		JButton btnRegister = new JButton("Register");
 		btnRegister.addMouseListener(new MouseAdapter() {
 			@Override
@@ -116,13 +116,13 @@ public class RegistrationWindow {
 			    String university = txtfldUniAffiliation.getText();
 			    String email = txtfldEmail.getText();
 			    String password = new String(pwdfldPassword.getPassword());
-			    
+
 			    // 2. Calculate password hash and salt
 			    Hash pwdHash = new Hash(password);
 			    System.out.println(pwdHash);
 			    String salt = pwdHash.getSalt();
 			    String hash = pwdHash.getHash();
-			    
+
 			    // 3. Add academic's details to database
 			    try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
 			        Statement statement = con.createStatement();
@@ -156,10 +156,10 @@ public class RegistrationWindow {
 		        catch (SQLException ex) {
 		            ex.printStackTrace();
 		        }
-			    
+
 			    // 4. Create Academic object
-                
-			    
+
+
 			    //Academic test = new Academic(1, txtfldTitle.getText() , txtfldForename.getText(), txtfldSurname.getText(), txtfldEmail.getText(), txtfldUniAffiliation.getText());
 				//System.out.println(test.getTitle());
 			}

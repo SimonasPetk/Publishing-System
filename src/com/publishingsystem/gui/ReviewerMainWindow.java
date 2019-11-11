@@ -1,10 +1,22 @@
 package com.publishingsystem.gui;
 import java.awt.EventQueue;
+import java.awt.Font;
 
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -12,6 +24,7 @@ import java.awt.event.MouseEvent;
 public class ReviewerMainWindow {
 
 	private JFrame frmReviewDashboard;
+	private JTable tblReview;
 
 	/**
 	 * Launch the application.
@@ -41,9 +54,146 @@ public class ReviewerMainWindow {
 	 */
 	private void initialize() {
 		frmReviewDashboard = new JFrame();
-		frmReviewDashboard.setTitle("Review's Dashboard");
-		frmReviewDashboard.setBounds(100, 100, 450, 300);
+		frmReviewDashboard.setBounds(100, 100, 900, 740);
 		frmReviewDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmReviewDashboard.setVisible(true);
+		
+		JLabel lblArticleList = new JLabel("Article's List:");
+		lblArticleList.setToolTipText("");
+		lblArticleList.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JScrollPane scrSubmitted = new JScrollPane();
+		
+		JButton btnSubmitAnArticle = new JButton("Submit an Article");
+		btnSubmitAnArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JScrollPane scrReview = new JScrollPane();
+		scrReview.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrReview.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		
+		JButton btnRespondToReviews = new JButton("Respond to Reviews");
+		btnRespondToReviews.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				new CriticismResponse();
+			}
+		});
+		btnRespondToReviews.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JLabel lblArticlesReview = new JLabel("Article's Review");
+		lblArticlesReview.setToolTipText("");
+		lblArticlesReview.setFont(new Font("Tahoma", Font.PLAIN, 20));
+        
+		GroupLayout groupLayout = new GroupLayout(frmReviewDashboard.getContentPane());
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(scrSubmitted, GroupLayout.PREFERRED_SIZE, 551, GroupLayout.PREFERRED_SIZE)
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGap(16)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
+										.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE)))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btnRespondToReviews))))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, 610, Short.MAX_VALUE)
+							.addComponent(btnSubmitAnArticle)))
+					.addContainerGap())
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(10)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnSubmitAnArticle))
+					.addGap(10)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 642, Short.MAX_VALUE)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+							.addGap(10)
+							.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnRespondToReviews)
+							.addGap(314)))
+					.addContainerGap())
+		);
+		
+		JEditorPane editPaneReview = new JEditorPane();
+		editPaneReview.setEditable(false);
+		scrReview.setViewportView(editPaneReview);
+		
+		tblReview = new JTable();
+		tblReview.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null},
+			},
+			new String[] {
+				"New column", "New column", "New column", "New column", "New column", "New column", "New column"
+			}
+		));
+		tblReview.setEnabled(false);
+		scrSubmitted.setViewportView(tblReview);
+		frmReviewDashboard.getContentPane().setLayout(groupLayout);
+		
 		
 		JMenuBar menuBar = new JMenuBar();
 		frmReviewDashboard.setJMenuBar(menuBar);
@@ -67,6 +217,7 @@ public class ReviewerMainWindow {
 				System.exit(0);
 			}
 		});
+		
 		menu.add(menuItem_2);
 		
 		JMenu mnChangeMyRole = new JMenu("Change My Role");
