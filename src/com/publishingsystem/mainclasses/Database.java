@@ -11,7 +11,7 @@ public class Database {
 			statement.executeUpdate("USE team022");
 			statement.executeUpdate("DROP TABLE Academic");
             statement.executeUpdate("CREATE TABLE Academic ("
-            		+ "academicID INT PRIMARY KEY, "
+            		+ "academicID INT PRIMARY KEY AUTO_INCREMENT, "
             		+ "title TEXT, "
             		+ "forenames TEXT, "
             		+ "surname TEXT, "
