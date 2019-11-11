@@ -1,18 +1,24 @@
 package com.publishingsystem.gui;
-import java.awt.EventQueue;
+
 import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.Hash;
+
+import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.*;
@@ -21,7 +27,7 @@ public class RegistrationWindow {
 
 	private JFrame frmRegistrationForm;
 	private JPasswordField pwdfldPassword;
-	private JTextField txtfldTitle;
+	private JComboBox comboTitle;
 	private JTextField txtfldForenames;
 	private JTextField txtfldSurname;
 	private JTextField txtfldUniAffiliation;
@@ -85,9 +91,8 @@ public class RegistrationWindow {
 		pwdfldPassword = new JPasswordField();
 		pwdfldPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		txtfldTitle = new JTextField();
-		txtfldTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		txtfldTitle.setColumns(10);
+		String[] titles = {"-", "Dr", "Mr", "Mrs", "Miss", "Ms", "Prof"};
+	    JComboBox<String> comboTitle = new JComboBox<String>(titles);
 
 		txtfldForenames = new JTextField();
 		txtfldForenames.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -110,58 +115,53 @@ public class RegistrationWindow {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				// 1. Get entered details
-			    String title = txtfldTitle.getText();
-			    String forenames = txtfldForenames.getText();
-			    String surname = txtfldSurname.getText();
+			    String title = comboTitle.getSelectedItem().toString();
+			    String forenames = txtfldForenames.getText().trim();
+			    String surname = txtfldSurname.getText().trim();
 			    String university = txtfldUniAffiliation.getText();
 			    String email = txtfldEmail.getText();
 			    String password = new String(pwdfldPassword.getPassword());
+			    
+	            // 2. Calculate password hash and salt
+                Hash pwdHash = new Hash(password);
 
-			    // 2. Calculate password hash and salt
-			    Hash pwdHash = new Hash(password);
-			    System.out.println(pwdHash);
-			    String salt = pwdHash.getSalt();
-			    String hash = pwdHash.getHash();
-
-			    // 3. Add academic's details to database
-			    try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
-			        Statement statement = con.createStatement();
-			        //String query = ;
-			        //System.out.println(query);
-			        statement.executeUpdate("USE team022");
-			        statement.executeUpdate("INSERT INTO Academic VALUES("
-                            + "null, "
-                            + "'" + title + "', "
-                            + "'" + forenames + "', "
-                            + "'" + surname + "', "
-                            + "'" + university + "', "
-                            + "'" + email + "', "
-                            + "'" + hash + "', "
-                            + "'" + salt + "'"
-                            +");");
-                    /*ResultSet rs = statement.executeQuery("SELECT * FROM Academic");
-                    while (rs.next()) System.out.println(rs.);
-                    statement.close();
-                    //System.out.println(result);
-                    /*
-                      "title TEXT, "
-                    + "forenames TEXT, "
-                    + "surname TEXT, "
-                    + "university TEXT, "
-                    + "emailAddress TEXT, "
-                    + "passwordHash TEXT, "
-                    + "salt TEXT");
-                     */
+			    // 3. Validate entered details
+			    boolean validCredentials = true;
+			    if (title == "-") {
+			        validCredentials = false;
+			        JOptionPane.showMessageDialog(null, "Please select a title", "Registration Form", 0);
+			    }
+			    if (validCredentials) {
+			        char[] characters = (forenames + surname + university).toCharArray();
+			        System.out.println(characters);
+			        int i = 0;
+			        while (validCredentials && i < characters.length) {
+	                    if (!Character.isLetter(characters[i]) && !(characters[i] == ' ') && !(characters[i] == '-')) validCredentials = false;
+	                    i++;
+			        }
+                    if (!validCredentials) JOptionPane.showMessageDialog(null, "Names must only contain letters", "Registration Form", 0);
+			    }
+			    
+			    // 4. Add academic's details to database if entered details are valid
+			    if (validCredentials) {
+			        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			            Statement statement = con.createStatement();
+			            statement.executeUpdate("USE team022");
+			            statement.executeUpdate("INSERT INTO Academic VALUES("
+			                    + "null, "
+			                    + "'" + title + "', "
+			                    + "'" + forenames + "', "
+			                    + "'" + surname + "', "
+                                + "'" + university + "', "
+                                + "'" + email + "', "
+                                + "'" + pwdHash.getHash() + "', "
+                                + "'" + pwdHash.getSalt() + "'"
+                                +");");
+			            statement.close();
+			            JOptionPane.showMessageDialog(null, "Registration Successful", "Registration Form", 1);
+			            frmRegistrationForm.dispose();
+			        } catch (SQLException ex) {ex.printStackTrace();}
 		        }
-		        catch (SQLException ex) {
-		            ex.printStackTrace();
-		        }
-
-			    // 4. Create Academic object
-
-
-			    //Academic test = new Academic(1, txtfldTitle.getText() , txtfldForename.getText(), txtfldSurname.getText(), txtfldEmail.getText(), txtfldUniAffiliation.getText());
-				//System.out.println(test.getTitle());
 			}
 		});
 		btnRegister.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -173,7 +173,7 @@ public class RegistrationWindow {
 					.addGap(70)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblYourTitle)
-						.addComponent(txtfldTitle, Alignment.TRAILING, 467, 500, Short.MAX_VALUE)
+						.addComponent(comboTitle, Alignment.TRAILING, 467, 500, Short.MAX_VALUE)
 						.addComponent(lblYourForenames)
 						.addComponent(txtfldForenames, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
 						.addComponent(lblYourSurname)
@@ -202,7 +202,7 @@ public class RegistrationWindow {
 					.addGap(28)
 					.addComponent(lblYourTitle)
 					.addGap(10)
-					.addComponent(txtfldTitle, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addComponent(comboTitle, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
 					.addComponent(lblYourForenames)
 					.addGap(10)

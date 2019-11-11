@@ -259,23 +259,28 @@ public class Database {
 		}
 	}
 	
-	/*
-	public static void showTables() {
+	public static void printAllRecords(String tblName) {
 	    try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
-	        Statement statement = con.createStatement();
-            statement.executeUpdate("USE team022");
-            DatabaseMetaData dbmd = con.getMetaData();
-            String[] types = {"TABLE"};
-            ResultSet rs = dbmd.getTables(null, null, "%", types);
+            Statement statement = con.createStatement();
+            statement.execute("USE team022;");
+            ResultSet rs = statement.executeQuery("SELECT * FROM " + tblName);
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnsNumber = rsmd.getColumnCount();
+            for (int i = 1; i <= columnsNumber; i++) System.out.print(rsmd.getColumnName(i) + "  ");
+            System.out.println();
             while (rs.next()) {
-                System.out.println(rs);
+                for (int i = 1; i <= columnsNumber; i++) {
+                    if (i > 1) System.out.print(",  ");
+                    String columnValue = rs.getString(i);
+                    System.out.print(columnValue);
+                }
+                System.out.println("");
             }
         }
 	    catch (SQLException ex) {
 	        ex.printStackTrace();
 	    }
 	}
-	*/
 	
 	public static void createTables() {
 		createTableAcademic();
@@ -293,7 +298,6 @@ public class Database {
 		createTableReview();
 		createTableResponse();
 		createTableInteractions();
-		//showTables();
 	}
 	
 	public static void main(String[] args) {
@@ -302,8 +306,13 @@ public class Database {
 		System.out.println("\nDrivers loaded by DriverManager:");
 		Enumeration<Driver> list = DriverManager.getDrivers();
 		while (list.hasMoreElements())
-			System.out.println(list.nextElement());	
-		createTables();
-		System.out.println("Success");
+			System.out.println(list.nextElement());
+		System.out.println();
+
+		//createTables();
+	    //createTableAcademic();
+		printAllRecords("Academic");
 	}
+	
+	
 }
