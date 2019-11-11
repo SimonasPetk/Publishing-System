@@ -2,21 +2,32 @@ package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Author extends Academic{
-	private ArrayList<Article> articles;
+	protected ArrayList<Submission> submissions;
 	
-	public Author(ArrayList<Article> articles, int academicId, String title ,String forename, String surname, String emailId, String university) {
+	public Author(int academicId, String title ,String forename, String surname, String emailId, String university) {
 		super(academicId, title, forename, surname, emailId, university);
-		this.articles = articles;
+		submissions = new ArrayList<Submission>();
 	}
 
-	public ArrayList<Article> getArticles() {
-		return articles;
+	public ArrayList<Submission> getSubmissions() {
+		return this.submissions;
 	}
 	
-	public void getArticleStatus(Article article) {
-		
+	public SubmissionStatus getSubmissionStatus(Submission submission) {
+		return submission.getStatus();
 	}
 	
-	public void getResponses() {}
+	public ArrayList<Review> getReviews(Submission submission) {
+		return submission.getReviews();
+	}
+	
+	//Main Author
+	public void submitArticle(Submission submission) {
+		this.submissions.add(submission);
+	}
+	
+	public void respond(Submission submission, int reviewerId, Response response) {
+		submission.addResponse(reviewerId, response);
+	}
 
 }

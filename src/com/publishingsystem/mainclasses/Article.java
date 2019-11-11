@@ -2,16 +2,18 @@ package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Article {
-	private ArrayList<Author> authors;
-	private String title;
-	private String summary;
-	private int articleId;
+	protected ArrayList<Author> authors;
+	protected String title;
+	protected String summary;
+	protected int articleId;
+	protected int journalId;
 	
-	public Article(ArrayList<Author> authors, String title, String summary, int articleId) {
+	public Article(ArrayList<Author> authors, String title, String summary, int articleId, int journalId) {
 		this.title = title;
 		this.summary = summary;
 		this.authors = authors;
 		this.articleId = articleId;
+		this.journalId = journalId;
 	}
 
 	public void setTitle(String title) {
@@ -37,6 +39,10 @@ public class Article {
 
 	public int getArticleId() {
 		return articleId;
+	}
+	
+	public int getJournalId() {
+		return this.journalId;
 	}
 	
 	

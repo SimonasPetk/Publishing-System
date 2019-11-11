@@ -1,6 +1,6 @@
 package com.publishingsystem.mainclasses;
 
-public class Academic {
+public abstract class Academic {
 	protected int academicId;
 	protected String title;
 	protected String forename;
