@@ -1,7 +1,6 @@
 package com.publishingsystem.gui;
 
-import com.publishingsystem.mainclasses.Academic;
-import com.publishingsystem.mainclasses.Hash;
+import com.publishingsystem.mainclasses.*;
 
 import java.awt.EventQueue;
 
@@ -141,6 +140,8 @@ public class RegistrationWindow {
 			        }
                     if (!validCredentials) JOptionPane.showMessageDialog(null, "Names must only contain letters", "Registration Form", 0);
 			    }
+			    // validate email
+			    
 			    
 			    // 4. Add academic's details to database if entered details are valid
 			    if (validCredentials) {
@@ -159,7 +160,8 @@ public class RegistrationWindow {
                                 +");");
 			            statement.close();
 			            JOptionPane.showMessageDialog(null, "Registration Successful", "Registration Form", 1);
-			            frmRegistrationForm.dispose();
+	                    frmRegistrationForm.dispose();
+			            Database.printAllRecords("Academic");
 			        } catch (SQLException ex) {ex.printStackTrace();}
 		        }
 			}

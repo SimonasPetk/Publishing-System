@@ -3,6 +3,8 @@ import java.awt.EventQueue;
 import com.publishingsystem.mainclasses.*;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.BorderLayout;
 import javax.swing.SwingConstants;
 import java.awt.Font;
@@ -13,15 +15,18 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import com.publishingsystem.mainclasses.Hash;
-
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class LoginScreen {
 
 	private JFrame frmLogInScreen;
-	private JTextField usernameField;
+	private JTextField emailField;
 	private JPasswordField passwordField;
 
 	/**
@@ -52,16 +57,16 @@ public class LoginScreen {
 	 */
 	private void initialize() {
 		frmLogInScreen = new JFrame();
-		frmLogInScreen.setTitle("Log In Screen");
+		frmLogInScreen.setTitle("Login");
 		frmLogInScreen.setBounds(100, 100, 700, 500);
 		frmLogInScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JLabel lblUsername = new JLabel("Username:");
-		lblUsername.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		JLabel lblEmail = new JLabel("Email Address:");
+		lblEmail.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		usernameField = new JTextField();
-		usernameField.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		usernameField.setColumns(10);
+		emailField = new JTextField();
+		emailField.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		emailField.setColumns(10);
 		
 		JLabel lblPassword = new JLabel("Password:");
 		lblPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -73,27 +78,47 @@ public class LoginScreen {
 		btnLogin.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-			    // 1. Get username and passwords entered
-			    String username = usernameField.getText();
+			    // 1. Get email and password entered then validate
+			    String email = emailField.getText();
 			    String password = new String(passwordField.getPassword());
-			    			    
-			    //System.out.println(new Hash(password).getSalt().toString());
+
+			    boolean validCredentials = true;
+			    if (email.isEmpty() || password.isEmpty()) validCredentials = false;
 			    
-			    // 2. Get stored hash and salt from database for given username
-			    String actualHash = "(a hash that is 256 characters)";
-			    byte[] salt = {'a', 'b'};
-			    
-			    // 3. Generate hash based on fetched salt and entered password
-			    //Hash newHash = new Hash(password, salt);
-			    //boolean correctPassword = newHash.getHash().equals(actualHash);
-			    boolean correctPassword = true;
-			    
-			    // 4. Check if this hash is same as stored hash
-			    if (correctPassword) {
-			        //System.out.println("Login successful");
-			        new AuthorMainWindow();
-			        frmLogInScreen.dispose();
-			    }
+			    if (validCredentials) {
+			        // 2. Get stored hash and salt from database for given email
+			        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			            Statement statement = con.createStatement();
+			            statement.executeUpdate("USE team022");
+			            ResultSet res = statement.executeQuery(
+			                    "SELECT academicID, passwordHash, salt FROM Academic WHERE emailAddress = '" + email + "'");
+			            
+			            int academicID = 0;
+			            String dbHash = null;
+			            String dbSalt = null;
+			            while (res.next()) {
+			                academicID = res.getInt(1);
+			                dbHash = res.getString(2);
+			                dbSalt = res.getString(3);
+			            }
+			            System.out.println(academicID + ", " + dbHash + ", " + dbSalt);
+			            
+			            if (academicID == 0) {
+			                JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
+			            } else {
+		                    // 3. Generate hash based on fetched salt and entered password
+		                    Hash newHash = new Hash(password, dbSalt);
+		                    boolean correctPassword = newHash.getHash().equals(dbHash);
+
+		                    // 4. Check if this hash is same as stored hash
+		                    if (correctPassword) {
+		                        JOptionPane.showMessageDialog(null, "Login Successful", "Login", 1);
+		                        new AuthorMainWindow();
+		                        frmLogInScreen.dispose();
+		                    } else JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
+			            }
+			        } catch (SQLException ex) {ex.printStackTrace();}
+			    } else JOptionPane.showMessageDialog(null, "Please fill in all fields", "Login", 0);
 			    
 			    // 5. Clear password variables
 			}
@@ -130,10 +155,10 @@ public class LoginScreen {
 					.addComponent(lblWelcomeBack, GroupLayout.PREFERRED_SIZE, 643, GroupLayout.PREFERRED_SIZE))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(100)
-					.addComponent(lblUsername, GroupLayout.PREFERRED_SIZE, 321, GroupLayout.PREFERRED_SIZE))
+					.addComponent(lblEmail, GroupLayout.PREFERRED_SIZE, 321, GroupLayout.PREFERRED_SIZE))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(100)
-					.addComponent(usernameField, GroupLayout.PREFERRED_SIZE, 529, GroupLayout.PREFERRED_SIZE))
+					.addComponent(emailField, GroupLayout.PREFERRED_SIZE, 529, GroupLayout.PREFERRED_SIZE))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(100)
 					.addComponent(lblPassword, GroupLayout.PREFERRED_SIZE, 315, GroupLayout.PREFERRED_SIZE))
@@ -157,9 +182,9 @@ public class LoginScreen {
 					.addGap(10)
 					.addComponent(lblWelcomeBack, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
 					.addGap(15)
-					.addComponent(lblUsername)
+					.addComponent(lblEmail)
 					.addGap(5)
-					.addComponent(usernameField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addComponent(emailField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(5)
 					.addComponent(lblPassword)
 					.addGap(5)

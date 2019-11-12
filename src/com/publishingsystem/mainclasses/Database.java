@@ -264,6 +264,8 @@ public class Database {
             Statement statement = con.createStatement();
             statement.execute("USE team022;");
             ResultSet rs = statement.executeQuery("SELECT * FROM " + tblName);
+            printResultSet(rs);
+            /*
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnsNumber = rsmd.getColumnCount();
             for (int i = 1; i <= columnsNumber; i++) System.out.print(rsmd.getColumnName(i) + "  ");
@@ -275,11 +277,28 @@ public class Database {
                     System.out.print(columnValue);
                 }
                 System.out.println("");
-            }
+            }*/
         }
 	    catch (SQLException ex) {
 	        ex.printStackTrace();
 	    }
+	}
+	
+	public static void printResultSet(ResultSet rs) {
+	    try {
+	        ResultSetMetaData rsmd = rs.getMetaData();
+	        int columnsNumber = rsmd.getColumnCount();
+	        for (int i = 1; i <= columnsNumber; i++) System.out.print(rsmd.getColumnName(i) + "  ");
+	        System.out.println();
+	        while (rs.next()) {
+	            for (int i = 1; i <= columnsNumber; i++) {
+	                if (i > 1) System.out.print(",  ");
+	                String columnValue = rs.getString(i);
+	                System.out.print(columnValue);
+	            }
+	        }
+	        System.out.println("");
+        } catch (SQLException ex) {ex.printStackTrace();}
 	}
 	
 	public static void createTables() {
@@ -310,7 +329,7 @@ public class Database {
 		System.out.println();
 
 		//createTables();
-	    //createTableAcademic();
+	    createTableAcademic();
 		printAllRecords("Academic");
 	}
 	
