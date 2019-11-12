@@ -8,12 +8,15 @@ public class Submission extends Article{
 	private Decision decision;
 	private SubmissionStatus status;
 	
-	public Submission(ArrayList<Author> authors, String title, String summary, int articleId, int submissionId, int mainAuthorId, int journalId) {
-		super(authors, title, summary, articleId, journalId);
+	public Submission(ArrayList<Author> authors, String title, String summary, int submissionId, String pdf, int journalId) {
+		super(authors, title, summary, submissionId, journalId, pdf);
 		this.submissionId = submissionId;
-		this.mainAuthorId = mainAuthorId;
 		this.status = SubmissionStatus.SUBMITTED;
 		this.reviews = new ArrayList<Review>();
+	}
+	
+	public void setMainAuthorId(int id) {
+		this.mainAuthorId = id;
 	}
 	
 	public SubmissionStatus getStatus() {

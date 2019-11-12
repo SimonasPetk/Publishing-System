@@ -23,6 +23,7 @@ public class Author extends Academic{
 	
 	//Main Author
 	public void submitArticle(Submission submission) {
+		submission.setMainAuthorId(this.academicId);
 		this.submissions.add(submission);
 	}
 	
