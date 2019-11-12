@@ -4,8 +4,8 @@ import java.util.ArrayList;
 public class Author extends Academic{
 	protected ArrayList<Submission> submissions;
 	
-	public Author(int academicId, String title ,String forename, String surname, String emailId, String university) {
-		super(academicId, title, forename, surname, emailId, university);
+	public Author(int academicId, String title ,String forename, String surname, String emailId, String university, Hash hash) {
+		super(academicId, title, forename, surname, emailId, university, hash);
 		submissions = new ArrayList<Submission>();
 	}
 
@@ -22,7 +22,7 @@ public class Author extends Academic{
 	}
 	
 	//Main Author
-	public void submitArticle(Submission submission) {
+	public void submit(Submission submission) {
 		submission.setMainAuthorId(this.academicId);
 		this.submissions.add(submission);
 	}

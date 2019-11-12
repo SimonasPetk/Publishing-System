@@ -17,11 +17,6 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 public class LoginScreen {
 
@@ -86,41 +81,17 @@ public class LoginScreen {
 			    if (email.isEmpty() || password.isEmpty()) validCredentials = false;
 			    
 			    if (validCredentials) {
-			        // 2. Get stored hash and salt from database for given email
-			        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
-			            Statement statement = con.createStatement();
-			            statement.executeUpdate("USE team022");
-			            ResultSet res = statement.executeQuery(
-			                    "SELECT academicID, passwordHash, salt FROM Academic WHERE emailAddress = '" + email + "'");
-			            
-			            int academicID = 0;
-			            String dbHash = null;
-			            String dbSalt = null;
-			            while (res.next()) {
-			                academicID = res.getInt(1);
-			                dbHash = res.getString(2);
-			                dbSalt = res.getString(3);
-			            }
-			            System.out.println(academicID + ", " + dbHash + ", " + dbSalt);
-			            
-			            if (academicID == 0) {
-			                JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
-			            } else {
-		                    // 3. Generate hash based on fetched salt and entered password
-		                    Hash newHash = new Hash(password, dbSalt);
-		                    boolean correctPassword = newHash.getHash().equals(dbHash);
-
-		                    // 4. Check if this hash is same as stored hash
-		                    if (correctPassword) {
-		                        JOptionPane.showMessageDialog(null, "Login Successful", "Login", 1);
-		                        new AuthorMainWindow();
-		                        frmLogInScreen.dispose();
-		                    } else JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
-			            }
-			        } catch (SQLException ex) {ex.printStackTrace();}
+			        
+			        // 3. Check if the generated hash from password is same as stored hash
+			    	boolean correctPassword = Database.vaidateCredentials(email, password);
+                    if (correctPassword) {
+                        JOptionPane.showMessageDialog(null, "Login Successful", "Login", 1);
+                        new AuthorMainWindow();
+                        frmLogInScreen.dispose();
+                    } else JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
 			    } else JOptionPane.showMessageDialog(null, "Please fill in all fields", "Login", 0);
 			    
-			    // 5. Clear password variables
+			    // 4. Clear password variables
 			}
 		});
 		btnLogin.setFont(new Font("Tahoma", Font.PLAIN, 15));

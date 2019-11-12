@@ -1,48 +1,52 @@
 package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
+import java.sql.Date;
 
 public class Journal {
-	private int journalName;
-	private String iSSN;
-	private String dateOfPublication;
+	private String journalName;
+	private int iSSN;
+	private Date dateOfPublication;
 	private ArrayList<Volume> volumes;
 	private ArrayList<Editor> boardOfEditors;
 	private int chiefEditorId;
 	
-	public Journal(int journalName, String iSSN, String dateOfPublication, int chiefEditorId) {
+	public Journal(int iSSN, String journalName, Date dateOfPublication) {
 		this.journalName = journalName;
 		this.iSSN = iSSN;
 		this.dateOfPublication = dateOfPublication;
-		this.chiefEditorId = chiefEditorId;
 		this.volumes = new ArrayList<Volume>();
 		this.boardOfEditors = new ArrayList<Editor>();
+	}
+	
+	public void setChiefEditorId(int id) {
+		this.chiefEditorId = id;
 	}
 	
 	public int getCheifEditorId() {
 		return this.chiefEditorId;
 	}
 
-	public int getJournalName() {
+	public String getJournalName() {
 		return this.journalName;
 	}
 
-	public void setJournalName(int journalName) {
+	public void setJournalName(String journalName) {
 		this.journalName = journalName;
 	}
 
-	public String getISSN() {
+	public int getISSN() {
 		return this.iSSN;
 	}
 
-	public void setISSN(String iSSN) {
+	public void setISSN(int iSSN) {
 		this.iSSN = iSSN;
 	}
 
-	public String getDateOfPublication() {
+	public Date getDateOfPublication() {
 		return this.dateOfPublication;
 	}
 
-	public void setDateOfPublication(String dateOfPublication) {
+	public void setDateOfPublication(Date dateOfPublication) {
 		this.dateOfPublication = dateOfPublication;
 	}
 	

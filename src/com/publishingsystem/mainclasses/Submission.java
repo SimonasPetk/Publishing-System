@@ -3,16 +3,20 @@ import java.util.ArrayList;
 
 public class Submission extends Article{
 	private ArrayList<Review> reviews;
-	private int submissionId;
 	private int mainAuthorId;
 	private Decision decision;
 	private SubmissionStatus status;
+	private int submissionId;
 	
-	public Submission(ArrayList<Author> authors, String title, String summary, int submissionId, String pdf, int journalId) {
+	public Submission(int submissionId, ArrayList<Author> authors, String title, String summary, String pdf, int journalId) {
 		super(authors, title, summary, submissionId, journalId, pdf);
 		this.submissionId = submissionId;
 		this.status = SubmissionStatus.SUBMITTED;
 		this.reviews = new ArrayList<Review>();
+	}
+	
+	public void setSubmissionId(int id) {
+		this.submissionId = id;
 	}
 	
 	public void setMainAuthorId(int id) {
