@@ -22,6 +22,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.*;
 import java.util.ArrayList;
+import javax.swing.DefaultComboBoxModel;
 
 public class RegistrationWindow {
 
@@ -91,8 +92,8 @@ public class RegistrationWindow {
 		pwdfldPassword = new JPasswordField();
 		pwdfldPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		String[] titles = {"-", "Dr", "Mr", "Mrs", "Miss", "Ms", "Prof"};
-	    JComboBox<String> comboTitle = new JComboBox<String>(titles);
+	    JComboBox<String> comboTitle = new JComboBox<String>();
+	    comboTitle.setModel(new DefaultComboBoxModel(new String[] {"-", "Dr", "Mr", "Mrs", "Miss", "Ms", "Prof"}));
 
 		txtfldForenames = new JTextField();
 		txtfldForenames.setFont(new Font("Tahoma", Font.PLAIN, 15));
