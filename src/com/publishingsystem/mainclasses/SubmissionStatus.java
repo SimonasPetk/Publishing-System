@@ -13,7 +13,7 @@ public enum SubmissionStatus {
 			case INITIALVERDICT:
 				return "Initial verdict";
 			case RESPONSESRECEIVED:
-				return "Responses recieved";
+				return "Responses received";
 			case FINALVERDICT:
 				return "Final verdict";
 			case COMPLETED:
