@@ -5,14 +5,21 @@ public class Journal {
 	private int journalName;
 	private String iSSN;
 	private String dateOfPublication;
-	private ArrayList<Editor> boardOfEditors;
 	private ArrayList<Volume> volumes;
+	private ArrayList<Editor> boardOfEditors;
+	private int chiefEditorId;
 	
-	public Journal(int journalName, String iSSN, String dateOfPublication, ArrayList<Editor> boardOfEditors) {
+	public Journal(int journalName, String iSSN, String dateOfPublication, int chiefEditorId) {
 		this.journalName = journalName;
 		this.iSSN = iSSN;
 		this.dateOfPublication = dateOfPublication;
-		this.boardOfEditors = boardOfEditors;
+		this.chiefEditorId = chiefEditorId;
+		this.volumes = new ArrayList<Volume>();
+		this.boardOfEditors = new ArrayList<Editor>();
+	}
+	
+	public int getCheifEditorId() {
+		return this.chiefEditorId;
 	}
 
 	public int getJournalName() {

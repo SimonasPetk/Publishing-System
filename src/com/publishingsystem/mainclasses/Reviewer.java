@@ -1,19 +1,30 @@
 package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
-public class Reviewer {
+public class Reviewer extends Author{
 	private int reviewerId;
-	private ArrayList<Article> articlesInReview;
+	private ArrayList<Submission> submissionsInReview;
 	
-	public Reviewer(int reviewerId) {
+	public Reviewer(int academicId, String title ,String forename, String surname, String emailId, String university, int reviewerId) {
+		super(academicId, title, forename, surname, emailId, university);
 		this.reviewerId = reviewerId;
-	}
-	
-	public void addArticleToReview(Article r) {
-		this.articlesInReview.add(r);
+		this.submissionsInReview = new ArrayList<Submission>();
 	}
 	
 	public int getReviewerId() {
 		return this.reviewerId;
 	}
+	
+	public void addSubmissionToReview(Submission s) {
+		this.submissionsInReview.add(s);
+	}
+	
+	public void setVerdict(Submission s, Verdict v) {
+		s.setVerdict(this.reviewerId, v);
+	}
+	
+	public void addReview(Submission s, Review r) {
+		s.addReview(r);
+	}
+	
 }

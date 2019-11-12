@@ -9,6 +9,7 @@ public class Edition {
 	public Edition(String editionDate, int editionNumber) {
 		this.editionDate = editionDate;
 		this.editionNumber = editionNumber;
+		this.articles = new ArrayList<Article>();
 	}
 
 	public void setEditionDate(String editionDate) {

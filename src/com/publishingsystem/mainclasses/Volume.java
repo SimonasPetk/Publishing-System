@@ -9,6 +9,7 @@ public class Volume {
 	public Volume(String dateOfPublication, int volumeNumber) {
 		this.dateOfPublication = dateOfPublication;
 		this.volumeNumber = volumeNumber;
+		this.editions = new ArrayList<Edition>();
 	}
 	
 	public void setDateOfPublication(String dateOfPublication) {
