@@ -93,7 +93,7 @@ public class RegistrationWindow {
 		pwdfldPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 	    JComboBox<String> comboTitle = new JComboBox<String>();
-	    comboTitle.setModel(new DefaultComboBoxModel(new String[] {"-", "Dr", "Mr", "Mrs", "Miss", "Ms", "Prof"}));
+	    comboTitle.setModel(new DefaultComboBoxModel(new String[] {" ", "Dr", "Mr", "Mrs", "Miss", "Ms", "Prof"}));
 
 		txtfldForenames = new JTextField();
 		txtfldForenames.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -128,7 +128,7 @@ public class RegistrationWindow {
 
 			    // 3. Validate entered details
 			    boolean validCredentials = true;
-			    if (title == "-" || forenames.isEmpty() || surname.isEmpty() || university.isEmpty() || email.isEmpty() || password.isEmpty()) {
+			    if (title == " " || forenames.isEmpty() || surname.isEmpty() || university.isEmpty() || email.isEmpty() || password.isEmpty()) {
                     validCredentials = false;
                     JOptionPane.showMessageDialog(null, "Please fill in all of the fields", "Registration Form", 0);
 			    }

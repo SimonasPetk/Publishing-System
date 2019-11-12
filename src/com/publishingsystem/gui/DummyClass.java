@@ -14,6 +14,10 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JTextField;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.Panel;
+import javax.swing.JPanel;
 
 public class DummyClass {
 
@@ -46,10 +50,13 @@ public class DummyClass {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		String ans;
+		
 		answerPop = new JFrame();
 		answerPop.setTitle("Response Form");
 		answerPop.setBounds(100, 100, 550, 400);
-		answerPop.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		answerPop.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		answerPop.setVisible(true);
 		
 		JLabel lblAnswerToCriticism = new JLabel("Answer to Criticism");
 		lblAnswerToCriticism.setHorizontalAlignment(SwingConstants.CENTER);
@@ -118,9 +125,24 @@ public class DummyClass {
 		JEditorPane editorPane = new JEditorPane();
 		editorPane.setEditable(false);
 		scrPaneCriticism.setViewportView(editorPane);
+		//editorPane.setText(criticism);
 		
 		JEditorPane editPaneAnswer = new JEditorPane();
 		scrPaneAnswer.setViewportView(editPaneAnswer);
 		answerPop.getContentPane().setLayout(groupLayout);
+		
+		ans = editPaneAnswer.getText();
+		
+		btnSubmit.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				
+				answerPop.dispose();
+				
+			}
+		});
+		
+		//return ans;
 	}
 }
