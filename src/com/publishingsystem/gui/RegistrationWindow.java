@@ -21,6 +21,7 @@ import javax.swing.JComboBox;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class RegistrationWindow {
 
@@ -126,13 +127,12 @@ public class RegistrationWindow {
 
 			    // 3. Validate entered details
 			    boolean validCredentials = true;
-			    if (title == "-") {
-			        validCredentials = false;
-			        JOptionPane.showMessageDialog(null, "Please select a title", "Registration Form", 0);
+			    if (title == "-" || forenames.isEmpty() || surname.isEmpty() || university.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                    validCredentials = false;
+                    JOptionPane.showMessageDialog(null, "Please fill in all of the fields", "Registration Form", 0);
 			    }
 			    if (validCredentials) {
 			        char[] characters = (forenames + surname + university).toCharArray();
-			        System.out.println(characters);
 			        int i = 0;
 			        while (validCredentials && i < characters.length) {
 	                    if (!Character.isLetter(characters[i]) && !(characters[i] == ' ') && !(characters[i] == '-')) validCredentials = false;
@@ -140,8 +140,20 @@ public class RegistrationWindow {
 			        }
                     if (!validCredentials) JOptionPane.showMessageDialog(null, "Names must only contain letters", "Registration Form", 0);
 			    }
-			    // validate email
-			    
+			    if (validCredentials) {
+			        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+                        Statement statement = con.createStatement();
+                        statement.executeUpdate("USE team022");
+                        ResultSet res = statement.executeQuery("SELECT emailAddress FROM Academic");
+                        
+                        ArrayList<String> emailsInDB = new ArrayList<String>();
+                        while (res.next()) emailsInDB.add(res.getString(1));
+                        if (emailsInDB.contains(email)) {
+                            JOptionPane.showMessageDialog(null, "Email address already in use", "Registration Form", 0);
+                            validCredentials = false;
+                        }
+			        } catch (SQLException ex) {ex.printStackTrace();}
+			    }
 			    
 			    // 4. Add academic's details to database if entered details are valid
 			    if (validCredentials) {
@@ -161,7 +173,6 @@ public class RegistrationWindow {
 			            statement.close();
 			            JOptionPane.showMessageDialog(null, "Registration Successful", "Registration Form", 1);
 	                    frmRegistrationForm.dispose();
-			            Database.printAllRecords("Academic");
 			        } catch (SQLException ex) {ex.printStackTrace();}
 		        }
 			}
