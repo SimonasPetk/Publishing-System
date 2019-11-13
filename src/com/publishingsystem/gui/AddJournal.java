@@ -79,7 +79,7 @@ public class AddJournal {
 			public void mousePressed(MouseEvent arg0) {
 
 				
-				JOptionPane.showMessageDialog(null, "To access your Chief-Editor role please Log Out and Login In again to the system. \\n Thank you!");
+				JOptionPane.showMessageDialog(null, "To access your Chief-Editor role please Log Out and Login In again to the system. Thank you!");
 			}
 		});
 		btnAddJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));

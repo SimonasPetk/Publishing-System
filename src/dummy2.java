@@ -13,6 +13,8 @@ import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class dummy2 {
 
@@ -76,6 +78,7 @@ public class dummy2 {
 		scrPaneAnswer.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		JButton btnSubmit = new JButton("Submit");
+		
 		btnSubmit.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
@@ -123,6 +126,14 @@ public class dummy2 {
 		
 		JEditorPane editPaneAnswer = new JEditorPane();
 		scrPaneAnswer.setViewportView(editPaneAnswer);
+		
+		btnSubmit.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				System.out.println(editPaneAnswer.getText().split("\n")[1]);
+			}
+		});
+	
 		
 		JEditorPane editPaneCriticsm = new JEditorPane();
 		editPaneCriticsm.setEditable(false);
