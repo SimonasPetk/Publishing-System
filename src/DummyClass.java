@@ -1,4 +1,4 @@
-package com.publishingsystem.gui;
+
 
 import java.awt.EventQueue;
 

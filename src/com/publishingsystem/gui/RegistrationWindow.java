@@ -63,7 +63,7 @@ public class RegistrationWindow {
 	private void initialize() {
 		frmRegistrationForm = new JFrame();
 		frmRegistrationForm.setTitle("Registration Form");
-		frmRegistrationForm.setBounds(100, 100, 653, 559);
+		frmRegistrationForm.setBounds(500, 100, 653, 559);
 		frmRegistrationForm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmRegistrationForm.setVisible(true);
 

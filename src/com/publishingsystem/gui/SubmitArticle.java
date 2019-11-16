@@ -90,7 +90,7 @@ public class SubmitArticle {
 		JScrollPane scrPaneAuthors = new JScrollPane();
 		scrPaneAuthors.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		JLabel lblNewLabel_2 = new JLabel("Please Enter Every New Name together with Password in a New Line. (e. g. name; password)");
+		JLabel lblNewLabel_2 = new JLabel("Please Register Your Article's Every Co-Author");
 		
 		JButton btnUploadPdf = new JButton("Upload PDF");
 		btnUploadPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -106,6 +106,17 @@ public class SubmitArticle {
 			}
 		});
 		btnSubmit.setFont(new Font("Tahoma", Font.BOLD, 15));
+		
+		JButton btnRegisterANew = new JButton("Register a New Author");
+		btnRegisterANew.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				new RegistrationWindow();
+				
+			}
+		});
+		btnRegisterANew.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(frmSubmitAnArticle.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -123,9 +134,13 @@ public class SubmitArticle {
 						.addComponent(lblSubmitANewArticle, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
 						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
 						.addComponent(txtfldTitle, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
-						.addComponent(scrPaneAbstract)
-						.addComponent(scrPaneAuthors)
-						.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE))
+						.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(scrPaneAuthors, GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
+							.addGap(50)
+							.addComponent(btnRegisterANew)
+							.addGap(35))
+						.addComponent(scrPaneAbstract, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE))
 					.addGap(80))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(290)
@@ -137,10 +152,10 @@ public class SubmitArticle {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
 					.addComponent(lblSubmitANewArticle)
-					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblChooseAJournal)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 77, GroupLayout.PREFERRED_SIZE)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblTitle)
 					.addPreferredGap(ComponentPlacement.RELATED)
@@ -148,20 +163,26 @@ public class SubmitArticle {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblAbstract)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrPaneAbstract, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
+					.addComponent(scrPaneAbstract, GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblAuthors)
 					.addGap(2)
 					.addComponent(lblNewLabel_2)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrPaneAuthors, GroupLayout.PREFERRED_SIZE, 70, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnUploadPdf)
-						.addComponent(lblPdfIsNot))
-					.addGap(10)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(10)
+							.addComponent(scrPaneAuthors, GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(btnUploadPdf)
+								.addComponent(lblPdfIsNot))
+							.addGap(10))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(30)
+							.addComponent(btnRegisterANew)
+							.addGap(10)))
 					.addComponent(btnSubmit)
-					.addGap(60))
+					.addGap(13))
 		);
 		
 		JEditorPane editPaneAuthors = new JEditorPane();

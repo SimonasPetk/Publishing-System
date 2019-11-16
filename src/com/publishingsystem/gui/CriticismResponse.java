@@ -62,7 +62,7 @@ public class CriticismResponse {
 	private void initialize() {
 		frmRespondToCriticism = new JFrame();
 		frmRespondToCriticism.setTitle("Respond to Criticism");
-		frmRespondToCriticism.setBounds(100, 100, 472, 515);
+		frmRespondToCriticism.setBounds(100, 100, 500, 600);
 		frmRespondToCriticism.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmRespondToCriticism.setVisible(true);
 		
@@ -92,40 +92,53 @@ public class CriticismResponse {
 		
 		JLabel lblCriticisms = new JLabel("Criticisms");
 		lblCriticisms.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JButton btnAddUpdatedPdf = new JButton("Add Updated PDF ");
+		btnAddUpdatedPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JLabel lblPleaseSubmitYour = new JLabel("Please submit your article's accordingly updated PDF file");
 		GroupLayout groupLayout = new GroupLayout(frmRespondToCriticism.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(150)
-					.addComponent(lblYourArticleReviews, GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+					.addComponent(lblYourArticleReviews, GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
 					.addGap(150))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(lblReview)
-					.addContainerGap(381, Short.MAX_VALUE))
+					.addContainerGap(411, Short.MAX_VALUE))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(scrPaneAnswer1, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
+					.addComponent(scrPaneAnswer1, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
 					.addContainerGap())
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(lblTypographicalErr, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(271, Short.MAX_VALUE))
+					.addContainerGap(301, Short.MAX_VALUE))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(lblCriticisms)
-					.addContainerGap(385, Short.MAX_VALUE))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(scrPaneAnswer2, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
-					.addContainerGap())
+					.addContainerGap(415, Short.MAX_VALUE))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(136)
-					.addComponent(btnSubmitResponse, GroupLayout.PREFERRED_SIZE, 154, Short.MAX_VALUE)
+					.addComponent(btnSubmitResponse, GroupLayout.PREFERRED_SIZE, 184, Short.MAX_VALUE)
 					.addGap(164))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(scrPaneReview1, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
+					.addComponent(scrPaneAnswer2, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
+					.addContainerGap())
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(btnAddUpdatedPdf)
+					.addContainerGap(321, Short.MAX_VALUE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(scrPaneReview1, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
+					.addContainerGap())
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblPleaseSubmitYour, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
@@ -135,19 +148,23 @@ public class CriticismResponse {
 					.addComponent(lblYourArticleReviews)
 					.addGap(10)
 					.addComponent(lblReview)
+					.addGap(5)
+					.addComponent(scrPaneReview1, GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
 					.addGap(10)
-					.addComponent(scrPaneReview1, GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblTypographicalErr, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
-					.addGap(13)
-					.addComponent(scrPaneAnswer1, GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGap(5)
+					.addComponent(scrPaneAnswer1, GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
+					.addGap(10)
 					.addComponent(lblCriticisms)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrPaneAnswer2, GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
-					.addGap(43)
+					.addGap(5)
+					.addComponent(scrPaneAnswer2, GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
+					.addGap(10)
+					.addComponent(btnAddUpdatedPdf)
+					.addGap(5)
+					.addComponent(lblPleaseSubmitYour)
+					.addGap(10)
 					.addComponent(btnSubmitResponse)
-					.addGap(18))
+					.addGap(10))
 		);
 		
 		
@@ -301,5 +318,4 @@ public class CriticismResponse {
 		
 		return null;
 	}
-	
 }

@@ -73,6 +73,13 @@ public class AuthorMainWindow {
 		JScrollPane scrSubmitted = new JScrollPane();
 		
 		JButton btnSubmitAnArticle = new JButton("Submit an Article");
+		btnSubmitAnArticle.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				new SubmitArticle();
+			}
+		});
 		btnSubmitAnArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JScrollPane scrReview = new JScrollPane();
