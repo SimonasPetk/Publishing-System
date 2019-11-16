@@ -3,274 +3,25 @@ import java.sql.*;
 import java.util.*;
 
 public class Database {
-	//	private static final String connection = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	//	private static final String database = "team022";
+	//		private static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+	//		private static final String DATABASE = "team022";
 
 	//localhost
-	private static final String connection = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-	private static final String database = "publishing_system";
+	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
-		return connection;
+		return CONNECTION;
 	}
 
 	public static String getDatabaseName() {
-		return database;
+		return DATABASE;
 	}
 
-	public static String createTableAcademic() { 
-		return "CREATE TABLE Academic ("
-				+ "academicID INT PRIMARY KEY AUTO_INCREMENT, "
-				+ "title TEXT, "
-				+ "forenames TEXT, "
-				+ "surname TEXT, "
-				+ "university TEXT, "
-				+ "emailAddress TEXT, "
-				+ "passwordHash TEXT, "
-				+ "salt VARBINARY(256))";
-	}
-
-	public static String createTableJournal() {
-		return "CREATE TABLE Journal ("
-				+ "ISSN INT PRIMARY KEY, "
-				+ "chiefEditorId INT, "
-				+ "name TEXT, "
-				+ "dateOfPublication date)";
-	}
-
-	public static String createTableVolume() {
-		return "CREATE TABLE Volume ("
-				+ "volNum INT PRIMARY KEY,"
-				+ "year DATE, "
-				+ "ISSN INT references Journal(ISSN))";
-	}
-
-	public static String createTableEdition() {
-		return "CREATE TABLE Edition ("
-				+ "volNum INT references Volume(volNum), "
-				+ "month DATE, "
-				+ "edNum INT PRIMARY KEY)";
-	}
-
-	public static String createTablePDF() {
-		return "CREATE TABLE PDF ("
-				+ "pdfID INT PRIMARY KEY, "
-				+ "pdfLink TEXT)";
-	}
-
-	public static String createTableSubmission() {
-		return "CREATE TABLE Submission ("
-				+ "submissionID INT PRIMARY KEY AUTO_INCREMENT, "
-				+ "mainAuthorID INT references Author(authorID), "
-				+ "status TEXT)";
-	}
-
-	public static String createTableEditor(){
-		return "CREATE TABLE Editor ("
-				+ "editorID INT PRIMARY KEY references Academic(academicID),"
-				+ "ISSN INT references Journal(ISSN))";
-	}
-
-	public static String createTableArticle(){
-		return "CREATE TABLE Article ("
-				+ "articleID INT PRIMARY KEY references Submission(submissionID),"
-				+ "title TEXT,"
-				+ "summary TEXT,"
-				+ "pdf TEXT,"
-				+ "pageRange INT,"
-				+ "edNum INT references Edition(edNum))";
-	}
-
-	public static String createTableAuthor(){
-		return "CREATE TABLE Author ("
-				+ "authorID INT PRIMARY KEY NOT NULL references Academic(academicID),"
-				+ "articleID INT references Article(articleID))";
-	}
-
-	public static String createTableReviewer() {
-		return "CREATE TABLE Reviewer ("
-				+ "reviewerID INT PRIMARY KEY references Academic(academicID),"
-				+ "submissionID INT references Submission(submissionID))";
-	}
-
-	public static String createTableReview() {
-		return "CREATE TABLE Review ("
-				+ "reviewerID INT references Academic(academicID),"
-				+ "submissionID INT references Submission(submissionID),"
-				+ "summary TEXT,"
-				+ "typingErrors TEXT,"
-				+ "verdict TEXT,"
-				+ "PRIMARY KEY (submissionID, reviewerID))";
-	}
-
-	public static String createTableResponse() {
-		return "CREATE TABLE Response ("
-				+ "submissionID INT references Submission(submissionID), "
-				+ "reviewerID INT references Reviewer(reviewerID), "
-				+ "criticismID INT references Criticism(criticismID), "
-				+ "PRIMARY KEY (submissionID, reviewerID))";
-	}
-
-	public static String createTableCriticism() {
-		return "CREATE TABLE Criticism ("
-				+ "reviewerID INT references Academic(academicID), "
-				+ "submissionID INT references Submission(submissionID), "
-				+ "criticism TEXT,"
-				+ "answer TEXT,"
-				+ "PRIMARY KEY (SubmissionID, reviewerID))";
-	}
-
-	public static void printAllRecords(String tblName) {
-		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
-			Statement statement = con.createStatement();
-			statement.execute("USE team022;");
-			ResultSet rs = statement.executeQuery("SELECT * FROM " + tblName);
-			//printResultSet(rs);
-			ResultSetMetaData rsmd = rs.getMetaData();
-			int columnsNumber = rsmd.getColumnCount();
-			for (int i = 1; i <= columnsNumber; i++) System.out.print(rsmd.getColumnName(i) + "   ");
-			System.out.println();
-			while (rs.next()) {
-				for (int i = 1; i <= columnsNumber; i++) {
-					if (i > 1) System.out.print(",  ");
-					String columnValue = rs.getString(i);
-					System.out.print(columnValue);
-				}
-				System.out.println("");
-			}
-		}
-		catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-
-	public static void dropTables() {
-		try (Connection con = DriverManager.getConnection(connection)) {
-			Statement statement = con.createStatement();
-			ResultSet res = statement.executeQuery("SHOW TABLES LIKE 'Academic';");
-			if(res.next())
-				statement.execute("DROP TABLE ACADEMIC");
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Journal';");
-			if(res.next())
-				statement.execute("DROP TABLE JOURNAL");
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Volume';");
-			if(res.next())
-				statement.execute("DROP TABLE VOLUME");
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Edition';");
-			if(res.next())
-				statement.execute("DROP TABLE EDITION");
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'PDF';");
-			if(res.next())
-				statement.execute("DROP TABLE PDF");
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Submission';");
-			if(res.next())
-				statement.execute("DROP TABLE SUBMISSION");
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Editor';");
-			if(res.next())
-				statement.execute("DROP TABLE EDITOR");
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Article';");
-			if(res.next())
-				statement.execute("DROP TABLE ARTICLE");
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Author';");
-			if(res.next())
-				statement.execute("DROP TABLE AUTHOR");
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Reviewer';");
-			if(res.next())
-				statement.execute("DROP TABLE REVIEWER");
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Review';");
-			if(res.next())
-				statement.execute("DROP TABLE REVIEW");
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Response';");
-			if(res.next())
-				statement.execute("DROP TABLE RESPONSE");
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Criticism';");
-			if(res.next())
-				statement.execute("DROP TABLE CRITICISM");
-		}catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public static void createTables() {
-		try (Connection con = DriverManager.getConnection(connection)) {
-			Statement statement = con.createStatement();
-			statement.execute("USE "+database+";");
-			ResultSet res = statement.executeQuery("SHOW TABLES LIKE 'Academic';");
-			if(!res.next())
-				statement.execute(createTableAcademic());
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Journal';");
-			if(!res.next())
-				statement.execute(createTableJournal());
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Volume';");
-			if(!res.next())
-				statement.execute(createTableVolume());
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Edition';");
-			if(!res.next())
-				statement.execute(createTableEdition());
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'PDF';");
-			if(!res.next())
-				statement.execute(createTablePDF());
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Submission';");
-			if(!res.next())
-				statement.execute(createTableSubmission());
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Editor';");
-			if(!res.next())
-				statement.execute(createTableEditor());
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Article';");
-			if(!res.next())
-				statement.execute(createTableArticle());
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Author';");
-			if(!res.next())
-				statement.execute(createTableAuthor());
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Reviewer';");
-			if(!res.next())
-				statement.execute(createTableReviewer());
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Review';");
-			if(!res.next())
-				statement.execute(createTableReview());
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Response';");
-			if(!res.next())
-				statement.execute(createTableResponse());
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'Criticism';");
-			if(!res.next())
-				statement.execute(createTableCriticism());
-
-
-		}catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public static void addEditors(ArrayList<Editor> editors) {
-		try (Connection con = DriverManager.getConnection(connection)){
+	public static void registerEditors(ArrayList<Editor> editors) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			for(Editor e : editors) {
-				//Add editor to academic table
-				String query = "INSERT INTO ACADEMIC values (null, ?, ?, ?, ?, ?, ?, ?)";
+				String query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
 				PreparedStatement preparedStmt = con.prepareStatement(query);
 				preparedStmt.setString(1, e.getTitle());
 				preparedStmt.setString(2, e.getForename());
@@ -282,35 +33,32 @@ public class Database {
 
 				preparedStmt.execute();
 
-				Statement statement = con.createStatement();
-				ResultSet rs = statement.executeQuery("select last_insert_id() as last_id from ACADEMIC");
+				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ACADEMICS");
 				while(rs.next())
-					e.setId(Integer.valueOf(rs.getString("last_id")));
-			}
-		}catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-	}
+					e.setAcademicId(Integer.valueOf(rs.getString("last_id")));
 
-	public static void addJournal(Journal j, ArrayList<Editor> editors) {
-		try (Connection con = DriverManager.getConnection(connection)){
-			
-			//Add journal to journal table
-			String query = "INSERT INTO Journal values (?, ?, ?, ?)";
-			PreparedStatement preparedStmt = con.prepareStatement(query);
-			preparedStmt.setInt(1, j.getISSN());
-			preparedStmt.setInt(2, j.getCheifEditorId());
-			preparedStmt.setString(3, j.getJournalName());
-			preparedStmt.setDate(4, j.getDateOfPublication());
-			preparedStmt.execute();
-
-			for(Editor e : editors) {
-				//Add the editor to editor table
-				query = "INSERT INTO Editor values (?, ?)";
+				//Add editor to editor table
+				query = "INSERT INTO EDITORS values (null, ?)";
 				preparedStmt = con.prepareStatement(query);
-				preparedStmt.setInt(1, e.getId());
-				preparedStmt.setInt(2, j.getISSN());
+				preparedStmt.setInt(1, e.getAcademicId());
+				preparedStmt.execute();
 
+				rs = preparedStmt.executeQuery("select last_insert_id() as last_id from EDITORS");
+				while(rs.next())
+					e.setEditorId(Integer.valueOf(rs.getString("last_id")));
+
+				int roleId = 0;
+				query = "SELECT roleID from ROLES where ROLE = 'Author'";
+				preparedStmt = con.prepareStatement(query);
+				rs = preparedStmt.executeQuery();
+				if(rs.next())
+					roleId = rs.getInt("roleID");
+
+
+				query = "INSERT INTO ACADEMICROLES values (?, ?)";
+				preparedStmt = con.prepareStatement(query);
+				preparedStmt.setInt(1, e.getAcademicId());
+				preparedStmt.setInt(2,roleId);
 				preparedStmt.execute();
 			}
 		}catch (SQLException ex) {
@@ -318,11 +66,10 @@ public class Database {
 		}
 	}
 
-	public static void addAuthors(ArrayList<Author> authors) {
-		try (Connection con = DriverManager.getConnection(connection)){
+	public static void registerAuthors(ArrayList<Author> authors) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			for(Author a : authors) {
-				//Add author to academic table
-				String query = "INSERT INTO ACADEMIC values (null, ?, ?, ?, ?, ?, ?, ?)";
+				String query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
 				PreparedStatement preparedStmt = con.prepareStatement(query);
 				preparedStmt.setString(1, a.getTitle());
 				preparedStmt.setString(2, a.getForename());
@@ -334,47 +81,159 @@ public class Database {
 
 				preparedStmt.execute();
 
-				Statement statement = con.createStatement();
-				ResultSet rs = statement.executeQuery("select last_insert_id() as last_id from ACADEMIC");
+				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ACADEMICS");
 				while(rs.next())
-					a.setId(Integer.valueOf(rs.getString("last_id")));
+					a.setAcademicId(Integer.valueOf(rs.getString("last_id")));
+
+				query = "INSERT INTO AUTHORS values (null, ?)";
+				preparedStmt = con.prepareStatement(query);
+				preparedStmt.setInt(1, a.getAcademicId());
+				preparedStmt.execute();
+
+				rs = preparedStmt.executeQuery("select last_insert_id() as last_id from AUTHORS");
+				while(rs.next())
+					a.setAuthorId((Integer.valueOf(rs.getString("last_id"))));
+
+				int roleId = 0;
+				query = "SELECT roleID from ROLES where ROLE = 'Editor'";
+				preparedStmt = con.prepareStatement(query);
+				rs = preparedStmt.executeQuery();
+				if(rs.next())
+					roleId = rs.getInt("roleID");
+
+
+				query = "INSERT INTO ACADEMICROLES values (?, ?)";
+				preparedStmt = con.prepareStatement(query);
+				preparedStmt.setInt(1, a.getAcademicId());
+				preparedStmt.setInt(2, roleId);
+				preparedStmt.execute();
+
+				rs = preparedStmt.executeQuery("select last_insert_id() as last_id from AUTHORS");
+				while(rs.next())
+					a.setAuthorId((Integer.valueOf(rs.getString("last_id"))));
 			}
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
 	}
 
-	public static void addSubmission(Submission s, ArrayList<Author> authors) {
-		try (Connection con = DriverManager.getConnection(connection)){
-			//Add submission to submission table
-			String query = "INSERT INTO SUBMISSION values (null, ?, ?)";
+	public static void addJournal(Journal j) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+
+			//Add journal to journal table
+			String query = "INSERT INTO JOURNALS values (?, ?, ?)";
+			PreparedStatement preparedStmt = con.prepareStatement(query);
+			preparedStmt.setInt(1, j.getISSN());
+			preparedStmt.setString(2, j.getJournalName());
+			preparedStmt.setDate(3, j.getDateOfPublication());
+			preparedStmt.execute();
+
+			for(Editor e : j.getBoardOfEditors()) {	
+				if(e instanceof ChiefEditor) {
+					query = "INSERT INTO CHIEFEDITORS values (?, ?)";
+					preparedStmt = con.prepareStatement(query);
+					preparedStmt.setInt(1, e.getEditorId());
+					preparedStmt.setInt(2, j.getISSN());
+					preparedStmt.execute();
+				}
+
+				query = "INSERT INTO EDITOROF values (?, ?)";
+				preparedStmt = con.prepareStatement(query);
+				preparedStmt.setInt(1, e.getEditorId());
+				preparedStmt.setInt(2, j.getISSN());
+				preparedStmt.execute();
+
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static void addSubmission(Submission s) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			//Add submission to article table
+			String query = "INSERT INTO ARTICLES values (null, ?, ?, ?, null)";
+
 			PreparedStatement preparedStmt = con.prepareStatement(query);
 			preparedStmt.setInt(1, s.getMainAuthorId());
+			preparedStmt.setString(2, s.getTitle());
+			preparedStmt.setString(3, s.getSummary());
+			preparedStmt.execute();
+
+			ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ARTICLES");
+			while(rs.next())
+				s.setArticleId(Integer.valueOf(rs.getString("last_id")));
+
+			query = "INSERT INTO SUBMISSIONS values (null, ?, ?)";
+
+			preparedStmt = con.prepareStatement(query);
+			preparedStmt.setInt(1, s.getArticleId());
 			preparedStmt.setString(2, SubmissionStatus.SUBMITTED.toString());
 			preparedStmt.execute();
 
-			Statement statement = con.createStatement();
-			ResultSet rs = statement.executeQuery("select last_insert_id() as last_id from SUBMISSION");
+			rs = preparedStmt.executeQuery("select last_insert_id() as last_id from SUBMISSIONS");
 			while(rs.next())
 				s.setSubmissionId(Integer.valueOf(rs.getString("last_id")));
 
+			for(Author a : s.getAuthors()) {
+				query = "INSERT INTO AUTHOROF values (?, ?)";
+				preparedStmt = con.prepareStatement(query);
+				preparedStmt.setInt(1, a.getAuthorId());
+				preparedStmt.setInt(2, s.getArticleId());
+				preparedStmt.execute();
 
-			//Add article to the article table
-			query = "INSERT INTO ARTICLE values (?, ?, ?, ?, null, null)";
+			}
+			
+			ArrayList<PDF> pdfs = s.getVersions();
+			PDF pdf = pdfs.get(pdfs.size()-1);
+			query = "INSERT INTO PDF values (null, ?, ?, ?)";
 			preparedStmt = con.prepareStatement(query);
 			preparedStmt.setInt(1, s.getSubmissionId());
-			preparedStmt.setString(2, s.getTitle());
-			preparedStmt.setString(3, s.getSummary());
-			preparedStmt.setString(4, s.getPDF());
+			preparedStmt.setString(2, pdf.getPdfLink());
+			preparedStmt.setDate(3, pdf.getDate());
+			
 			preparedStmt.execute();
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
 
-			for(Author a : authors) {
-				//Add the author to author table
-				query = "INSERT INTO AUTHOR values (?, ?)";
+	public static void addSubmissionToReview(Reviewer r, Submission s) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			String query = "INSERT INTO REVIEWEROF values (?, ?)";
+			PreparedStatement preparedStmt = con.prepareStatement(query);
+			preparedStmt.setInt(1, r.getReviewerId());
+			preparedStmt.setInt(2, s.getSubmissionId());
+			preparedStmt.execute();
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static void addReviewers(ArrayList<Reviewer> reviewers) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			for(Reviewer r : reviewers) {
+				String query = "INSERT INTO REVIEWERS values (null, ?)";
+				PreparedStatement preparedStmt = con.prepareStatement(query);
+				preparedStmt.setInt(1, r.getAcademicId());
+				preparedStmt.execute();
+
+				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
+				while(rs.next())
+					r.setReviewerId(Integer.valueOf(rs.getString("last_id")));
+
+				int roleId = 0;
+				query = "SELECT roleID from ROLES where ROLE = 'Reviewer'";
 				preparedStmt = con.prepareStatement(query);
-				preparedStmt.setInt(1, a.getId());
-				preparedStmt.setInt(2, s.getSubmissionId());
+				rs = preparedStmt.executeQuery();
+				if(rs.next())
+					roleId = rs.getInt("roleID");
 
+
+				query = "INSERT INTO ACADEMICROLES values (?, ?)";
+				preparedStmt = con.prepareStatement(query);
+				preparedStmt.setInt(1, r.getAcademicId());
+				preparedStmt.setInt(2, roleId);
 				preparedStmt.execute();
 			}
 		}catch (SQLException ex) {
@@ -382,11 +241,83 @@ public class Database {
 		}
 	}
 
+	public static void addReview(Review review) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, null)";
+			PreparedStatement preparedStmt = con.prepareStatement(query);
+			preparedStmt.setInt(1, review.getReviewerId());
+			preparedStmt.setInt(2, review.getSubmissionId());
+			preparedStmt.setString(3, review.getSummary());
+			preparedStmt.setString(4, review.getTypingErrors());
+
+			preparedStmt.execute();
+
+			for(String criticism : review.getCriticisms()) {
+				query = "INSERT INTO REMARKS values (null, ?, ?, ?, null)";
+				preparedStmt = con.prepareStatement(query);
+				preparedStmt.setInt(1, review.getReviewerId());
+				preparedStmt.setInt(2, review.getSubmissionId());
+				preparedStmt.setString(3, criticism);
+
+				preparedStmt.execute();
+			}
+
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static void setVerdict(Reviewer r, Submission s) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			String query = "UPDATE REVIEWS SET verdict = ?";
+			PreparedStatement preparedStmt = con.prepareStatement(query);
+			preparedStmt.setString(1, s.getReview(r.getReviewerId()).getVerdict().toString());
+
+			preparedStmt.execute();
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static void addResponse(Reviewer r, Submission s) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Review review = s.getReview(r.getReviewerId());
+
+			String query = "INSERT INTO RESPONSES VALUES (?, ?)";
+			PreparedStatement preparedStmt = con.prepareStatement(query);
+			preparedStmt.setInt(1, r.getReviewerId());
+			preparedStmt.setInt(2, s.getSubmissionId());
+			preparedStmt.execute();	
+			
+			for(String answer : review.getResponse().getAnswers()) {
+				query = "UPDATE REMARKS SET ANSWER = ?";
+				preparedStmt = con.prepareStatement(query);
+				preparedStmt.setString(1, answer);
+				
+				preparedStmt.execute();	
+			}
+			
+			ArrayList<PDF> pdfs = s.getVersions();
+			PDF pdf = pdfs.get(pdfs.size()-1);
+			query = "INSERT INTO PDF values (null, ?, ?, ?)";
+			preparedStmt = con.prepareStatement(query);
+			preparedStmt.setInt(1, s.getSubmissionId());
+			preparedStmt.setString(2, pdf.getPdfLink());
+			preparedStmt.setDate(3, pdf.getDate());
+			
+			preparedStmt.execute();
+			
+			
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+
 	public final static boolean vaidateCredentials(String email, String password) {
-		try (Connection con = DriverManager.getConnection(connection)) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
-			statement.executeUpdate("USE "+database);
-			String query = "SELECT academicID, passwordHash, salt FROM Academic WHERE emailAddress = ?";
+			statement.executeUpdate("USE "+DATABASE);
+			String query = "SELECT academicID, hash, salt FROM Academic WHERE emailAddress = ?";
 			PreparedStatement preparedStmt = con.prepareStatement(query);
 			preparedStmt.setString(1, email.trim());
 			ResultSet res = preparedStmt.executeQuery();
@@ -412,22 +343,9 @@ public class Database {
 		}
 		return false;
 	}
-
+	
 	public static void main(String[] args) {
-		System.out.println("\nDrivers loaded as properties:");
-		System.out.println(System.getProperty("jdbc.drivers"));
-		System.out.println("\nDrivers loaded by DriverManager:");
-		Enumeration<Driver> list = DriverManager.getDrivers();
-		while (list.hasMoreElements())
-			System.out.println(list.nextElement());
-		System.out.println();
-
-		dropTables();
-		createTables();
-		//createTableAcademic();
-		//		printAllRecords("Academic");
-
+		
 	}
-
+	
 }
-
