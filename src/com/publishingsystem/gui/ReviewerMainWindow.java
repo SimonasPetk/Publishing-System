@@ -64,14 +64,11 @@ public class ReviewerMainWindow {
 		
 		JScrollPane scrSubmitted = new JScrollPane();
 		
-		JButton btnSubmitAnArticle = new JButton("Submit an Article");
-		btnSubmitAnArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
 		JScrollPane scrReview = new JScrollPane();
 		scrReview.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrReview.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		
-		JButton btnRespondToReviews = new JButton("Respond to Reviews");
+		JButton btnRespondToReviews = new JButton("Review Article");
 		btnRespondToReviews.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -102,26 +99,21 @@ public class ReviewerMainWindow {
 								.addGroup(groupLayout.createSequentialGroup()
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(btnRespondToReviews))))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 610, Short.MAX_VALUE)
-							.addComponent(btnSubmitAnArticle)))
+						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnSubmitAnArticle))
+					.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 642, Short.MAX_VALUE)
+						.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 							.addGap(10)
-							.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+							.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnRespondToReviews)
 							.addGap(314)))
@@ -129,6 +121,7 @@ public class ReviewerMainWindow {
 		);
 		
 		JEditorPane editPaneReview = new JEditorPane();
+		editPaneReview.setText("If empty leave text \"No Review yet\"");
 		editPaneReview.setEditable(false);
 		scrReview.setViewportView(editPaneReview);
 		
