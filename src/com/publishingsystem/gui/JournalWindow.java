@@ -26,9 +26,9 @@ import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class AvailableNumbers {
+public class JournalWindow {
 
-	private JFrame frmAvailable;
+	private JFrame frmJournalWindow;
 	private JTable tblJournal;
 
 	/**
@@ -38,8 +38,8 @@ public class AvailableNumbers {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AvailableNumbers window = new AvailableNumbers();
-					window.frmAvailable.setVisible(true);
+					JournalWindow window = new JournalWindow();
+					window.frmJournalWindow.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -50,7 +50,7 @@ public class AvailableNumbers {
 	/**
 	 * Create the application.
 	 */
-	public AvailableNumbers() {
+	public JournalWindow() {
 		initialize();
 	}
 
@@ -58,17 +58,17 @@ public class AvailableNumbers {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frmAvailable = new JFrame();
-		frmAvailable.setTitle("Available Journals, Volumes & Editions");
-		frmAvailable.setBounds(100, 100, 540, 331);
-		frmAvailable.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frmAvailable.setVisible(true);
+		frmJournalWindow = new JFrame();
+		frmJournalWindow.setTitle("Available Journals, Volumes & Editions");
+		frmJournalWindow.setBounds(100, 100, 540, 331);
+		frmJournalWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmJournalWindow.setVisible(true);
 		
 		JLabel lblAvailabeJournals = new JLabel("Choose which journal, volume or edition you would like to read:");
 		lblAvailabeJournals.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		
 		JScrollPane scrollPanelJournal = new JScrollPane();
-		GroupLayout groupLayout = new GroupLayout(frmAvailable.getContentPane());
+		GroupLayout groupLayout = new GroupLayout(frmJournalWindow.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
@@ -102,6 +102,9 @@ public class AvailableNumbers {
 
 			        JOptionPane.showMessageDialog(tblJournal, "row #" + 0 + " is clicked");
 				}
+				
+				new ArticlesWindow();
+				frmJournalWindow.dispose();
 			} 
 		});
 		tblJournal.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -147,12 +150,22 @@ public class AvailableNumbers {
 		});
 		
 		scrollPanelJournal.setViewportView(tblJournal);
-		frmAvailable.getContentPane().setLayout(groupLayout);
+		frmJournalWindow.getContentPane().setLayout(groupLayout);
 		
 		JMenuBar menuBar = new JMenuBar();
-		frmAvailable.setJMenuBar(menuBar);
+		frmJournalWindow.setJMenuBar(menuBar);
 		
 		JButton btnLogOut = new JButton("Log Out");
+		btnLogOut.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				
+				new LoginScreen();
+				frmJournalWindow.dispose();
+				
+			}
+		});
 		menuBar.add(btnLogOut);
 	}
 }

@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.AbstractListModel;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
@@ -19,6 +20,9 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JComboBox;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JButton;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.ListSelectionModel;
 
 public class SubmitArticle {
 
@@ -60,15 +64,15 @@ public class SubmitArticle {
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
-		JLabel lblNewLabel = new JLabel("Submit a New Article");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		JLabel lblSubmitANewArticle = new JLabel("Submit a New Article");
+		lblSubmitANewArticle.setHorizontalAlignment(SwingConstants.CENTER);
+		lblSubmitANewArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JLabel lblChooseAJournal = new JLabel("Choose a Journal to which Publish to:");
 		lblChooseAJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JLabel lblNewLabel_1 = new JLabel("Title:");
-		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		JLabel lblTitle = new JLabel("Title:");
+		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		txtfldTitle = new JTextField();
 		txtfldTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -94,6 +98,13 @@ public class SubmitArticle {
 		JLabel lblPdfIsNot = new JLabel("PDF is not yet uploaded");
 		
 		JButton btnSubmit = new JButton("Submit");
+		btnSubmit.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JOptionPane.showMessageDialog(null, "To access your Author/Reviewer roles please Log Out and Login In again to the system. Thank you!");
+				frmSubmitAnArticle.dispose();
+			}
+		});
 		btnSubmit.setFont(new Font("Tahoma", Font.BOLD, 15));
 		GroupLayout groupLayout = new GroupLayout(frmSubmitAnArticle.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -107,9 +118,9 @@ public class SubmitArticle {
 							.addComponent(lblPdfIsNot))
 						.addComponent(lblAuthors)
 						.addComponent(lblAbstract)
-						.addComponent(lblNewLabel_1)
+						.addComponent(lblTitle)
 						.addComponent(lblChooseAJournal)
-						.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
+						.addComponent(lblSubmitANewArticle, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
 						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
 						.addComponent(txtfldTitle, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
 						.addComponent(scrPaneAbstract)
@@ -125,13 +136,13 @@ public class SubmitArticle {
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
-					.addComponent(lblNewLabel)
+					.addComponent(lblSubmitANewArticle)
 					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addComponent(lblChooseAJournal)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 77, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblNewLabel_1)
+					.addComponent(lblTitle)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(txtfldTitle, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
@@ -159,9 +170,10 @@ public class SubmitArticle {
 		JEditorPane editPaneAbstract = new JEditorPane();
 		scrPaneAbstract.setViewportView(editPaneAbstract);
 		
-		JList list = new JList();
-		scrollPane.setViewportView(list);
-		list.setModel(new AbstractListModel() {
+		JList listOfJournals = new JList();
+		listOfJournals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		scrollPane.setViewportView(listOfJournals);
+		listOfJournals.setModel(new AbstractListModel() {
 			String[] values = new String[] {"First Journal", "Second journal", "Third Journal", "", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal"};
 			public int getSize() {
 				return values.length;

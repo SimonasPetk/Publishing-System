@@ -214,28 +214,66 @@ public class ReviewerMainWindow {
 		menuItem_2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				System.exit(0);
+				new LoginScreen();
+				frmReviewDashboard.dispose();
+				//System.exit(0);
 			}
 		});
 		
 		menu.add(menuItem_2);
 		
-		JMenu mnChangeMyRole = new JMenu("Change My Role");
-		menuBar.add(mnChangeMyRole);
-
-		JMenuItem mntmAuthors = new JMenuItem("Author");
-		mnChangeMyRole.add(mntmAuthors);
+		JMenu mnChangeRole = new JMenu("Change My Role");
+		menuBar.add(mnChangeRole);
+		
+		JMenuItem mntmToAuthor = new JMenuItem("Author");
+		mntmToAuthor.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A AUTHOR IF NOT MAKE ERROR MESSAGE
+				new AuthorMainWindow();
+				frmReviewDashboard.dispose();
+			}
+		});
+		mnChangeRole.add(mntmToAuthor);
 		
 		JMenuItem mntmChiefEditor = new JMenuItem("Chief Editor");
-		mnChangeMyRole.add(mntmChiefEditor);
+		mntmChiefEditor.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A CHIEF EDITOR IF NOT MAKE ERROR MESSAGE
+				
+				new ChiefMainWindow();
+				frmReviewDashboard.dispose();
+			}
+		});
+		mnChangeRole.add(mntmChiefEditor);
 		
-		JMenuItem mntmEditor = new JMenuItem("Editor");
-		mnChangeMyRole.add(mntmEditor);
+		JMenuItem mntmToEditor = new JMenuItem("Editor");
+		mntmToEditor.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A EDITOR IF NOT MAKE ERROR MESSAGE
+				new EditorMainWindow();
+				frmReviewDashboard.dispose();
+			}
+		});
+		mnChangeRole.add(mntmToEditor);
 		
-		JMenuItem mntmReader = new JMenuItem("Reader");
-		mnChangeMyRole.add(mntmReader);
-		
-		
+		JMenuItem mntmToReader = new JMenuItem("Reader");
+		mntmToReader.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				// Allow this always
+				new JournalWindow();
+				frmReviewDashboard.dispose();
+			}
+		});
+		mnChangeRole.add(mntmToReader);
+
 	}
 
 }

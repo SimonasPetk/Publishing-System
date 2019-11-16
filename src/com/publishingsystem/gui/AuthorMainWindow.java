@@ -223,26 +223,64 @@ public class AuthorMainWindow {
 		mntmLogOut.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				System.out.println(0);
-				System.exit(0); 
+				new LoginScreen();
+				frmAuthorsDashboard.dispose();
+				// System.exit(0); 
 			}
 		});
 		menu.add(mntmLogOut);
 		
-		JMenu mnChangeMyRole = new JMenu("Change My Role");
-		menuBar.add(mnChangeMyRole);
+		JMenu mnChangeRole = new JMenu("Change My Role");
+		menuBar.add(mnChangeRole);
 		
 		JMenuItem mntmChiefEditor = new JMenuItem("Chief Editor");
-		mnChangeMyRole.add(mntmChiefEditor);
+		mntmChiefEditor.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A CHIEF EDITOR IF NOT MAKE ERROR MESSAGE
+				
+				new ChiefMainWindow();
+				frmAuthorsDashboard.dispose();
+			}
+		});
+		mnChangeRole.add(mntmChiefEditor);
 		
-		JMenuItem mntmEditor = new JMenuItem("Editor");
-		mnChangeMyRole.add(mntmEditor);
+		JMenuItem mntmToEditor = new JMenuItem("Editor");
+		mntmToEditor.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A EDITOR IF NOT MAKE ERROR MESSAGE
+				new EditorMainWindow();
+				frmAuthorsDashboard.dispose();
+			}
+		});
+		mnChangeRole.add(mntmToEditor);
 		
-		JMenuItem mntmReader = new JMenuItem("Reader");
-		mnChangeMyRole.add(mntmReader);
+		JMenuItem mntmToReader = new JMenuItem("Reader");
+		mntmToReader.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				// Allow this always
+				new JournalWindow();
+				frmAuthorsDashboard.dispose();
+			}
+		});
+		mnChangeRole.add(mntmToReader);
 		
-		JMenuItem mntmReviewer= new JMenuItem("Reviewer");
-		mnChangeMyRole.add(mntmReviewer);
+		JMenuItem mntmToReviewer = new JMenuItem("Reviewer");
+		mntmToReviewer.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A EDITOR IF NOT MAKE ERROR MESSAGE
+				new ReviewerMainWindow();
+				frmAuthorsDashboard.dispose();
+			}
+		});
+		mnChangeRole.add(mntmToReviewer);
 		
 	}
 }

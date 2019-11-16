@@ -80,6 +80,7 @@ public class AddJournal {
 
 				
 				JOptionPane.showMessageDialog(null, "To access your Chief-Editor role please Log Out and Login In again to the system. Thank you!");
+				frmAddJournal.dispose();
 			}
 		});
 		btnAddJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));

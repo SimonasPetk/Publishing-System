@@ -55,6 +55,7 @@ public class LoginScreen {
 		frmLogInScreen.setTitle("Login");
 		frmLogInScreen.setBounds(100, 100, 700, 500);
 		frmLogInScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmLogInScreen.setVisible(true);
 		
 		JLabel lblEmail = new JLabel("Email Address:");
 		lblEmail.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -104,7 +105,7 @@ public class LoginScreen {
 		btnLoginAsA.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				new AvailableNumbers();
+				new JournalWindow();
 				frmLogInScreen.dispose();
 			}
 		});

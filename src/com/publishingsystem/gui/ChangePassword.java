@@ -11,6 +11,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JPasswordField;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class ChangePassword {
 
@@ -47,7 +49,7 @@ public class ChangePassword {
 	private void initialize() {
 		frmChangePassword = new JFrame();
 		frmChangePassword.setTitle("Change Password");
-		frmChangePassword.setBounds(100, 100, 450, 300);
+		frmChangePassword.setBounds(300, 300, 450, 300);
 		frmChangePassword.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		JLabel lblChangeYourPassword = new JLabel("Change Your Password");
@@ -61,6 +63,14 @@ public class ChangePassword {
 		lblNewPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JButton btnChange = new JButton("Change");
+		btnChange.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				// Show a pop up message that it was successfully changed
+				frmChangePassword.dispose();
+			}
+		});
 		btnChange.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		pwdOldPassword = new JPasswordField();
