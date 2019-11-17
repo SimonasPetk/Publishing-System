@@ -168,7 +168,7 @@ public class Database {
 
 			preparedStmt = con.prepareStatement(query);
 			preparedStmt.setInt(1, s.getArticleId());
-			preparedStmt.setString(2, SubmissionStatus.SUBMITTED.toString());
+			preparedStmt.setString(2, SubmissionStatus.SUBMITTED.asString());
 			preparedStmt.execute();
 
 			rs = preparedStmt.executeQuery("select last_insert_id() as last_id from SUBMISSIONS");
@@ -183,7 +183,7 @@ public class Database {
 				preparedStmt.execute();
 
 			}
-			
+
 			ArrayList<PDF> pdfs = s.getVersions();
 			PDF pdf = pdfs.get(pdfs.size()-1);
 			query = "INSERT INTO PDF values (null, ?, ?, ?)";
@@ -191,7 +191,7 @@ public class Database {
 			preparedStmt.setInt(1, s.getSubmissionId());
 			preparedStmt.setString(2, pdf.getPdfLink());
 			preparedStmt.setDate(3, pdf.getDate());
-			
+
 			preparedStmt.execute();
 		}catch (SQLException ex) {
 			ex.printStackTrace();
@@ -252,12 +252,33 @@ public class Database {
 
 			preparedStmt.execute();
 
-			for(String criticism : review.getCriticisms()) {
+			for(Remark remark : review.getRemarks()) {
 				query = "INSERT INTO REMARKS values (null, ?, ?, ?, null)";
 				preparedStmt = con.prepareStatement(query);
 				preparedStmt.setInt(1, review.getReviewerId());
 				preparedStmt.setInt(2, review.getSubmissionId());
-				preparedStmt.setString(3, criticism);
+				preparedStmt.setString(3, remark.getCriticism());
+
+				preparedStmt.execute();
+
+				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REMARKS");
+				while(rs.next())
+					remark.setRemarkId((Integer.valueOf(rs.getString("last_id"))));
+			}
+
+			query = "SELECT COUNT(*) AS REVIEWS FROM REVIEWS WHERE submissionID = ?";
+			preparedStmt = con.prepareStatement(query);
+			preparedStmt.setInt(1, review.getSubmissionId());
+			ResultSet rs = preparedStmt.executeQuery();
+			int numReviews = 0;
+			while(rs.next())
+				numReviews = rs.getInt("REVIEWS");
+
+			if(numReviews == 3) {
+				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
+				preparedStmt = con.prepareStatement(query);
+				preparedStmt.setString(1, SubmissionStatus.REVIEWSRECEIVED.asString());
+				preparedStmt.setInt(2, review.getSubmissionId());
 
 				preparedStmt.execute();
 			}
@@ -269,11 +290,54 @@ public class Database {
 
 	public static void setVerdict(Reviewer r, Submission s) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
-			String query = "UPDATE REVIEWS SET verdict = ?";
+			String query = "UPDATE REVIEWS SET verdict = ? WHERE reviewerID = ? and submissionID = ?";
 			PreparedStatement preparedStmt = con.prepareStatement(query);
 			preparedStmt.setString(1, s.getReview(r.getReviewerId()).getVerdict().toString());
+			preparedStmt.setInt(2, r.getReviewerId());
+			preparedStmt.setInt(3, s.getSubmissionId());
 
 			preparedStmt.execute();
+
+			
+			int numVerdicts = 0;
+			SubmissionStatus status = null;
+			
+			query = "SELECT REVIEWS.SUBMISSIONID, COUNT(*) AS REVIEWS, STATUS FROM REVIEWS, "
+					+ "SUBMISSIONS WHERE REVIEWS.submissionID = ? AND SUBMISSIONS.submissionID = ? "
+					+ "AND verdict IS NOT NULL";
+			preparedStmt = con.prepareStatement(query);
+			preparedStmt.setInt(1, s.getSubmissionId());
+			preparedStmt.setInt(2, s.getSubmissionId());
+			try(ResultSet rs = preparedStmt.executeQuery()){
+				while(rs.next()) {
+					numVerdicts = rs.getInt("REVIEWS");
+					status = SubmissionStatus.valueOf(rs.getString("Status"));
+				}
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			
+			if(numVerdicts == 3 && status.equals(SubmissionStatus.REVIEWSRECEIVED)){
+				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
+				try(PreparedStatement ps = con.prepareStatement(query)){
+					ps.setString(1, SubmissionStatus.INITIALVERDICT.asString());
+					ps.setInt(2, s.getSubmissionId());
+					ps.execute();
+				}catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+
+			}else if(numVerdicts == 3 && status.equals(SubmissionStatus.RESPONSESRECEIVED)) {
+				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
+				try(PreparedStatement ps = con.prepareStatement(query)){
+					ps.setString(1, SubmissionStatus.FINALVERDICT.asString());
+					ps.setInt(2, s.getSubmissionId());
+					ps.execute();
+				}catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -289,14 +353,34 @@ public class Database {
 			preparedStmt.setInt(2, s.getSubmissionId());
 			preparedStmt.execute();	
 			
-			for(String answer : review.getResponse().getAnswers()) {
-				query = "UPDATE REMARKS SET ANSWER = ?";
+			query = "SELECT COUNT(*) AS RESPONSES FROM RESPONSES WHERE submissionID = ?";
+			preparedStmt = con.prepareStatement(query);
+			preparedStmt.setInt(1, review.getSubmissionId());
+			ResultSet rs = preparedStmt.executeQuery();
+			int numResponses = 0;
+			while(rs.next())
+				numResponses = rs.getInt("RESPONSES");
+
+			if(numResponses == 3) {
+				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
 				preparedStmt = con.prepareStatement(query);
-				preparedStmt.setString(1, answer);
-				
+				preparedStmt.setString(1, SubmissionStatus.RESPONSESRECEIVED.asString());
+				preparedStmt.setInt(2, review.getSubmissionId());
+
+				preparedStmt.execute();
+			}
+
+			ArrayList<String> answers = review.getResponse().getAnswers();
+			ArrayList<Remark> remarks = review.getRemarks();
+			for(int i = 0; i < remarks.size(); i++) {
+				query = "UPDATE REMARKS SET ANSWER = ? WHERE remarkID = ?";
+				preparedStmt = con.prepareStatement(query);
+				preparedStmt.setString(1, answers.get(i));
+				preparedStmt.setInt(2, remarks.get(i).getRemarkId());
+
 				preparedStmt.execute();	
 			}
-			
+
 			ArrayList<PDF> pdfs = s.getVersions();
 			PDF pdf = pdfs.get(pdfs.size()-1);
 			query = "INSERT INTO PDF values (null, ?, ?, ?)";
@@ -304,10 +388,10 @@ public class Database {
 			preparedStmt.setInt(1, s.getSubmissionId());
 			preparedStmt.setString(2, pdf.getPdfLink());
 			preparedStmt.setDate(3, pdf.getDate());
-			
+
 			preparedStmt.execute();
-			
-			
+
+
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -343,9 +427,9 @@ public class Database {
 		}
 		return false;
 	}
-	
+
 	public static void main(String[] args) {
-		
+
 	}
-	
+
 }

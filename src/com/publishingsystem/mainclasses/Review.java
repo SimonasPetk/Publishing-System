@@ -6,7 +6,7 @@ public class Review {
 	private int submissionId;
 	private String summary;
 	private String typingErrors;
-	private ArrayList<String> criticisms;
+	private ArrayList<Remark> remarks;
 	private Response response;
 	private Verdict verdict;
 	
@@ -15,7 +15,10 @@ public class Review {
 		this.submissionId = submissionId;
 		this.summary = summary;
 		this.typingErrors = typingErrors;
-		this.criticisms = criticisms;
+		this.remarks = new ArrayList<Remark>();
+		for(String c : criticisms) {
+			this.remarks.add(new Remark(c));
+		}
 	}
 	
 	public void setVerdict(Verdict v) {
@@ -42,8 +45,8 @@ public class Review {
 		return this.verdict;
 	}
 
-	public ArrayList<String> getCriticisms() {
-		return criticisms;
+	public ArrayList<Remark> getRemarks() {
+		return this.remarks;
 	}
 	
 	public Response getResponse() {

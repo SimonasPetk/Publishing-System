@@ -103,9 +103,9 @@ public class TestRun {
 		
 		
 
-//		e1.acceptArticle(s);
-//		
-//		System.out.println(a1.getSubmissionStatus(s));
-//		
+		e1.acceptArticle(s);
+		
+		System.out.println(a1.getSubmissionStatus(s));
+		
 	}
 }
