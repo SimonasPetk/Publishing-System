@@ -73,7 +73,7 @@ public class ReviewerMainWindow {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				
-				new CriticismResponse();
+				new ReviewArticle();
 			}
 		});
 		btnRespondToReviews.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -81,6 +81,12 @@ public class ReviewerMainWindow {
 		JLabel lblArticlesReview = new JLabel("Article's Review");
 		lblArticlesReview.setToolTipText("");
 		lblArticlesReview.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JButton btnNewButton = new JButton("Download PDF");
+		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JButton btnCheckResponses = new JButton("Check Response");
+		btnCheckResponses.setFont(new Font("Tahoma", Font.PLAIN, 15));
         
 		GroupLayout groupLayout = new GroupLayout(frmReviewDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -90,15 +96,16 @@ public class ReviewerMainWindow {
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(scrSubmitted, GroupLayout.PREFERRED_SIZE, 551, GroupLayout.PREFERRED_SIZE)
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(16)
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
-										.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE)))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnRespondToReviews))))
+							.addGap(16)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+									.addComponent(btnCheckResponses)
+									.addPreferredGap(ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+										.addComponent(btnRespondToReviews, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(btnNewButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+								.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
+								.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE)))
 						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
@@ -109,14 +116,18 @@ public class ReviewerMainWindow {
 					.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 621, Short.MAX_VALUE)
+						.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 624, Short.MAX_VALUE)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 							.addGap(10)
-							.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
-							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
+							.addGap(10)
+							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(btnNewButton)
+								.addComponent(btnCheckResponses))
+							.addGap(10)
 							.addComponent(btnRespondToReviews)
-							.addGap(314)))
+							.addGap(284)))
 					.addContainerGap())
 		);
 		
@@ -268,5 +279,4 @@ public class ReviewerMainWindow {
 		mnChangeRole.add(mntmToReader);
 
 	}
-
 }
