@@ -185,8 +185,9 @@ public class SubmitArticle {
 					.addGap(13))
 		);
 		
-		JEditorPane editPaneAuthors = new JEditorPane();
-		scrPaneAuthors.setViewportView(editPaneAuthors);
+		JList list = new JList();
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		scrPaneAuthors.setViewportView(list);
 		
 		JEditorPane editPaneAbstract = new JEditorPane();
 		scrPaneAbstract.setViewportView(editPaneAbstract);

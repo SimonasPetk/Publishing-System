@@ -86,6 +86,12 @@ public class ReviewerMainWindow {
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JButton btnCheckResponses = new JButton("Check Response");
+		btnCheckResponses.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				new ReviewArticle();
+			}
+		});
 		btnCheckResponses.setFont(new Font("Tahoma", Font.PLAIN, 15));
         
 		GroupLayout groupLayout = new GroupLayout(frmReviewDashboard.getContentPane());

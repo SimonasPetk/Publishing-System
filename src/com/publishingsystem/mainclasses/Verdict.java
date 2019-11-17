@@ -5,13 +5,13 @@ public enum Verdict{
 	public String toString() {
 		switch(this) {
 			case STRONGACCEPT:
-				return "Strong accept";
+				return "Strong Accept";
 			case  WEAKACCEPT:
-				return "Weak accept";
+				return "Weak Accept";
 			case WEAKREJECT:
-				return "Weak reject";
+				return "Weak Reject";
 			case STRONGREJECT:
-				return "Strong reject";
+				return "Strong Rseject";
 			default:
 				return "";
 		}
