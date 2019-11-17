@@ -7,21 +7,29 @@ public class Article {
 	protected String summary;
 	protected int articleId;
 	protected int journalId;
+	protected int mainAuthorId;
 	protected String pdf;
-	protected String pageRange;
-	protected int editionNumber;
 	
-	public Article(ArrayList<Author> authors, String title, String summary, int articleId, int journalId, String pdf) {
+	public Article(String title, String summary, int journalId, ArrayList<Author> authors) {
 		this.title = title;
 		this.summary = summary;
 		this.authors = authors;
-		this.articleId = articleId;
 		this.journalId = journalId;
-		this.pdf = pdf;
 	}
 	
+	public void setMainAuthorId(int id) {
+		this.mainAuthorId = id;
+	}
 	
+	public int getMainAuthorId() {
+		return this.mainAuthorId;
+	}
 
+	
+	public void setArticleId(int id) {
+		this.articleId = id;
+	}
+	
 	public void setTitle(String title) {
 		this.title = title;
 	}
@@ -30,15 +38,10 @@ public class Article {
 		this.summary = summary;
 	}
 	
-	public void setEditionNumber(int en) {
-		this.editionNumber = en;
+	public void setPDF(String pdf) {
+		this.pdf = pdf;
 	}
 	
-	public void setPageRange(String pr) {
-		this.pageRange = pr;
-	}
-	
-
 	public String getTitle() {
 		return title;
 	}
@@ -59,16 +62,8 @@ public class Article {
 		return this.journalId;
 	}
 	
-	public int getEditionNumber() {
-		return this.editionNumber;
-	}
-	
 	public String getPDF() {
 		return this.pdf;
-	}
-	
-	public String getPageRange() {
-		return this.pageRange;
 	}
 	
 	

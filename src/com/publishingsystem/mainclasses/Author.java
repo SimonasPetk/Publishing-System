@@ -2,11 +2,20 @@ package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Author extends Academic{
-	protected ArrayList<Submission> submissions;
+	private ArrayList<Submission> submissions;
+	private int authorId;
 	
-	public Author(int academicId, String title ,String forename, String surname, String emailId, String university, Hash hash) {
-		super(academicId, title, forename, surname, emailId, university, hash);
+	public Author(String title ,String forename, String surname, String emailId, String university, Hash hash) {
+		super(title, forename, surname, emailId, university, hash);
 		submissions = new ArrayList<Submission>();
+	}
+	
+	public void setAuthorId(int id) {
+		this.authorId = id;
+	}
+	
+	public int getAuthorId() {
+		return this.authorId;
 	}
 
 	public ArrayList<Submission> getSubmissions() {
@@ -23,12 +32,16 @@ public class Author extends Academic{
 	
 	//Main Author
 	public void submit(Submission submission) {
-		submission.setMainAuthorId(this.academicId);
+		submission.setMainAuthorId(this.authorId);
 		this.submissions.add(submission);
 	}
 	
-	public void respond(Submission submission, int reviewerId, Response response) {
-		submission.addResponse(reviewerId, response);
+	public void submitRevisedVersion(Submission s, PDF pdf) {
+		s.addVersion(pdf);
+	}
+	
+	public void respond(Submission s, Reviewer reviewer, Response response) {
+		s.addResponse(reviewer.getReviewerId(), response);
 	}
 
 }

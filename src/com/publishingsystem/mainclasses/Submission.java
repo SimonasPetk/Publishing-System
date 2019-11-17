@@ -3,24 +3,33 @@ import java.util.ArrayList;
 
 public class Submission extends Article{
 	private ArrayList<Review> reviews;
-	private int mainAuthorId;
 	private Decision decision;
 	private SubmissionStatus status;
 	private int submissionId;
+	private ArrayList<PDF> versions;
 	
-	public Submission(int submissionId, ArrayList<Author> authors, String title, String summary, String pdf, int journalId) {
-		super(authors, title, summary, submissionId, journalId, pdf);
-		this.submissionId = submissionId;
+	public Submission(String title, String summary, int journalId, ArrayList<Author> authors, PDF pdf) {
+		super(title, summary, journalId, authors);
 		this.status = SubmissionStatus.SUBMITTED;
 		this.reviews = new ArrayList<Review>();
+		this.versions = new ArrayList<PDF>();
+		this.versions.add(pdf);
+	}
+	
+	public void addVersion(PDF pdf) {
+		this.versions.add(pdf);
+	}
+	
+	public ArrayList<PDF> getVersions() {
+		return this.versions;
 	}
 	
 	public void setSubmissionId(int id) {
 		this.submissionId = id;
 	}
 	
-	public void setMainAuthorId(int id) {
-		this.mainAuthorId = id;
+	public int getSubmissionId() {
+		return this.submissionId;
 	}
 	
 	public SubmissionStatus getStatus() {
@@ -36,34 +45,30 @@ public class Submission extends Article{
 		this.status = SubmissionStatus.COMPLETED;
 	}
 	
-	public int getMainAuthorId() {
-		return this.mainAuthorId;
-	}
-	
 	public ArrayList<Review> getReviews() {
 		return this.reviews;
 	}
-
-	public int getSubmissionId() {
-		return this.submissionId;
-	}
 	
-	public void setVerdict(int reviewerId, Verdict v) {
-		int numVerdicts = 0;
+	public Review getReview(int reviewerId) {
 		for(Review r : this.reviews) {
 			if(r.getReviewerId() == reviewerId) {
-				r.setVerdict(v);
+				return r;
 			}
-			if(r.getVerdict() != null)
-				numVerdicts++;
 		}
+		return null;
+	}
+
+	public void setVerdict(int reviewerId, Verdict v) {
 		
-		if(numVerdicts == 3) {
-			if(this.status.equals(SubmissionStatus.REVIEWSRECEIVED))
-				this.status = SubmissionStatus.INITIALVERDICT;
-			else if(this.status.equals(SubmissionStatus.RESPONSESRECEIVED))
-				this.status = SubmissionStatus.FINALVERDICT;
-		}
+		Review r = getReview(reviewerId);
+		r.setVerdict(v);
+		
+//		if(numVerdicts == 3) {
+//			if(this.status.equals(SubmissionStatus.REVIEWSRECEIVED))
+//				this.status = SubmissionStatus.INITIALVERDICT;
+//			else if(this.status.equals(SubmissionStatus.RESPONSESRECEIVED))
+//				this.status = SubmissionStatus.FINALVERDICT;
+//		}
 	}
 
 	public void addReview(Review r) {
@@ -75,16 +80,10 @@ public class Submission extends Article{
 	}
 	
 	public void addResponse(int reviewerId, Response response) {
-		int numResponses = 0;
-		for(Review r : this.reviews) {
-			if(r.getReviewerId() == reviewerId) {
-				r.addResponse(response);
-			}
-			if(r.getResponse() != null)
-				numResponses++;
-		}
-		if(numResponses == 3) {
-			this.status = SubmissionStatus.RESPONSESRECEIVED;
-		}
+		Review r = getReview(reviewerId);
+		r.addResponse(response);
+//		if(numResponses == 3) {
+//			this.status = SubmissionStatus.RESPONSESRECEIVED;
+//		}
 	}
 }

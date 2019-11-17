@@ -9,8 +9,7 @@ public abstract class Academic {
 	protected String university;
 	protected Hash hash;
 	
-	public Academic(int academicId, String title, String forename, String surname, String emailId, String university, Hash hash) {
-		this.academicId = academicId;
+	public Academic(String title, String forename, String surname, String emailId, String university, Hash hash) {
 		this.title = title;
 		this.forename = forename;
 		this.surname = surname;
@@ -23,11 +22,11 @@ public abstract class Academic {
 		return this.hash;
 	}
 	
-	public void setId(int id) {
+	public void setAcademicId(int id) {
 		this.academicId = id;
 	}
 
-	public int getId() {
+	public int getAcademicId() {
 		return academicId;
 	}
 	
