@@ -20,7 +20,6 @@ import javax.swing.JComboBox;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.*;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 
@@ -41,7 +40,7 @@ public class RegistrationWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RegistrationWindow window = new RegistrationWindow();
+					RegistrationWindow window = new RegistrationWindow(null);
 					window.frmRegistrationForm.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -53,14 +52,14 @@ public class RegistrationWindow {
 	/**
 	 * Create the application.
 	 */
-	public RegistrationWindow() {
-		initialize();
+	public RegistrationWindow(Role r) {
+		initialize(r);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize(Role r) {
 		frmRegistrationForm = new JFrame();
 		frmRegistrationForm.setTitle("Registration Form");
 		frmRegistrationForm.setBounds(500, 100, 653, 559);
@@ -141,40 +140,25 @@ public class RegistrationWindow {
 			        }
                     if (!validCredentials) JOptionPane.showMessageDialog(null, "Names must only contain letters", "Registration Form", 0);
 			    }
-			    if (validCredentials) {
-			        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
-                        Statement statement = con.createStatement();
-                        statement.executeUpdate("USE team022");
-                        ResultSet res = statement.executeQuery("SELECT emailAddress FROM Academic");
-                        
-                        ArrayList<String> emailsInDB = new ArrayList<String>();
-                        while (res.next()) emailsInDB.add(res.getString(1));
-                        if (emailsInDB.contains(email)) {
-                            JOptionPane.showMessageDialog(null, "Email address already in use", "Registration Form", 0);
-                            validCredentials = false;
-                        }
-			        } catch (SQLException ex) {ex.printStackTrace();}
-			    }
-			    
-			    // 4. Add academic's details to database if entered details are valid
-			    if (validCredentials) {
-			        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
-			            Statement statement = con.createStatement();
-			            statement.executeUpdate("USE team022");
-			            statement.executeUpdate("INSERT INTO Academic VALUES("
-			                    + "null, "
-			                    + "'" + title + "', "
-			                    + "'" + forenames + "', "
-			                    + "'" + surname + "', "
-                                + "'" + university + "', "
-                                + "'" + email + "', "
-                                + "'" + pwdHash.getHash() + "', "
-                                + "'" + pwdHash.getSalt() + "'"
-                                +");");
-			            statement.close();
-			            JOptionPane.showMessageDialog(null, "Registration Successful", "Registration Form", 1);
-	                    frmRegistrationForm.dispose();
-			        } catch (SQLException ex) {ex.printStackTrace();}
+			    if (!Database.academicExists(email)) {
+			    	// 4. Add academic's details to database if entered details are valid
+			    	switch(r) {
+			    		case AUTHOR:
+			    			Author author = new Author(title, forenames, surname, university, email, pwdHash);
+			    			new SubmitArticle(author);
+			    			break;
+			    		case CHIEFEDITOR:
+			    			ChiefEditor chiefEditor = new ChiefEditor(title, forenames, surname, university, email, pwdHash);
+//			    			------------
+			    			//!NEW ADD JOURNAL CALL here!
+//			    			------------
+			    			break;
+			    		default:
+			    	}
+			        JOptionPane.showMessageDialog(null, "Registration Successful", "Registration Form", 1);
+			        frmRegistrationForm.dispose();
+		        }else {
+		        	JOptionPane.showMessageDialog(null, "Email address already in use", "Registration Form", 0);
 		        }
 			}
 		});

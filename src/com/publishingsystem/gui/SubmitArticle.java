@@ -12,6 +12,10 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
+
+import com.publishingsystem.mainclasses.Author;
+import com.publishingsystem.mainclasses.Role;
+
 import javax.swing.JTextField;
 import javax.swing.JEditorPane;
 import javax.swing.JTextPane;
@@ -36,7 +40,7 @@ public class SubmitArticle {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SubmitArticle window = new SubmitArticle();
+					SubmitArticle window = new SubmitArticle(null);
 					window.frmSubmitAnArticle.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -48,14 +52,14 @@ public class SubmitArticle {
 	/**
 	 * Create the application.
 	 */
-	public SubmitArticle() {
-		initialize();
+	public SubmitArticle(Author a) {
+		initialize(a);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize(Author a) {
 		frmSubmitAnArticle = new JFrame();
 		frmSubmitAnArticle.setTitle("Submit an Article");
 		frmSubmitAnArticle.setBounds(100, 100, 700, 552);
@@ -112,7 +116,7 @@ public class SubmitArticle {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				
-				new RegistrationWindow();
+				new RegistrationWindow(Role.AUTHOR);
 				
 			}
 		});

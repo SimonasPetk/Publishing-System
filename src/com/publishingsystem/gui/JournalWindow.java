@@ -16,6 +16,11 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import com.publishingsystem.mainclasses.Academic;
+import com.publishingsystem.mainclasses.Author;
+import com.publishingsystem.mainclasses.Role;
+
 import javax.swing.JToolBar;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
@@ -176,7 +181,7 @@ public class JournalWindow {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
-				new RegistrationWindow();
+				new RegistrationWindow(Role.AUTHOR);
 				frmJournalWindow.dispose();
 			}
 		});
@@ -187,7 +192,7 @@ public class JournalWindow {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
-				new RegistrationWindow();
+				new RegistrationWindow(Role.CHIEFEDITOR);
 				frmJournalWindow.dispose();
 			}
 		});
