@@ -18,6 +18,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.ScrollPaneConstants;
+import com.publishingsystem.mainclasses.*;
+
 /* NOTE TO DO
  * 
  * 
@@ -40,7 +42,8 @@ public class AuthorMainWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AuthorMainWindow window = new AuthorMainWindow();
+				    System.out.println("Hello");
+					AuthorMainWindow window = new AuthorMainWindow(null);
 					window.frmAuthorsDashboard.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -52,21 +55,21 @@ public class AuthorMainWindow {
 	/**
 	 * Create the application.
 	 */
-	public AuthorMainWindow() {
-		initialize();
+	public AuthorMainWindow(Author loggedInUser) {
+		initialize(loggedInUser);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize(Author loggedInUser) {
 		frmAuthorsDashboard = new JFrame();
 		frmAuthorsDashboard.setTitle("Author's Dashboard");
 		frmAuthorsDashboard.setBounds(100, 100, 900, 740);
 		frmAuthorsDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAuthorsDashboard.setVisible(true);
 		
-		JLabel lblArticleList = new JLabel("Article's List:");
+		JLabel lblArticleList = new JLabel("List of articles:");
 		lblArticleList.setToolTipText("");
 		lblArticleList.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
@@ -141,9 +144,14 @@ public class AuthorMainWindow {
 		JEditorPane editPaneReview = new JEditorPane();
 		editPaneReview.setEditable(false);
 		scrReview.setViewportView(editPaneReview);
-		
-		tblSubmitted = new JTable();
-		tblSubmitted.setModel(new DefaultTableModel(
+
+	    String articles[][] = {{"1", "Article One", "Alex"},
+	                           {"2", "Article Two", "Manas"},
+	                           {"3", "Article Three", "Ross"},
+	                           {"4", "Article Four", "Simonas"}};
+		String columns[] = {"ID", "Title", "Authors"};
+		tblSubmitted = new JTable(articles, columns);
+/*		tblSubmitted.setModel(new DefaultTableModel(
 			new Object[][] {
 				{null, null, null, null, null, null, null},
 				{null, null, null, null, null, null, null},
@@ -199,13 +207,17 @@ public class AuthorMainWindow {
 			new String[] {
 				"New column", "New column", "New column", "New column", "New column", "New column", "New column"
 			}
-		));
+		));*/
+		
 		tblSubmitted.setEnabled(false);
 		scrSubmitted.setViewportView(tblSubmitted);
 		frmAuthorsDashboard.getContentPane().setLayout(groupLayout);
 		
 		JMenuBar menuBar = new JMenuBar();
 		frmAuthorsDashboard.setJMenuBar(menuBar);
+		
+		JMenu name = new JMenu("Welcome back " + loggedInUser.getForename());
+		menuBar.add(name);
 		
 		JMenu menu = new JMenu("Menu");
 		menuBar.add(menu);

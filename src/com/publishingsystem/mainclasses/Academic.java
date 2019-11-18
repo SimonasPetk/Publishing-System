@@ -59,4 +59,7 @@ public abstract class Academic {
 		this.university = university;
 	}
 	
+	public String toString() {
+        return this.academicId + ", " + title + ", " + forename + ", " + surname + ", " + emailId + ", " + university;
+    }
 }

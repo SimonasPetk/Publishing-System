@@ -91,19 +91,43 @@ public class LoginScreen {
 			            Statement statement = con.createStatement();
 			            statement.executeUpdate("USE team022");
 			            ResultSet res = statement.executeQuery(
-			                    "SELECT academicID, passwordHash, salt FROM Academic WHERE emailAddress = '" + email + "'");
+			                    "SELECT * FROM Academic WHERE emailAddress = '" + email + "'");
 			            
-			            int academicID = 0;
+			            /*statement.executeUpdate("CREATE TABLE Academic ("
+			                    + "academicID INT PRIMARY KEY AUTO_INCREMENT, "
+			                    + "title TEXT, "
+			                    + "forenames TEXT, "
+			                    + "surname TEXT, "
+			                    + "university TEXT, "
+			                    + "emailAddress TEXT, "
+			                    + "passwordHash TEXT, "
+			                    + "salt VARBINARY(256))");*/
+			            
+			            int dbAcademicID = 0;
+			            String dbTitle = null;
+			            String dbForenames = null;
+			            String dbSurname = null;
+			            String dbUniversity = null;
+			            String dbEmailAddress = null;
 			            String dbHash = null;
 			            String dbSalt = null;
 			            while (res.next()) {
-			                academicID = res.getInt(1);
-			                dbHash = res.getString(2);
-			                dbSalt = res.getString(3);
+			                dbAcademicID = res.getInt(1);
+			                dbTitle = res.getString(2);
+			                dbForenames = res.getString(3);
+			                dbSurname = res.getString(4);
+			                dbUniversity = res.getString(5);
+			                dbEmailAddress = res.getString(6);
+			                dbHash = res.getString(7);
+			                dbSalt = res.getString(8);
 			            }
-			            System.out.println(academicID + ", " + dbHash + ", " + dbSalt);
+			            System.out.println(dbAcademicID + ", " + dbHash + ", " + dbSalt);
 			            
-			            if (academicID == 0) {
+			            //Academic loggedInUser = new Academic(dbAcademicID, dbTitle, dbForenames, dbSurname, dbEmailAddress, dbUniversity);
+			            Author loggedInUser = new Author(dbAcademicID, dbTitle, dbForenames, dbSurname, dbEmailAddress, dbUniversity);
+			            System.out.println(loggedInUser);
+			            
+			            if (dbAcademicID == 0) {
 			                JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
 			            } else {
 		                    // 3. Generate hash based on fetched salt and entered password
@@ -113,7 +137,7 @@ public class LoginScreen {
 		                    // 4. Check if this hash is same as stored hash
 		                    if (correctPassword) {
 		                        JOptionPane.showMessageDialog(null, "Login Successful", "Login", 1);
-		                        new AuthorMainWindow();
+		                        new AuthorMainWindow(loggedInUser);
 		                        frmLogInScreen.dispose();
 		                    } else JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
 			            }
