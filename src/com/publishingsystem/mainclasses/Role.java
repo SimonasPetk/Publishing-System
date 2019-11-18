@@ -1,5 +1,5 @@
 package com.publishingsystem.mainclasses;
 
 public enum Role {
-	AUTHOR, EDITOR, REVIEWER, CHIEFEDITOR
+	AUTHOR, EDITOR, REVIEWER, CHIEFEDITOR, COAUTHOR
 }

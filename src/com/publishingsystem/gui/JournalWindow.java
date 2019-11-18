@@ -191,7 +191,6 @@ public class JournalWindow {
 		btnAddJournal.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
 				new RegistrationWindow(Role.CHIEFEDITOR);
 				frmJournalWindow.dispose();
 			}

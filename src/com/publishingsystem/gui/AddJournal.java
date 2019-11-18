@@ -10,6 +10,9 @@ import javax.swing.JOptionPane;
 import java.awt.Font;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
+
+import com.publishingsystem.mainclasses.ChiefEditor;
+
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
@@ -28,7 +31,7 @@ public class AddJournal {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AddJournal window = new AddJournal();
+					AddJournal window = new AddJournal(null);
 					window.frmAddJournal.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -40,14 +43,14 @@ public class AddJournal {
 	/**
 	 * Create the application.
 	 */
-	public AddJournal() {
-		initialize();
+	public AddJournal(ChiefEditor chiefEditor) {
+		initialize(chiefEditor);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize(ChiefEditor chiefEditor) {
 		frmAddJournal = new JFrame();
 		frmAddJournal.setTitle("Add Journal");
 		frmAddJournal.setBounds(100, 100, 591, 283);

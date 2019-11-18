@@ -14,6 +14,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 
 import com.publishingsystem.mainclasses.Author;
+import com.publishingsystem.mainclasses.Database;
 import com.publishingsystem.mainclasses.Role;
 
 import javax.swing.JTextField;
@@ -26,12 +27,16 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+
 import javax.swing.ListSelectionModel;
 
 public class SubmitArticle {
 
 	private JFrame frmSubmitAnArticle;
 	private JTextField txtfldTitle;
+	
+	private ArrayList<Author> coAuthors;
 
 	/**
 	 * Launch the application.
@@ -54,6 +59,11 @@ public class SubmitArticle {
 	 */
 	public SubmitArticle(Author a) {
 		initialize(a);
+		coAuthors = new ArrayList<Author>();
+	}
+	
+	public void addCoAuthor(Author coAuthor) {
+		this.coAuthors.add(coAuthor);
 	}
 
 	/**
@@ -105,18 +115,21 @@ public class SubmitArticle {
 		btnSubmit.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				coAuthors.add(a);
+				Database.registerAuthors(coAuthors);
 				JOptionPane.showMessageDialog(null, "To access your Author/Reviewer roles please Log Out and Login In again to the system. Thank you!");
 				frmSubmitAnArticle.dispose();
 			}
 		});
 		btnSubmit.setFont(new Font("Tahoma", Font.BOLD, 15));
 		
+		SubmitArticle submitArticleGUI = this;
 		JButton btnRegisterANew = new JButton("Register a New Author");
 		btnRegisterANew.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				
-				new RegistrationWindow(Role.AUTHOR);
+				new RegistrationWindow(Role.COAUTHOR, submitArticleGUI);
 				
 			}
 		});

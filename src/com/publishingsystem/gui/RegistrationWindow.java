@@ -40,8 +40,8 @@ public class RegistrationWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RegistrationWindow window = new RegistrationWindow(null);
-					window.frmRegistrationForm.setVisible(true);
+//					RegistrationWindow window = new RegistrationWindow(null);
+//					window.frmRegistrationForm.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -53,13 +53,21 @@ public class RegistrationWindow {
 	 * Create the application.
 	 */
 	public RegistrationWindow(Role r) {
-		initialize(r);
+		initialize(r, null, null);
+	}
+	
+	public RegistrationWindow(Role r, SubmitArticle submitArticleGUI) {
+		initialize(r, submitArticleGUI, null);
+	}
+	
+	public RegistrationWindow(Role r, AddJournal addJournalGUI) {
+		initialize(r, null, addJournalGUI);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Role r) {
+	private void initialize(Role r, SubmitArticle submitArticleGUI, AddJournal addJournalGUI) {
 		frmRegistrationForm = new JFrame();
 		frmRegistrationForm.setTitle("Registration Form");
 		frmRegistrationForm.setBounds(500, 100, 653, 559);
@@ -147,11 +155,12 @@ public class RegistrationWindow {
 			    			Author author = new Author(title, forenames, surname, university, email, pwdHash);
 			    			new SubmitArticle(author);
 			    			break;
+			    		case COAUTHOR:
+			    			Author coAuthor = new Author(title, forenames, surname, university, email, pwdHash);
+			    			submitArticleGUI.addCoAuthor(coAuthor);
 			    		case CHIEFEDITOR:
 			    			ChiefEditor chiefEditor = new ChiefEditor(title, forenames, surname, university, email, pwdHash);
-//			    			------------
-			    			//!NEW ADD JOURNAL CALL here!
-//			    			------------
+			    			new AddJournal(chiefEditor);
 			    			break;
 			    		default:
 			    	}
