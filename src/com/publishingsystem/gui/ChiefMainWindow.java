@@ -209,7 +209,7 @@ public class ChiefMainWindow {
 			public void mousePressed(MouseEvent e) {
 				
 				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A AUTHOR IF NOT MAKE ERROR MESSAGE
-				new AuthorMainWindow();
+				//new AuthorMainWindow();
 				frmChiefEditorsDashboard.dispose();
 			}
 		});

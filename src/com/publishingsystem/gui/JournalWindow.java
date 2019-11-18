@@ -25,6 +25,9 @@ import javax.swing.JPopupMenu;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
 
 public class JournalWindow {
 
@@ -155,8 +158,8 @@ public class JournalWindow {
 		JMenuBar menuBar = new JMenuBar();
 		frmJournalWindow.setJMenuBar(menuBar);
 		
-		JButton btnLogOut = new JButton("Log Out");
-		btnLogOut.addMouseListener(new MouseAdapter() {
+		JButton btnLogIn = new JButton("Log In");
+		btnLogIn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
@@ -166,6 +169,28 @@ public class JournalWindow {
 				
 			}
 		});
-		menuBar.add(btnLogOut);
+		menuBar.add(btnLogIn);
+		
+		JButton btnSubmitArticle = new JButton("Submit Article");
+		btnSubmitArticle.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				new RegistrationWindow();
+				frmJournalWindow.dispose();
+			}
+		});
+		menuBar.add(btnSubmitArticle);
+		
+		JButton btnAddJournal = new JButton("Add Journal");
+		btnAddJournal.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				new RegistrationWindow();
+				frmJournalWindow.dispose();
+			}
+		});
+		menuBar.add(btnAddJournal);
 	}
 }
