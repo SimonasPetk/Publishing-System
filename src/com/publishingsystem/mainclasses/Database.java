@@ -3,12 +3,12 @@ import java.sql.*;
 import java.util.*;
 
 public class Database {
-	//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	//	protected static final String DATABASE = "team022";
+	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+	protected static final String DATABASE = "team022";
 
 	//	//localhost
-	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-	protected static final String DATABASE = "publishing_system";
+	//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+	//	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -20,6 +20,9 @@ public class Database {
 
 	public static void registerEditors(ArrayList<Editor> editors) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
 			for(Editor e : editors) {
 				String query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
@@ -30,9 +33,9 @@ public class Database {
 					preparedStmt.setString(5, e.getEmailId());
 					preparedStmt.setString(6, e.getHash().getHash());
 					preparedStmt.setString(7, e.getHash().getSalt());
-	
+
 					preparedStmt.execute();
-	
+
 					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ACADEMICS");
 					while(rs.next())
 						e.setAcademicId(Integer.valueOf(rs.getString("last_id")));
@@ -43,7 +46,7 @@ public class Database {
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, e.getAcademicId());
 					preparedStmt.execute();
-	
+
 					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from EDITORS");
 					while(rs.next())
 						e.setEditorId(Integer.valueOf(rs.getString("last_id")));
@@ -78,6 +81,9 @@ public class Database {
 
 	public static void registerAuthors(ArrayList<Author> authors) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
 			for(Author a : authors) {
 				String query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
@@ -102,7 +108,7 @@ public class Database {
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, a.getAcademicId());
 					preparedStmt.execute();
-	
+
 					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from AUTHORS");
 					while(rs.next())
 						a.setAuthorId((Integer.valueOf(rs.getString("last_id"))));
@@ -141,7 +147,9 @@ public class Database {
 
 	public static void addJournal(Journal j) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
-
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
 			//Add journal to journal table
 			String query = "INSERT INTO JOURNALS values (?, ?, ?)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
@@ -182,6 +190,9 @@ public class Database {
 
 	public static void addSubmission(Submission s) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
 			//Add submission to article table
 			String query = "INSERT INTO ARTICLES values (null, ?, ?, ?, null)";
 
@@ -242,6 +253,9 @@ public class Database {
 
 	public static void addSubmissionToReview(Reviewer r, Submission s) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
 			String query = "INSERT INTO REVIEWEROF values (?, ?)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, r.getReviewerId());
@@ -257,6 +271,9 @@ public class Database {
 
 	public static void addReviewers(ArrayList<Reviewer> reviewers) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
 			for(Reviewer r : reviewers) {
 				String query = "INSERT INTO REVIEWERS values (null, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
@@ -297,6 +314,10 @@ public class Database {
 
 	public static void addReview(Review review) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			
 			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, null)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, review.getReviewerId());
@@ -356,6 +377,10 @@ public class Database {
 
 	public static void setVerdict(Reviewer r, Submission s) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			
 			String query = "UPDATE REVIEWS SET verdict = ? WHERE reviewerID = ? and submissionID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setString(1, s.getReview(r.getReviewerId()).getVerdict().toString());
@@ -414,6 +439,9 @@ public class Database {
 
 	public static void addResponse(Reviewer r, Submission s) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
 			Review review = s.getReview(r.getReviewerId());
 
 			String query = "INSERT INTO RESPONSES VALUES (?, ?)";
@@ -483,15 +511,19 @@ public class Database {
 
 	public static boolean academicExists(String email) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
 			String query = "SELECT academicID, hash, salt FROM Academics WHERE emailAddress = ?";
-			PreparedStatement preparedStmt = con.prepareStatement(query);
-			preparedStmt.setString(1, email.trim());
-			ResultSet res = preparedStmt.executeQuery();
-			preparedStmt.close();
-			if (res.next())
-				return true;
-			else
-				return false;
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setString(1, email.trim());
+				ResultSet res = preparedStmt.executeQuery();
+				preparedStmt.close();
+				if (res.next())
+					return true;
+				else
+					return false;
+			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -500,26 +532,32 @@ public class Database {
 
 	public static boolean validateCredentials(String email, String password) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
 			String query = "SELECT academicID, hash, salt FROM Academics WHERE emailAddress = ?";
-			PreparedStatement preparedStmt = con.prepareStatement(query);
-			preparedStmt.setString(1, email.trim());
-			ResultSet res = preparedStmt.executeQuery();
-			preparedStmt.close();
-			int academicID = -1;
-			String dbHash = null;
-			String dbSalt = null;
-			if (res.next()) {
-				academicID = res.getInt(1);
-				dbHash = res.getString(2);
-				dbSalt = res.getString(3);
-			}
-			System.out.println(academicID + ", " + dbHash + ", " + dbSalt);
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setString(1, email.trim());
+				ResultSet res = preparedStmt.executeQuery();
 
-			if (academicID != -1) {
-				//Generate hash based on fetched salt and entered password
-				Hash newHash = new Hash(password, dbSalt);
-				password = ""; //Delete password by setting it to an empty string
-				return newHash.getHash().equals(dbHash);
+				int academicID = -1;
+				String dbHash = null;
+				String dbSalt = null;
+				if (res.next()) {
+					academicID = res.getInt(1);
+					dbHash = res.getString(2);
+					dbSalt = res.getString(3);
+				}
+				System.out.println(academicID + ", " + dbHash + ", " + dbSalt);
+
+				if (academicID != -1) {
+					//Generate hash based on fetched salt and entered password
+					Hash newHash = new Hash(password, dbSalt);
+					password = ""; //Delete password by setting it to an empty string
+					return newHash.getHash().equals(dbHash);
+				}
+			}catch (SQLException ex) {
+				ex.printStackTrace();
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -535,10 +573,11 @@ public class Database {
 		while (list.hasMoreElements())
 			System.out.println(list.nextElement());
 		System.out.println();
-
+		
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
-			//			statement.execute("USE "+DATABASE+";");
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
 
 			String query = "SHOW TABLES";
 			PreparedStatement preparedStmt = con.prepareStatement(query);
@@ -546,7 +585,6 @@ public class Database {
 			while(res.next()) {
 				System.out.println(res.getString(1));
 			}
-			statement.close();
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
