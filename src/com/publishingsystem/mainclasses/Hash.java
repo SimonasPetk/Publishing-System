@@ -135,6 +135,7 @@ public class Hash {
 	public static void main(String[] args){
 	    Hash hash1 = new Hash("password");
 		System.out.println(hash1.getHash());
+		System.out.println(hash1.getSalt());
 		System.out.println(new Hash("password", hash1.getSalt()).getHash());
     }
 }

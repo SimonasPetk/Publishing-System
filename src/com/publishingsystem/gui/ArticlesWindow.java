@@ -18,8 +18,12 @@ import javax.swing.JButton;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.JEditorPane;
 
-public class ArticleList {
+public class ArticlesWindow {
 
 	private JFrame frmAvailableJournalArticles;
 	private JTable tblArticles;
@@ -31,7 +35,7 @@ public class ArticleList {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ArticleList window = new ArticleList();
+					ArticlesWindow window = new ArticlesWindow();
 					window.frmAvailableJournalArticles.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -43,7 +47,7 @@ public class ArticleList {
 	/**
 	 * Create the application.
 	 */
-	public ArticleList() {
+	public ArticlesWindow() {
 		initialize();
 	}
 
@@ -55,13 +59,33 @@ public class ArticleList {
 		frmAvailableJournalArticles.setTitle("Available Article");
 		frmAvailableJournalArticles.setBounds(100, 100, 850, 700);
 		frmAvailableJournalArticles.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmAvailableJournalArticles.setVisible(true);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		JEditorPane editorPane = new JEditorPane();
+		editorPane.setEditable(false);
+		scrollPane_1.setViewportView(editorPane);
+		
 		tblArticles = new JTable();
+		tblArticles.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				if (e.getClickCount() == 2 && tblArticles.rowAtPoint(e.getPoint()) == 0) {
+					
+					editorPane.setText("This is a dummy summary added, still need to do a lot of work on it, for example to know which article was pressed, and then show that summary, now everything is hardcoded\n"
+										+ " Possible solution would be to make article id the same as it displayed in the list, however this might not be possible due to articles having id associated with all of the articles not with a specified journal");
+				} else {
+					editorPane.setText(""); // perhaps there is a method like .clear() or smth similar
+				}
+			}
+		});
 		tblArticles.setModel(new DefaultTableModel(
 			new Object[][] {
-				{null, null, null, null, null},
+				{"Article Name", "Article smth", "Volume", "Number", "Page range"},
 				{"sdasdas", null, null, null, null},
 				{null, null, "sd", null, null},
 				{null, null, null, null, null},
@@ -134,42 +158,46 @@ public class ArticleList {
 		JLabel lblAbstract = new JLabel("Abstract:");
 		lblAbstract.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JTextArea textArea = new JTextArea();
-		textArea.setEditable(false);
-		
 		JButton btnDownloadPdf = new JButton("Download PDF");
+	
 		GroupLayout groupLayout = new GroupLayout(frmAvailableJournalArticles.getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
+			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE)
-						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 496, Short.MAX_VALUE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addComponent(lblAbstract, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
-						.addComponent(textArea, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
-						.addComponent(btnDownloadPdf))
-					.addContainerGap())
+						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE))
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.RELATED, 279, Short.MAX_VALUE)
+							.addComponent(btnDownloadPdf)
+							.addContainerGap())
+						.addGroup(groupLayout.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblAbstract, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
+								.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 364, Short.MAX_VALUE))
+							.addGap(16))))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 15, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblAbstract, GroupLayout.PREFERRED_SIZE, 15, GroupLayout.PREFERRED_SIZE))
+					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblAbstract, GroupLayout.PREFERRED_SIZE, 15, GroupLayout.PREFERRED_SIZE)
+							.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
 							.addGap(10)
-							.addComponent(textArea, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnDownloadPdf))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 15, GroupLayout.PREFERRED_SIZE)
-							.addGap(10)
-							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE)))
+							.addComponent(btnDownloadPdf)
+							.addGap(165))
+						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE))
 					.addGap(32))
 		);
+		
 		frmAvailableJournalArticles.getContentPane().setLayout(groupLayout);
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -179,9 +207,25 @@ public class ArticleList {
 		menuBar.add(mnMenu);
 		
 		JMenuItem mntmBackToJournals = new JMenuItem("Back To Journals");
+		mntmBackToJournals.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				new JournalWindow();
+				frmAvailableJournalArticles.dispose();
+			}
+		});
 		mnMenu.add(mntmBackToJournals);
 		
 		JMenuItem mntmLogOut = new JMenuItem("Log Out");
+		mntmLogOut.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				new LoginScreen();
+				frmAvailableJournalArticles.dispose();
+			}
+		});
 		mnMenu.add(mntmLogOut);
 	}
 }

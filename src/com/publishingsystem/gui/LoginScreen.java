@@ -17,11 +17,6 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 public class LoginScreen {
 
@@ -60,20 +55,21 @@ public class LoginScreen {
 		frmLogInScreen.setTitle("Login");
 		frmLogInScreen.setBounds(100, 100, 700, 500);
 		frmLogInScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+		frmLogInScreen.setVisible(true);
+
 		JLabel lblEmail = new JLabel("Email Address:");
 		lblEmail.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		emailField = new JTextField();
 		emailField.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		emailField.setColumns(10);
-		
+
 		JLabel lblPassword = new JLabel("Password:");
 		lblPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		passwordField = new JPasswordField();
 		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JButton btnLogin = new JButton("Login");
 		btnLogin.addMouseListener(new MouseAdapter() {
 			@Override
@@ -84,7 +80,7 @@ public class LoginScreen {
 
 			    boolean validCredentials = true;
 			    if (email.isEmpty() || password.isEmpty()) validCredentials = false;
-			    
+
 			    if (validCredentials) {
 			        // 2. Get stored hash and salt from database for given email
 			        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
@@ -92,7 +88,7 @@ public class LoginScreen {
 			            statement.executeUpdate("USE team022");
 			            ResultSet res = statement.executeQuery(
 			                    "SELECT * FROM Academic WHERE emailAddress = '" + email + "'");
-			            
+
 			            /*statement.executeUpdate("CREATE TABLE Academic ("
 			                    + "academicID INT PRIMARY KEY AUTO_INCREMENT, "
 			                    + "title TEXT, "
@@ -102,7 +98,7 @@ public class LoginScreen {
 			                    + "emailAddress TEXT, "
 			                    + "passwordHash TEXT, "
 			                    + "salt VARBINARY(256))");*/
-			            
+
 			            int dbAcademicID = 0;
 			            String dbTitle = null;
 			            String dbForenames = null;
@@ -122,11 +118,11 @@ public class LoginScreen {
 			                dbSalt = res.getString(8);
 			            }
 			            System.out.println(dbAcademicID + ", " + dbHash + ", " + dbSalt);
-			            
+
 			            //Academic loggedInUser = new Academic(dbAcademicID, dbTitle, dbForenames, dbSurname, dbEmailAddress, dbUniversity);
 			            Author loggedInUser = new Author(dbAcademicID, dbTitle, dbForenames, dbSurname, dbEmailAddress, dbUniversity);
 			            System.out.println(loggedInUser);
-			            
+
 			            if (dbAcademicID == 0) {
 			                JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
 			            } else {
@@ -143,26 +139,26 @@ public class LoginScreen {
 			            }
 			        } catch (SQLException ex) {ex.printStackTrace();}
 			    } else JOptionPane.showMessageDialog(null, "Please fill in all fields", "Login", 0);
-			    
-			    // 5. Clear password variables
+
+			    // 4. Clear password variables
 			}
 		});
 		btnLogin.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JLabel lblWelcomeBack = new JLabel("Welcome Back!");
 		lblWelcomeBack.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWelcomeBack.setFont(new Font("Tahoma", Font.PLAIN, 25));
-		
+
 		JButton btnLoginAsA = new JButton("Login as a Reader");
 		btnLoginAsA.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				new AvailableNumbers();
+				new JournalWindow();
 				frmLogInScreen.dispose();
 			}
 		});
 		btnLoginAsA.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JButton btnAcademicRegister = new JButton("Register as an Academic");
 		btnAcademicRegister.addMouseListener(new MouseAdapter() {
 			@Override

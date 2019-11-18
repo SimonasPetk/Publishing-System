@@ -7,17 +7,24 @@ public abstract class Academic {
 	protected String surname;
 	protected String emailId;
 	protected String university;
+	protected Hash hash;
 	
-	public Academic(int academicId, String title, String forename, String surname, String emailId, String university) {
-		this.academicId = academicId;
+	public Academic(String title, String forename, String surname, String emailId, String university, Hash hash) {
 		this.title = title;
 		this.forename = forename;
 		this.surname = surname;
 		this.emailId = emailId;
 		this.university = university;
+		this.hash = hash;
 	}
 	
-	public void register() {}
+	public Hash getHash() {
+		return this.hash;
+	}
+	
+	public void setAcademicId(int id) {
+		this.academicId = id;
+	}
 
 	public int getAcademicId() {
 		return academicId;

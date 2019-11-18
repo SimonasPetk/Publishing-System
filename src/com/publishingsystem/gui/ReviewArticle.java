@@ -28,10 +28,15 @@ import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.JScrollBar;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
-public class CriticismResponse {
+public class ReviewArticle {
 
-	private JFrame frmRespondToCriticism;
+	private JFrame frmReviewArticle;
+	private JTable tblTypoErrors;
 
 	/**
 	 * Launch the application.
@@ -40,8 +45,8 @@ public class CriticismResponse {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					CriticismResponse window = new CriticismResponse();
-					window.frmRespondToCriticism.setVisible(true);
+					ReviewArticle window = new ReviewArticle();
+					window.frmReviewArticle.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -52,7 +57,7 @@ public class CriticismResponse {
 	/**
 	 * Create the application.
 	 */
-	public CriticismResponse() {
+	public ReviewArticle() {
 		initialize();
 	}
 
@@ -60,182 +65,203 @@ public class CriticismResponse {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frmRespondToCriticism = new JFrame();
-		frmRespondToCriticism.setTitle("Respond to Criticism");
-		frmRespondToCriticism.setBounds(100, 100, 500, 600);
-		frmRespondToCriticism.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frmRespondToCriticism.setVisible(true);
+		frmReviewArticle = new JFrame();
+		frmReviewArticle.setTitle("Respond to Criticism");
+		frmReviewArticle.setBounds(100, 100, 510, 600);
+		frmReviewArticle.setMinimumSize(new Dimension(510,600));
+		frmReviewArticle.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frmReviewArticle.setVisible(true);
 		
 		
-		JScrollPane scrPaneAnswer1 = new JScrollPane();
-		scrPaneAnswer1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		JScrollPane scrPaneTypoErrors = new JScrollPane();
+		scrPaneTypoErrors.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		JLabel lblYourArticleReviews = new JLabel("Your Article's Reviews");
-		lblYourArticleReviews.setHorizontalAlignment(SwingConstants.CENTER);
-		lblYourArticleReviews.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		JLabel lblArticleReviews = new JLabel("Please Submit Your Review");
+		lblArticleReviews.setHorizontalAlignment(SwingConstants.CENTER);
+		lblArticleReviews.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JScrollPane scrPaneReview1 = new JScrollPane();
 		scrPaneReview1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrPaneReview1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		
-		JLabel lblReview = new JLabel("Summary");
+		JLabel lblReview = new JLabel("Summary of the Review");
 		lblReview.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JScrollPane scrPaneAnswer2 = new JScrollPane();
-		scrPaneAnswer2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		JScrollPane scrPaneCriticisms = new JScrollPane();
+		scrPaneCriticisms.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		JButton btnSubmitResponse = new JButton("Submit Response");
-		btnSubmitResponse.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		JButton btnSubmitReview = new JButton("Submit a Review");
+		btnSubmitReview.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				frmReviewArticle.dispose();
+			}
+		});
+		btnSubmitReview.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JLabel lblTypographicalErr = new JLabel("Typographical Error");
-		lblTypographicalErr.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		JLabel lblTypoErrors = new JLabel("Typographical Error");
+		lblTypoErrors.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JLabel lblCriticisms = new JLabel("Criticisms");
+		JLabel lblCriticisms = new JLabel("List of Criticisms");
 		lblCriticisms.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JButton btnAddUpdatedPdf = new JButton("Add Updated PDF ");
-		btnAddUpdatedPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		JLabel lblNewLabel = new JLabel("Your Verdict");
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JLabel lblPleaseSubmitYour = new JLabel("Please submit your article's accordingly updated PDF file");
-		GroupLayout groupLayout = new GroupLayout(frmRespondToCriticism.getContentPane());
+		JComboBox comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"", "Strong Accept", "Weak Accept", "Weak Reject", "Strong Reject"}));
+		GroupLayout groupLayout = new GroupLayout(frmReviewArticle.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(150)
-					.addComponent(lblYourArticleReviews, GroupLayout.DEFAULT_SIZE, 184, Short.MAX_VALUE)
-					.addGap(150))
-				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(lblReview)
-					.addContainerGap(411, Short.MAX_VALUE))
+					.addContainerGap(327, Short.MAX_VALUE))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(scrPaneAnswer1, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
+					.addComponent(scrPaneTypoErrors, GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE)
 					.addContainerGap())
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(lblTypographicalErr, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(301, Short.MAX_VALUE))
+					.addComponent(lblTypoErrors, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(311, Short.MAX_VALUE))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(lblCriticisms)
-					.addContainerGap(415, Short.MAX_VALUE))
+					.addContainerGap(381, Short.MAX_VALUE))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(136)
-					.addComponent(btnSubmitResponse, GroupLayout.PREFERRED_SIZE, 184, Short.MAX_VALUE)
+					.addComponent(btnSubmitReview, GroupLayout.PREFERRED_SIZE, 194, Short.MAX_VALUE)
 					.addGap(164))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(scrPaneAnswer2, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
+					.addComponent(scrPaneReview1)
+					.addContainerGap())
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(140)
+					.addComponent(lblArticleReviews, GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
+					.addGap(140))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(scrPaneCriticisms, GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE)
 					.addContainerGap())
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(btnAddUpdatedPdf)
-					.addContainerGap(321, Short.MAX_VALUE))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(scrPaneReview1, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
+					.addComponent(lblNewLabel)
 					.addContainerGap())
-				.addGroup(groupLayout.createSequentialGroup()
+				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(lblPleaseSubmitYour, GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
+					.addComponent(comboBox, 0, 474, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblYourArticleReviews)
+					.addGap(10)
+					.addComponent(lblArticleReviews, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addGap(10)
 					.addComponent(lblReview)
 					.addGap(5)
-					.addComponent(scrPaneReview1, GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+					.addComponent(scrPaneReview1, GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
 					.addGap(10)
-					.addComponent(lblTypographicalErr, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
+					.addComponent(lblTypoErrors, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
 					.addGap(5)
-					.addComponent(scrPaneAnswer1, GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE)
+					.addComponent(scrPaneTypoErrors, GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
 					.addGap(10)
 					.addComponent(lblCriticisms)
 					.addGap(5)
-					.addComponent(scrPaneAnswer2, GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
+					.addComponent(scrPaneCriticisms, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
-					.addComponent(btnAddUpdatedPdf)
+					.addComponent(lblNewLabel)
 					.addGap(5)
-					.addComponent(lblPleaseSubmitYour)
+					.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
-					.addComponent(btnSubmitResponse)
+					.addComponent(btnSubmitReview)
 					.addGap(10))
 		);
+		
+		tblTypoErrors = new JTable();
+		tblTypoErrors.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tblTypoErrors.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null},
+				{null},
+				{null},
+				{null},
+				{null},
+				{null},
+				{null},
+				{null},
+				{null},
+				{null},
+				{null},
+				{null},
+				{null},
+				{null},
+				{null},
+				{null},
+				{null},
+				{null},
+			},
+			new String[] {
+				""
+			}
+		));
+		scrPaneTypoErrors.setViewportView(tblTypoErrors);
+		scrPaneTypoErrors.setColumnHeader(null);
 		
 		
 		
 		// ADDIDING ELEMNTS INTO A LIST WILL NEED TO BE OBJECTS of criticsms
 		DefaultListModel listModel = new DefaultListModel();
 		
-		listModel.addElement("smtth");
-		listModel.addElement("smt1");
-		listModel.addElement("smt2");
-		listModel.addElement("smt3");
-		listModel.addElement("smt5");
-		
-		JList list_1 = new JList(listModel);
-		list_1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list_1.setValueIsAdjusting(true);
+		listModel.addElement("Click here to add a new criticism / Click on a existant critism to update it");
 
-		list_1.addMouseListener(new MouseAdapter() {
+		JList listOfCriticisms = new JList(listModel);
+		listOfCriticisms.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		listOfCriticisms.setValueIsAdjusting(true);
+
+		listOfCriticisms.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
-				 int index = list_1.getSelectedIndex();
-		         System.out.println("Index Selected: " + index);
-		         String s = (String) list_1.getSelectedValue();
-		         System.out.println("Value Selected: " + s);
+				 String criticism = null;
+				 int index = listOfCriticisms.getSelectedIndex();
+				 String s = (String) listOfCriticisms.getSelectedValue();
+				 
+				 
+				 // returns all elements of the JList, we start from 1, because 0 is a dummy text 
+				 for(int i = 1; i < listOfCriticisms.getModel().getSize(); i++){
+			            System.out.println(listOfCriticisms.getModel().getElementAt(i));
+			     }
+				 
+				 System.out.println("Index Selected: " + index);
+			     System.out.println("Value Selected: " + s);
 		         
-		         System.out.println(popUp(s));
-		         listModel.remove(index);
-		         listModel.addElement("test");
+			     // popUp window to add new criticsm
+		         if (index == 0) {
+		        	 criticism = popUp("Add your new Criticism below");
+		         } else {
+		        	 criticism = popUp(s);
+		         }
+		         
+		         
+		         // if it is not the first index and not a null remove the criticsm
+		         if (index != 0 && criticism != null) {
+		        	 listModel.remove(index);
+		         }
+		         
+		         
+		         // add new criticsm to the list;
+		         listModel.addElement(criticism); 
 		    }
 		});
-		scrPaneAnswer2.setViewportView(list_1);
-		
-		JList list = new JList();
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-		list.setModel(new AbstractListModel() {
-			String[] values = new String[] {"ASSSSSSSSSSSSSSSSSSS", "sdffffffff", "dsfffffffff"};
-			public int getSize() {
-				return values.length;
-			}
-			public Object getElementAt(int index) {
-				return values[index];
-			}
-		});
-		
-		
-		list.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				
-				/*list.setValueAt("Press Again", 0, 0);
-
-				if (arg0.getClickCount() == 2 && list.rowAtPoint(arg0.getPoint()) == 0) {
-
-			        JOptionPane.showMessageDialog(tblJournal, "row #" + 0 + " is clicked");
-				}*/
-			} 
-		});
-		
-		
-		
-		
-		scrPaneAnswer1.setViewportView(list);
+		scrPaneCriticisms.setViewportView(listOfCriticisms);
 		
 		JEditorPane dtrpnReview1 = new JEditorPane();
-		dtrpnReview1.setText("\r\n");
-		dtrpnReview1.setEnabled(false);
-		dtrpnReview1.setEditable(false);
 		scrPaneReview1.setViewportView(dtrpnReview1);
-		frmRespondToCriticism.getContentPane().setLayout(groupLayout);
+		frmReviewArticle.getContentPane().setLayout(groupLayout);
 	}
 	
 	private String popUp(String criticism) {
@@ -246,14 +272,14 @@ public class CriticismResponse {
 		JScrollPane scrPaneCriticism = new JScrollPane();
 		scrPaneCriticism.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		JLabel lblAnswerToCriticism = new JLabel("Answer to Criticism");
+		JLabel lblAnswerToCriticism = new JLabel("Please Add Your Criticism");
 		lblAnswerToCriticism.setHorizontalAlignment(SwingConstants.CENTER);
 		lblAnswerToCriticism.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JLabel lblCriticism = new JLabel("Criticism");
+		JLabel lblCriticism = new JLabel("Previous Criticism");
 		lblCriticism.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JLabel lblYourAnswer = new JLabel("Your Answer");
+		JLabel lblYourAnswer = new JLabel("New Criticism");
 		lblYourAnswer.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JScrollPane scrPaneAnswer = new JScrollPane();
@@ -273,9 +299,9 @@ public class CriticismResponse {
 						.addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup()
 							.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
 								.addComponent(scrPaneAnswer, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
-								.addComponent(lblYourAnswer, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 83, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblYourAnswer, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
 								.addComponent(scrPaneCriticism, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE)
-								.addComponent(lblCriticism, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 52, GroupLayout.PREFERRED_SIZE))
+								.addComponent(lblCriticism, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE))
 							.addContainerGap())))
 		);
 		gl_panel.setVerticalGroup(
@@ -313,7 +339,7 @@ public class CriticismResponse {
 			ans = editPaneAnswer.getText();
 			return ans;
 		} else if (result == JOptionPane.OK_OPTION && editPaneAnswer.getText().isEmpty()) {
-			 JOptionPane.showMessageDialog(new JPanel(), "You haven't responded to criticism", "Warning", JOptionPane.WARNING_MESSAGE);
+			 JOptionPane.showMessageDialog(new JPanel(), "You haven't entered criticism", "Warning", JOptionPane.WARNING_MESSAGE);
 		}
 		
 		return null;

@@ -64,19 +64,16 @@ public class ReviewerMainWindow {
 		
 		JScrollPane scrSubmitted = new JScrollPane();
 		
-		JButton btnSubmitAnArticle = new JButton("Submit an Article");
-		btnSubmitAnArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
 		JScrollPane scrReview = new JScrollPane();
 		scrReview.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrReview.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		
-		JButton btnRespondToReviews = new JButton("Respond to Reviews");
+		JButton btnRespondToReviews = new JButton("Review Article");
 		btnRespondToReviews.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				
-				new CriticismResponse();
+				new ReviewArticle();
 			}
 		});
 		btnRespondToReviews.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -84,6 +81,18 @@ public class ReviewerMainWindow {
 		JLabel lblArticlesReview = new JLabel("Article's Review");
 		lblArticlesReview.setToolTipText("");
 		lblArticlesReview.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JButton btnNewButton = new JButton("Download PDF");
+		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JButton btnCheckResponses = new JButton("Check Response");
+		btnCheckResponses.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				new ReviewArticle();
+			}
+		});
+		btnCheckResponses.setFont(new Font("Tahoma", Font.PLAIN, 15));
         
 		GroupLayout groupLayout = new GroupLayout(frmReviewDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -93,42 +102,43 @@ public class ReviewerMainWindow {
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(scrSubmitted, GroupLayout.PREFERRED_SIZE, 551, GroupLayout.PREFERRED_SIZE)
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(16)
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
-										.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE)))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnRespondToReviews))))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 610, Short.MAX_VALUE)
-							.addComponent(btnSubmitAnArticle)))
+							.addGap(16)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+									.addComponent(btnCheckResponses)
+									.addPreferredGap(ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+										.addComponent(btnRespondToReviews, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(btnNewButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+								.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
+								.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE)))
+						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnSubmitAnArticle))
+					.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 642, Short.MAX_VALUE)
+						.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 624, Short.MAX_VALUE)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 							.addGap(10)
-							.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
-							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
+							.addGap(10)
+							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(btnNewButton)
+								.addComponent(btnCheckResponses))
+							.addGap(10)
 							.addComponent(btnRespondToReviews)
-							.addGap(314)))
+							.addGap(284)))
 					.addContainerGap())
 		);
 		
 		JEditorPane editPaneReview = new JEditorPane();
+		editPaneReview.setText("If empty leave text \"No Review yet\"");
 		editPaneReview.setEditable(false);
 		scrReview.setViewportView(editPaneReview);
 		
@@ -214,28 +224,65 @@ public class ReviewerMainWindow {
 		menuItem_2.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				System.exit(0);
+				new LoginScreen();
+				frmReviewDashboard.dispose();
+				//System.exit(0);
 			}
 		});
 		
 		menu.add(menuItem_2);
 		
-		JMenu mnChangeMyRole = new JMenu("Change My Role");
-		menuBar.add(mnChangeMyRole);
-
-		JMenuItem mntmAuthors = new JMenuItem("Author");
-		mnChangeMyRole.add(mntmAuthors);
+		JMenu mnChangeRole = new JMenu("Change My Role");
+		menuBar.add(mnChangeRole);
+		
+		JMenuItem mntmToAuthor = new JMenuItem("Author");
+		mntmToAuthor.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A AUTHOR IF NOT MAKE ERROR MESSAGE
+				new AuthorMainWindow();
+				frmReviewDashboard.dispose();
+			}
+		});
+		mnChangeRole.add(mntmToAuthor);
 		
 		JMenuItem mntmChiefEditor = new JMenuItem("Chief Editor");
-		mnChangeMyRole.add(mntmChiefEditor);
+		mntmChiefEditor.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A CHIEF EDITOR IF NOT MAKE ERROR MESSAGE
+				
+				new ChiefMainWindow();
+				frmReviewDashboard.dispose();
+			}
+		});
+		mnChangeRole.add(mntmChiefEditor);
 		
-		JMenuItem mntmEditor = new JMenuItem("Editor");
-		mnChangeMyRole.add(mntmEditor);
+		JMenuItem mntmToEditor = new JMenuItem("Editor");
+		mntmToEditor.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A EDITOR IF NOT MAKE ERROR MESSAGE
+				new EditorMainWindow();
+				frmReviewDashboard.dispose();
+			}
+		});
+		mnChangeRole.add(mntmToEditor);
 		
-		JMenuItem mntmReader = new JMenuItem("Reader");
-		mnChangeMyRole.add(mntmReader);
-		
-		
-	}
+		JMenuItem mntmToReader = new JMenuItem("Reader");
+		mntmToReader.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				// Allow this always
+				new JournalWindow();
+				frmReviewDashboard.dispose();
+			}
+		});
+		mnChangeRole.add(mntmToReader);
 
+	}
 }

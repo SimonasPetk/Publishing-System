@@ -22,6 +22,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.*;
 import java.util.ArrayList;
+import javax.swing.DefaultComboBoxModel;
 
 public class RegistrationWindow {
 
@@ -62,7 +63,7 @@ public class RegistrationWindow {
 	private void initialize() {
 		frmRegistrationForm = new JFrame();
 		frmRegistrationForm.setTitle("Registration Form");
-		frmRegistrationForm.setBounds(100, 100, 653, 559);
+		frmRegistrationForm.setBounds(500, 100, 653, 559);
 		frmRegistrationForm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmRegistrationForm.setVisible(true);
 
@@ -91,8 +92,8 @@ public class RegistrationWindow {
 		pwdfldPassword = new JPasswordField();
 		pwdfldPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		String[] titles = {"-", "Dr", "Mr", "Mrs", "Miss", "Ms", "Prof"};
-	    JComboBox<String> comboTitle = new JComboBox<String>(titles);
+	    JComboBox<String> comboTitle = new JComboBox<String>();
+	    comboTitle.setModel(new DefaultComboBoxModel(new String[] {" ", "Dr", "Mr", "Mrs", "Miss", "Ms", "Prof"}));
 
 		txtfldForenames = new JTextField();
 		txtfldForenames.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -127,7 +128,7 @@ public class RegistrationWindow {
 
 			    // 3. Validate entered details
 			    boolean validCredentials = true;
-			    if (title == "-" || forenames.isEmpty() || surname.isEmpty() || university.isEmpty() || email.isEmpty() || password.isEmpty()) {
+			    if (title == " " || forenames.isEmpty() || surname.isEmpty() || university.isEmpty() || email.isEmpty() || password.isEmpty()) {
                     validCredentials = false;
                     JOptionPane.showMessageDialog(null, "Please fill in all of the fields", "Registration Form", 0);
 			    }
