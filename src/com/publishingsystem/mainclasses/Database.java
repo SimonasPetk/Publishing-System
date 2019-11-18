@@ -396,12 +396,10 @@ public class Database {
 			ex.printStackTrace();
 		}
 	}
-
-	public final static boolean vaidateCredentials(String email, String password) {
+	
+	public static boolean academicExists(String email) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
-			Statement statement = con.createStatement();
-			statement.executeUpdate("USE "+DATABASE);
-			String query = "SELECT academicID, hash, salt FROM Academic WHERE emailAddress = ?";
+			String query = "SELECT academicID, hash, salt FROM Academics WHERE emailAddress = ?";
 			PreparedStatement preparedStmt = con.prepareStatement(query);
 			preparedStmt.setString(1, email.trim());
 			ResultSet res = preparedStmt.executeQuery();
@@ -409,7 +407,27 @@ public class Database {
 			int academicID = -1;
 			String dbHash = null;
 			String dbSalt = null;
-			while (res.next()) {
+			if (res.next())
+				return true;
+			else
+				return false;
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return false;
+	}
+
+	public static boolean validateCredentials(String email, String password) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			String query = "SELECT academicID, hash, salt FROM Academics WHERE emailAddress = ?";
+			PreparedStatement preparedStmt = con.prepareStatement(query);
+			preparedStmt.setString(1, email.trim());
+			ResultSet res = preparedStmt.executeQuery();
+
+			int academicID = -1;
+			String dbHash = null;
+			String dbSalt = null;
+			if (res.next()) {
 				academicID = res.getInt(1);
 				dbHash = res.getString(2);
 				dbSalt = res.getString(3);

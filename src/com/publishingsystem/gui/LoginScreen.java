@@ -84,7 +84,7 @@ public class LoginScreen {
 			    if (validCredentials) {
 			        
 			        // 3. Check if the generated hash from password is same as stored hash
-			    	boolean correctPassword = Database.vaidateCredentials(email, password);
+			    	boolean correctPassword = Database.validateCredentials(email, password);
                     if (correctPassword) {
                         JOptionPane.showMessageDialog(null, "Login Successful", "Login", 1);
                         //new AuthorMainWindow();
