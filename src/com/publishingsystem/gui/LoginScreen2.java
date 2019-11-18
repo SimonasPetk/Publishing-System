@@ -18,7 +18,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class LoginScreen {
+public class LoginScreen2 {
 
 	private JFrame frmLogInScreen;
 	private JTextField emailField;
@@ -31,7 +31,7 @@ public class LoginScreen {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					LoginScreen window = new LoginScreen();
+					LoginScreen2 window = new LoginScreen2();
 					window.frmLogInScreen.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -43,7 +43,7 @@ public class LoginScreen {
 	/**
 	 * Create the application.
 	 */
-	public LoginScreen() {
+	public LoginScreen2() {
 		initialize();
 	}
 
@@ -56,20 +56,20 @@ public class LoginScreen {
 		frmLogInScreen.setBounds(100, 100, 700, 500);
 		frmLogInScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmLogInScreen.setVisible(true);
-		
+
 		JLabel lblEmail = new JLabel("Email Address:");
 		lblEmail.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		emailField = new JTextField();
 		emailField.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		emailField.setColumns(10);
-		
+
 		JLabel lblPassword = new JLabel("Password:");
 		lblPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		passwordField = new JPasswordField();
 		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JButton btnLogin = new JButton("Login");
 		btnLogin.addMouseListener(new MouseAdapter() {
 			@Override
@@ -80,27 +80,75 @@ public class LoginScreen {
 
 			    boolean validCredentials = true;
 			    if (email.isEmpty() || password.isEmpty()) validCredentials = false;
-			    
+
 			    if (validCredentials) {
-			        
-			        // 3. Check if the generated hash from password is same as stored hash
-			    	boolean correctPassword = Database.vaidateCredentials(email, password);
-                    if (correctPassword) {
-                        JOptionPane.showMessageDialog(null, "Login Successful", "Login", 1);
-                        //new AuthorMainWindow();
-                        frmLogInScreen.dispose();
-                    } else JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
+			        // 2. Get stored hash and salt from database for given email
+			        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+			            Statement statement = con.createStatement();
+			            statement.executeUpdate("USE team022");
+			            ResultSet res = statement.executeQuery(
+			                    "SELECT * FROM Academic WHERE emailAddress = '" + email + "'");
+
+			            /*statement.executeUpdate("CREATE TABLE Academic ("
+			                    + "academicID INT PRIMARY KEY AUTO_INCREMENT, "
+			                    + "title TEXT, "
+			                    + "forenames TEXT, "
+			                    + "surname TEXT, "
+			                    + "university TEXT, "
+			                    + "emailAddress TEXT, "
+			                    + "passwordHash TEXT, "
+			                    + "salt VARBINARY(256))");*/
+
+			            int dbAcademicID = 0;
+			            String dbTitle = null;
+			            String dbForenames = null;
+			            String dbSurname = null;
+			            String dbUniversity = null;
+			            String dbEmailAddress = null;
+			            String dbHash = null;
+			            String dbSalt = null;
+			            while (res.next()) {
+			                dbAcademicID = res.getInt(1);
+			                dbTitle = res.getString(2);
+			                dbForenames = res.getString(3);
+			                dbSurname = res.getString(4);
+			                dbUniversity = res.getString(5);
+			                dbEmailAddress = res.getString(6);
+			                dbHash = res.getString(7);
+			                dbSalt = res.getString(8);
+			            }
+			            System.out.println(dbAcademicID + ", " + dbHash + ", " + dbSalt);
+
+			            //Academic loggedInUser = new Academic(dbAcademicID, dbTitle, dbForenames, dbSurname, dbEmailAddress, dbUniversity);
+			            Author loggedInUser = new Author(dbAcademicID, dbTitle, dbForenames, dbSurname, dbEmailAddress, dbUniversity);
+			            System.out.println(loggedInUser);
+
+			            if (dbAcademicID == 0) {
+			                JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
+			            } else {
+		                    // 3. Generate hash based on fetched salt and entered password
+		                    Hash newHash = new Hash(password, dbSalt);
+		                    boolean correctPassword = newHash.getHash().equals(dbHash);
+
+		                    // 4. Check if this hash is same as stored hash
+		                    if (correctPassword) {
+		                        JOptionPane.showMessageDialog(null, "Login Successful", "Login", 1);
+		                        new AuthorMainWindow(loggedInUser);
+		                        frmLogInScreen.dispose();
+		                    } else JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
+			            }
+			        } catch (SQLException ex) {ex.printStackTrace();}
 			    } else JOptionPane.showMessageDialog(null, "Please fill in all fields", "Login", 0);
-			    
+
 			    // 4. Clear password variables
 			}
 		});
 		btnLogin.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JLabel lblWelcomeBack = new JLabel("Welcome Back!");
 		lblWelcomeBack.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWelcomeBack.setFont(new Font("Tahoma", Font.PLAIN, 25));
-		
+
 		JButton btnLoginAsA = new JButton("Login as a Reader");
 		btnLoginAsA.addMouseListener(new MouseAdapter() {
 			@Override
@@ -110,7 +158,7 @@ public class LoginScreen {
 			}
 		});
 		btnLoginAsA.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JButton btnAcademicRegister = new JButton("Register as an Academic");
 		btnAcademicRegister.addMouseListener(new MouseAdapter() {
 			@Override
