@@ -3,12 +3,12 @@ import java.sql.*;
 import java.util.*;
 
 public class Database {
-	//		private static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	//		private static final String DATABASE = "team022";
+	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+	protected static final String DATABASE = "team022";
 
-	//localhost
-	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-	protected static final String DATABASE = "publishing_system";
+//	//localhost
+//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+//	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -404,9 +404,6 @@ public class Database {
 			preparedStmt.setString(1, email.trim());
 			ResultSet res = preparedStmt.executeQuery();
 
-			int academicID = -1;
-			String dbHash = null;
-			String dbSalt = null;
 			if (res.next())
 				return true;
 			else
@@ -447,7 +444,28 @@ public class Database {
 	}
 
 	public static void main(String[] args) {
+		System.out.println("\nDrivers loaded as properties:");
+		System.out.println(System.getProperty("jdbc.drivers"));
+		System.out.println("\nDrivers loaded by DriverManager:");
+		Enumeration<Driver> list = DriverManager.getDrivers();
+		while (list.hasMoreElements())
+			System.out.println(list.nextElement());
+		System.out.println();
+		
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
 
+			String query = "SHOW TABLES";
+			PreparedStatement preparedStmt = con.prepareStatement(query);
+			ResultSet res = preparedStmt.executeQuery();
+			while(res.next()) {
+				System.out.println(res.getString(1));
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		
 	}
 
 }

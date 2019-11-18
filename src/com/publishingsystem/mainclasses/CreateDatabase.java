@@ -6,14 +6,6 @@ import java.util.*;
 public class CreateDatabase extends Database{
 	private static String[] roles = {"Author", "Reviewer", "Editor"};
 
-	public static String getConnectionName() {
-		return CONNECTION;
-	}
-
-	public static String getDatabaseName() {
-		return DATABASE;
-	}
-
 	public static String createTableAcademics() { 
 		return "CREATE TABLE Academics ("
 				+ "academicID INT PRIMARY KEY AUTO_INCREMENT, "
