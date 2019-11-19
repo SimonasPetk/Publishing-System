@@ -514,11 +514,10 @@ public class Database {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			String query = "SELECT academicID, hash, salt FROM Academics WHERE emailAddress = ?";
+			String query = "SELECT academicID, hash, salt FROM ACADEMICS WHERE emailAddress = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setString(1, email.trim());
 				ResultSet res = preparedStmt.executeQuery();
-				preparedStmt.close();
 				if (res.next())
 					return true;
 				else
@@ -535,7 +534,7 @@ public class Database {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			String query = "SELECT academicID, hash, salt FROM Academics WHERE emailAddress = ?";
+			String query = "SELECT academicID, hash, salt FROM ACADEMICS WHERE emailAddress = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setString(1, email.trim());
 				ResultSet res = preparedStmt.executeQuery();
