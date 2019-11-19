@@ -85,7 +85,7 @@ public class LoginScreen {
 			    	boolean correctPassword = Database.validateCredentials(email, password);
                     if (correctPassword) {
                         JOptionPane.showMessageDialog(null, "Login Successful", "Login", 1);
-                        //new AuthorMainWindow();
+                        new AuthorMainWindow(null);
                         frmLogInScreen.dispose();
                     } else JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
 			    } else JOptionPane.showMessageDialog(null, "Please fill in all fields", "Login", 0);
