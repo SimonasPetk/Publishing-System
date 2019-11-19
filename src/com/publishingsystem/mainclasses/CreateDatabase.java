@@ -385,9 +385,11 @@ public class CreateDatabase extends Database{
 			System.out.println(list.nextElement());
 		System.out.println();
 
-		dropTables();
-		createTables();
-
+		//dropTables();
+		//createTables();
+	
+        printAllRecords("Academic");
+        
 	}
 	
 }

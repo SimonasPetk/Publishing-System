@@ -69,7 +69,6 @@ public class LoginScreen {
 		
 		passwordField = new JPasswordField();
 		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
 		JButton btnLogin = new JButton("Login");
 		btnLogin.addMouseListener(new MouseAdapter() {
 			@Override
@@ -82,7 +81,6 @@ public class LoginScreen {
 			    if (email.isEmpty() || password.isEmpty()) validCredentials = false;
 			    
 			    if (validCredentials) {
-			        
 			        // 3. Check if the generated hash from password is same as stored hash
 			    	boolean correctPassword = Database.validateCredentials(email, password);
                     if (correctPassword) {
@@ -115,7 +113,7 @@ public class LoginScreen {
 		btnAcademicRegister.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				new RegistrationWindow();
+				new RegistrationWindow(Role.AUTHOR);
 			}
 		});
 		btnAcademicRegister.setFont(new Font("Tahoma", Font.PLAIN, 15));

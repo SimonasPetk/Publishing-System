@@ -3,12 +3,14 @@ import java.sql.*;
 import java.util.*;
 
 public class Database {
-	//		private static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	//		private static final String DATABASE = "team022";
+	private static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+	private static final String DATABASE = "team022";
 
+    /*
 	//localhost
 	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
 	protected static final String DATABASE = "publishing_system";
+	*/
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -419,10 +421,10 @@ public class Database {
 
 	public static boolean validateCredentials(String email, String password) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
-			String query = "SELECT academicID, hash, salt FROM Academics WHERE emailAddress = ?";
-			PreparedStatement preparedStmt = con.prepareStatement(query);
-			preparedStmt.setString(1, email.trim());
-			ResultSet res = preparedStmt.executeQuery();
+			String query = "USE team022; SELECT academicID, hash, salt FROM Academics WHERE emailAddress = " + email + ";";
+			System.out.println(query);
+			Statement statement = con.createStatement();
+			ResultSet res = statement.executeQuery(query);
 
 			int academicID = -1;
 			String dbHash = null;
