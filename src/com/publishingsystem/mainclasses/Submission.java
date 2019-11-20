@@ -6,22 +6,11 @@ public class Submission extends Article{
 	private Decision decision;
 	private SubmissionStatus status;
 	private int submissionId;
-	private ArrayList<PDF> versions;
 	
-	public Submission(String title, String summary, int journalId, ArrayList<Author> authors, PDF pdf) {
-		super(title, summary, journalId, authors);
+	public Submission(String title, String summary, String journalName, PDF pdf) {
+		super(title, summary, journalName, pdf);
 		this.status = SubmissionStatus.SUBMITTED;
 		this.reviews = new ArrayList<Review>();
-		this.versions = new ArrayList<PDF>();
-		this.versions.add(pdf);
-	}
-	
-	public void addVersion(PDF pdf) {
-		this.versions.add(pdf);
-	}
-	
-	public ArrayList<PDF> getVersions() {
-		return this.versions;
 	}
 	
 	public void setSubmissionId(int id) {
@@ -51,7 +40,7 @@ public class Submission extends Article{
 	
 	public Review getReview(int reviewerId) {
 		for(Review r : this.reviews) {
-			if(r.getReviewerId() == reviewerId) {
+			if(r.getReviewer().getReviewerId() == reviewerId) {
 				return r;
 			}
 		}
@@ -72,18 +61,6 @@ public class Submission extends Article{
 	}
 
 	public void addReview(Review r) {
-		if(this.reviews.size() < 3)
-			this.reviews.add(r);
-		if(this.reviews.size() == 3) {
-			this.status = SubmissionStatus.REVIEWSRECEIVED;
-		}
-	}
-	
-	public void addResponse(int reviewerId, Response response) {
-		Review r = getReview(reviewerId);
-		r.addResponse(response);
-//		if(numResponses == 3) {
-//			this.status = SubmissionStatus.RESPONSESRECEIVED;
-//		}
+		this.reviews.add(r);
 	}
 }

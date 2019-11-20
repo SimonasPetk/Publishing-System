@@ -2,22 +2,21 @@ package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Review {
-	private int reviewerId;
-	private int submissionId;
+	private Reviewer reviewer;
+	private Submission submission;
 	private String summary;
 	private String typingErrors;
-	private ArrayList<Remark> remarks;
-	private Response response;
+	private ArrayList<Criticism> criticisms;
 	private Verdict verdict;
 	
-	public Review(int reviewerId, int submissionId, String summary, String typingErrors, ArrayList<String> criticisms) {
-		this.reviewerId = reviewerId;
-		this.submissionId = submissionId;
+	public Review(Reviewer reviewer, Submission submission, String summary, String typingErrors, ArrayList<String> criticisms) {
+		this.reviewer = reviewer;
+		this.submission = submission;
 		this.summary = summary;
 		this.typingErrors = typingErrors;
-		this.remarks = new ArrayList<Remark>();
+		this.criticisms = new ArrayList<Criticism>();
 		for(String c : criticisms) {
-			this.remarks.add(new Remark(c));
+			this.criticisms.add(new Criticism(c));
 		}
 	}
 	
@@ -25,12 +24,12 @@ public class Review {
 		this.verdict = v;
 	}
 
-	public int getReviewerId() {
-		return reviewerId;
+	public Reviewer getReviewer() {
+		return reviewer;
 	}
 
-	public int getSubmissionId() {
-		return submissionId;
+	public Submission getSubmission() {
+		return submission;
 	}
 
 	public String getSummary() {
@@ -45,16 +44,8 @@ public class Review {
 		return this.verdict;
 	}
 
-	public ArrayList<Remark> getRemarks() {
-		return this.remarks;
-	}
-	
-	public Response getResponse() {
-		return this.response;
-	}
-	
-	public void addResponse(Response r) {
-		this.response = r;
+	public ArrayList<Criticism> getCriticisms() {
+		return this.criticisms;
 	}
 	
 }

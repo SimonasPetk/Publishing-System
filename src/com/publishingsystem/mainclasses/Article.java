@@ -2,27 +2,36 @@ package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Article {
-	protected ArrayList<Author> authors;
+	protected ArrayList<AuthorOfArticle> authorsOfArticle;
 	protected String title;
 	protected String summary;
 	protected int articleId;
-	protected int journalId;
-	protected int mainAuthorId;
-	protected String pdf;
+	protected String journalName;
+	private ArrayList<PDF> versions;
 	
-	public Article(String title, String summary, int journalId, ArrayList<Author> authors) {
+	public Article(String title, String summary, String journalName, PDF pdf) {
 		this.title = title;
 		this.summary = summary;
-		this.authors = authors;
-		this.journalId = journalId;
+		this.journalName = journalName;
+		this.authorsOfArticle = new ArrayList<AuthorOfArticle>();
+		this.versions = new ArrayList<PDF>();
+		this.versions.add(pdf);
 	}
 	
-	public void setMainAuthorId(int id) {
-		this.mainAuthorId = id;
+	public Article(String title, String summary, String journalName) {
+		this.title = title;
+		this.summary = summary;
+		this.journalName = journalName;
+		this.authorsOfArticle = new ArrayList<AuthorOfArticle>();
+		this.versions = new ArrayList<PDF>();
 	}
 	
-	public int getMainAuthorId() {
-		return this.mainAuthorId;
+	public void addVersion(PDF pdf) {
+		this.versions.add(pdf);
+	}
+	
+	public ArrayList<PDF> getVersions() {
+		return this.versions;
 	}
 
 	
@@ -38,8 +47,8 @@ public class Article {
 		this.summary = summary;
 	}
 	
-	public void setPDF(String pdf) {
-		this.pdf = pdf;
+	public void addPDF(PDF pdf) {
+		this.versions.add(pdf);
 	}
 	
 	public String getTitle() {
@@ -50,20 +59,24 @@ public class Article {
 		return summary;
 	}
 
-	public ArrayList<Author> getAuthors() {
-		return authors;
+	public ArrayList<AuthorOfArticle> getAuthorsOfArticle() {
+		return this.authorsOfArticle;
+	}
+	
+	public void addAuthorOfArticle(AuthorOfArticle a) {
+		this.authorsOfArticle.add(a);
 	}
 
 	public int getArticleId() {
 		return articleId;
 	}
 	
-	public int getJournalId() {
-		return this.journalId;
+	public String getJournalName() {
+		return this.journalName;
 	}
 	
-	public String getPDF() {
-		return this.pdf;
+	public ArrayList<PDF> getPDFVersions() {
+		return this.versions;
 	}
 	
 	

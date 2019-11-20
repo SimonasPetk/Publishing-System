@@ -6,9 +6,9 @@ public class Database {
 	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
 	protected static final String DATABASE = "team022";
 
-	//	//localhost
-	//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-	//	protected static final String DATABASE = "publishing_system";
+	//localhost
+//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+//	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -54,25 +54,6 @@ public class Database {
 					ex.printStackTrace();
 				}
 
-				int roleId = 0;
-				query = "SELECT roleID from ROLES where ROLE = 'Author'";
-				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					ResultSet rs = preparedStmt.executeQuery();
-					if(rs.next())
-						roleId = rs.getInt("roleID");
-				}catch (SQLException ex) {
-					ex.printStackTrace();
-				}
-
-
-				query = "INSERT INTO ACADEMICROLES values (?, ?)";
-				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setInt(1, e.getAcademicId());
-					preparedStmt.setInt(2,roleId);
-					preparedStmt.execute();
-				}catch (SQLException ex) {
-					ex.printStackTrace();
-				}
 			}
 		}catch (SQLException ex) {
 			ex.printStackTrace();
@@ -116,29 +97,6 @@ public class Database {
 					ex.printStackTrace();
 				}
 
-				int roleId = 0;
-				query = "SELECT roleID from ROLES where ROLE = 'Editor'";
-				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					ResultSet rs = preparedStmt.executeQuery();
-					if(rs.next())
-						roleId = rs.getInt("roleID");
-				}catch (SQLException ex) {
-					ex.printStackTrace();
-				}
-
-
-				query = "INSERT INTO ACADEMICROLES values (?, ?)";
-				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setInt(1, a.getAcademicId());
-					preparedStmt.setInt(2, roleId);
-					preparedStmt.execute();
-
-					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from AUTHORS");
-					while(rs.next())
-						a.setAuthorId((Integer.valueOf(rs.getString("last_id"))));
-				}catch (SQLException ex) {
-					ex.printStackTrace();
-				}
 			}
 		}catch (SQLException ex) {
 			ex.printStackTrace();
@@ -161,22 +119,15 @@ public class Database {
 				ex.printStackTrace();
 			}
 
-			for(Editor e : j.getBoardOfEditors()) {
-				if(e instanceof ChiefEditor) {
-					query = "INSERT INTO CHIEFEDITORS values (?, ?)";
-					try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-						preparedStmt.setInt(1, e.getEditorId());
-						preparedStmt.setInt(2, j.getISSN());
-						preparedStmt.execute();
-					}catch (SQLException ex) {
-						ex.printStackTrace();
-					}
-				}
-
-				query = "INSERT INTO EDITOROF values (?, ?)";
+			for(EditorOfJournal e : j.getBoardOfEditors()) {
+				query = "INSERT INTO EDITOROFJOURNAL values (?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setInt(1, e.getEditorId());
+					preparedStmt.setInt(1, e.getEditor().getEditorId());
 					preparedStmt.setInt(2, j.getISSN());
+					if(e.isChiefEditor())
+						preparedStmt.setBoolean(3, true);
+					else
+						preparedStmt.setBoolean(3, false);
 					preparedStmt.execute();
 				}catch (SQLException ex) {
 					ex.printStackTrace();
@@ -194,12 +145,11 @@ public class Database {
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 			//Add submission to article table
-			String query = "INSERT INTO ARTICLES values (null, ?, ?, ?, null)";
+			String query = "INSERT INTO ARTICLES values (null, ?, ?)";
 
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, s.getMainAuthorId());
-				preparedStmt.setString(2, s.getTitle());
-				preparedStmt.setString(3, s.getSummary());
+				preparedStmt.setString(1, s.getTitle());
+				preparedStmt.setString(2, s.getSummary());
 				preparedStmt.execute();
 
 				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ARTICLES");
@@ -223,11 +173,15 @@ public class Database {
 				ex.printStackTrace();
 			}
 
-			for(Author a : s.getAuthors()) {
-				query = "INSERT INTO AUTHOROF values (?, ?)";
+			for(AuthorOfArticle a : s.getAuthorsOfArticle()) {
+				query = "INSERT INTO AUTHOROFARTICLE values (?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setInt(1, a.getAuthorId());
+					preparedStmt.setInt(1, a.getAuthor().getAuthorId());
 					preparedStmt.setInt(2, s.getArticleId());
+					if(a.isMainAuthor())
+						preparedStmt.setBoolean(3, true);
+					else
+						preparedStmt.setBoolean(3, false);
 					preparedStmt.execute();
 				}catch (SQLException ex) {
 					ex.printStackTrace();
@@ -242,24 +196,6 @@ public class Database {
 				preparedStmt.setString(2, pdf.getPdfLink());
 				preparedStmt.setDate(3, pdf.getDate());
 
-				preparedStmt.execute();
-			}catch (SQLException ex) {
-				ex.printStackTrace();
-			}
-		}catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public static void addSubmissionToReview(Reviewer r, Submission s) {
-		try (Connection con = DriverManager.getConnection(CONNECTION)){
-			Statement statement = con.createStatement();
-			statement.execute("USE "+DATABASE+";");
-			statement.close();
-			String query = "INSERT INTO REVIEWEROF values (?, ?)";
-			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, r.getReviewerId());
-				preparedStmt.setInt(2, s.getSubmissionId());
 				preparedStmt.execute();
 			}catch (SQLException ex) {
 				ex.printStackTrace();
@@ -286,26 +222,6 @@ public class Database {
 				}catch (SQLException ex) {
 					ex.printStackTrace();
 				}
-
-				int roleId = 0;
-				query = "SELECT roleID from ROLES where ROLE = 'Reviewer'";
-				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					ResultSet rs = preparedStmt.executeQuery();
-					if(rs.next())
-						roleId = rs.getInt("roleID");
-				}catch (SQLException ex) {
-					ex.printStackTrace();
-				}
-
-
-				query = "INSERT INTO ACADEMICROLES values (?, ?)";
-				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setInt(1, r.getAcademicId());
-					preparedStmt.setInt(2, roleId);
-					preparedStmt.execute();
-				}catch (SQLException ex) {
-					ex.printStackTrace();
-				}
 			}
 		}catch (SQLException ex) {
 			ex.printStackTrace();
@@ -317,11 +233,14 @@ public class Database {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-
+			
+			Reviewer reviewer =  review.getReviewer();
+			Submission submission = review.getSubmission();
+			
 			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, null)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, review.getReviewerId());
-				preparedStmt.setInt(2, review.getSubmissionId());
+				preparedStmt.setInt(1, reviewer.getReviewerId());
+				preparedStmt.setInt(2, submission.getSubmissionId());
 				preparedStmt.setString(3, review.getSummary());
 				preparedStmt.setString(4, review.getTypingErrors());
 
@@ -330,18 +249,18 @@ public class Database {
 				ex.printStackTrace();
 			}
 
-			for(Remark remark : review.getRemarks()) {
-				query = "INSERT INTO REMARKS values (null, ?, ?, ?, null)";
+			for(Criticism c : review.getCriticisms()) {
+				query = "INSERT INTO CRITICISMS values (null, ?, ?, ?, null)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setInt(1, review.getReviewerId());
-					preparedStmt.setInt(2, review.getSubmissionId());
-					preparedStmt.setString(3, remark.getCriticism());
+					preparedStmt.setInt(1, reviewer.getReviewerId());
+					preparedStmt.setInt(2, submission.getSubmissionId());
+					preparedStmt.setString(3, c.getCriticism());
 
 					preparedStmt.execute();
 
-					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REMARKS");
+					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from CRITICISMS");
 					while(rs.next())
-						remark.setRemarkId((Integer.valueOf(rs.getString("last_id"))));
+						c.setCriticismId((Integer.valueOf(rs.getString("last_id"))));
 				}catch (SQLException ex) {
 					ex.printStackTrace();
 				}
@@ -350,19 +269,19 @@ public class Database {
 			query = "SELECT COUNT(*) AS REVIEWS FROM REVIEWS WHERE submissionID = ?";
 			int numReviews = 0;
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, review.getSubmissionId());
+				preparedStmt.setInt(1, submission.getSubmissionId());
 				ResultSet rs = preparedStmt.executeQuery();
 				while(rs.next())
 					numReviews = rs.getInt("REVIEWS");
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
-
+			
 			if(numReviews == 3) {
 				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setString(1, SubmissionStatus.REVIEWSRECEIVED.asString());
-					preparedStmt.setInt(2, review.getSubmissionId());
+					preparedStmt.setInt(2, submission.getSubmissionId());
 
 					preparedStmt.execute();
 				}catch (SQLException ex) {
@@ -375,17 +294,20 @@ public class Database {
 		}
 	}
 
-	public static void setVerdict(Reviewer r, Submission s) {
+	public static void setVerdict(Review r) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
+			
+			Reviewer reviewer =  r.getReviewer();
+			Submission submission = r.getSubmission();
 
 			String query = "UPDATE REVIEWS SET verdict = ? WHERE reviewerID = ? and submissionID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setString(1, s.getReview(r.getReviewerId()).getVerdict().toString());
-				preparedStmt.setInt(2, r.getReviewerId());
-				preparedStmt.setInt(3, s.getSubmissionId());
+				preparedStmt.setString(1, r.getVerdict().toString());
+				preparedStmt.setInt(2, reviewer.getReviewerId());
+				preparedStmt.setInt(3, submission.getSubmissionId());
 
 				preparedStmt.execute();
 			}catch (SQLException ex) {
@@ -400,8 +322,8 @@ public class Database {
 					+ "SUBMISSIONS WHERE REVIEWS.submissionID = ? AND SUBMISSIONS.submissionID = ? "
 					+ "AND verdict IS NOT NULL";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, s.getSubmissionId());
-				preparedStmt.setInt(2, s.getSubmissionId());
+				preparedStmt.setInt(1, submission.getSubmissionId());
+				preparedStmt.setInt(2, submission.getSubmissionId());
 				ResultSet rs = preparedStmt.executeQuery();
 				while(rs.next()) {
 					numVerdicts = rs.getInt("REVIEWS");
@@ -415,7 +337,7 @@ public class Database {
 				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
 				try(PreparedStatement ps = con.prepareStatement(query)){
 					ps.setString(1, SubmissionStatus.INITIALVERDICT.asString());
-					ps.setInt(2, s.getSubmissionId());
+					ps.setInt(2, submission.getSubmissionId());
 					ps.execute();
 				}catch (SQLException ex) {
 					ex.printStackTrace();
@@ -425,7 +347,7 @@ public class Database {
 				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
 				try(PreparedStatement ps = con.prepareStatement(query)){
 					ps.setString(1, SubmissionStatus.FINALVERDICT.asString());
-					ps.setInt(2, s.getSubmissionId());
+					ps.setInt(2, submission.getSubmissionId());
 					ps.execute();
 				}catch (SQLException ex) {
 					ex.printStackTrace();
@@ -437,38 +359,32 @@ public class Database {
 		}
 	}
 
-	public static void addResponse(Reviewer r, Submission s) {
+	public static void addResponse(Review r) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			Review review = s.getReview(r.getReviewerId());
+			Submission submission = r.getSubmission();
 
-			String query = "INSERT INTO RESPONSES VALUES (?, ?)";
+			boolean allCriticismsAnswered = false;
+			String query = "SELECT COUNT(*) AS ANSWERSLEFT FROM CRITICISMS WHERE submissionID = ? AND answer = null";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, r.getReviewerId());
-				preparedStmt.setInt(2, s.getSubmissionId());
-				preparedStmt.execute();
-			}catch (SQLException ex) {
-				ex.printStackTrace();
-			}
-
-			int numResponses = 0;
-			query = "SELECT COUNT(*) AS RESPONSES FROM RESPONSES WHERE submissionID = ?";
-			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, review.getSubmissionId());
+				preparedStmt.setInt(1, submission.getSubmissionId());
 				ResultSet rs = preparedStmt.executeQuery();
-				while(rs.next())
-					numResponses = rs.getInt("RESPONSES");
+				while(rs.next()) {
+					int numAnswersLeft = rs.getInt("ANSWERSLEFT");
+					if(numAnswersLeft == 0)
+						allCriticismsAnswered = true;
+				}
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
 
-			if(numResponses == 3) {
+			if(allCriticismsAnswered) {
 				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setString(1, SubmissionStatus.RESPONSESRECEIVED.asString());
-					preparedStmt.setInt(2, review.getSubmissionId());
+					preparedStmt.setInt(2, submission.getSubmissionId());
 
 					preparedStmt.execute();
 				}catch (SQLException ex) {
@@ -476,13 +392,12 @@ public class Database {
 				}
 			}
 
-			ArrayList<String> answers = review.getResponse().getAnswers();
-			ArrayList<Remark> remarks = review.getRemarks();
-			for(int i = 0; i < remarks.size(); i++) {
-				query = "UPDATE REMARKS SET ANSWER = ? WHERE remarkID = ?";
+			ArrayList<Criticism> criticisms = r.getCriticisms();
+			for(Criticism c : criticisms) {
+				query = "UPDATE CRITICISMS SET ANSWER = ? WHERE criticismID = ?";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setString(1, answers.get(i));
-					preparedStmt.setInt(2, remarks.get(i).getRemarkId());
+					preparedStmt.setString(1, c.getAnswer());
+					preparedStmt.setInt(2, c.getCriticismId());
 
 					preparedStmt.execute();
 				}catch (SQLException ex) {
@@ -490,20 +405,28 @@ public class Database {
 				}
 			}
 
-			ArrayList<PDF> pdfs = s.getVersions();
-			PDF pdf = pdfs.get(pdfs.size()-1);
-			query = "INSERT INTO PDF values (null, ?, ?, ?)";
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void addRevisedSubmission(PDF pdf) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+
+			Article a = pdf.getArticle();
+			String query = "INSERT INTO PDF values (null, ?, ?, ?)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, s.getSubmissionId());
+				preparedStmt.setInt(1, a.getArticleId());
 				preparedStmt.setString(2, pdf.getPdfLink());
 				preparedStmt.setDate(3, pdf.getDate());
-
+	
 				preparedStmt.execute();
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
-
-
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}

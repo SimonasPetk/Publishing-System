@@ -42,16 +42,9 @@ public class CreateDatabase extends Database{
 	public static String createTablePDF() {
 		return "CREATE TABLE PDF ("
 				+ "pdfID INT PRIMARY KEY AUTO_INCREMENT, "
-				+ "submissionID INT REFERENCES SUBMISSION(submissionID),"
+				+ "articleID INT REFERENCES ARTICLE(articleID),"
 				+ "pdfLink TEXT, "
 				+ "uploadDate DATE)";
-	}
-	
-	public static String createTableChiefEditors(){
-		return "CREATE TABLE CHIEFEDITORS ("
-				+ "editorID INT references EDITORS(editorID),"
-				+ "ISSN INT references JOURNALS(ISSN),"
-				+ "PRIMARY KEY (editorID, ISSN))";
 	}
 
 	public static String createTableEditors(){
@@ -60,10 +53,11 @@ public class CreateDatabase extends Database{
 				+ "academicID INT references ACADEMICS(academicID))";
 	}
 	
-	public static String createTableEditorOf(){
-		return "CREATE TABLE EDITOROF ("
+	public static String createTableEditorOfJournal(){
+		return "CREATE TABLE EDITOROFJOURNAL ("
 				+ "editorID INT REFERENCES EDITORS(editorID),"
 				+ "ISSN INT REFERENCES JOURNALS(ISSN),"
+				+ "mainEditor BOOLEAN, "
 				+ "PRIMARY KEY (editorID, ISSN))";
 	}
 	
@@ -77,10 +71,8 @@ public class CreateDatabase extends Database{
 	public static String createTableArticles(){
 		return "CREATE TABLE ARTICLES ("
 				+ "articleID INT PRIMARY KEY AUTO_INCREMENT,"
-				+ "mainAuthorID INT REFERENCES AUTHORS(authorID),"
 				+ "title TEXT,"
-				+ "summary TEXT,"
-				+ "pdfId INT references PDF(pdfId))";
+				+ "summary TEXT)";
 	}
 	
 	public static String createTableSubmissions() {
@@ -96,10 +88,12 @@ public class CreateDatabase extends Database{
 				+ "academicID INT REFERENCES ACADEMICS(academicID))";
 	}
 	
-	public static String createTableAuthorOf(){
-		return "CREATE TABLE AUTHOROF ("
+	public static String createTableAuthorOfArticle(){
+		return "CREATE TABLE AUTHOROFARTICLE ("
 				+ "authorID INT REFERENCES AUTHORS(authorID),"
-				+ "articleID INT REFERENCES ARTICLES(articleID))";
+				+ "articleID INT REFERENCES ARTICLES(articleID), "
+				+ "mainAuthor BOOLEAN, "
+				+ "PRIMARY KEY (authorID, articleID))";
 	}
 
 	public static String createTableReviewers() {
@@ -108,12 +102,6 @@ public class CreateDatabase extends Database{
 				+ "academicID INT REFERENCES ACADEMIC(academicID))";
 	}
 	
-	public static String createTableReviewerOf() {
-		return "CREATE TABLE REVIEWEROF ("
-				+ "reviewerID INT REFERENCES REVIEWERS(reviewerID),"
-				+ "submissionID INT REFERENCES SUBMISSIONS(submissionID))";
-	}
-
 	public static String createTableReviews() {
 		return "CREATE TABLE REVIEWS ("
 				+ "reviewerID INT REFERENCES REVIEWERS(academicID),"
@@ -124,43 +112,13 @@ public class CreateDatabase extends Database{
 				+ "PRIMARY KEY (submissionID, reviewerID))";
 	}
 
-	public static String createTableResponses() {
-		return "CREATE TABLE RESPONSES ("
-				+ "reviewerID INT REFERENCES REVIEWERS(reviewerID), "
-				+ "submissionID INT REFERENCES SUBMISSIONS(submissionID), "
-				+ "PRIMARY KEY (submissionID, reviewerID))";
-	}
-
-	public static String createTableRemarks() {
-		return "CREATE TABLE REMARKS ("
-				+ "remarkID INT PRIMARY KEY AUTO_INCREMENT, "
+	public static String createTableCriticisms() {
+		return "CREATE TABLE CRITICISMS ("
+				+ "criticismID INT PRIMARY KEY AUTO_INCREMENT, "
 				+ "reviewerID INT REFERENCES REVIEWER(reviewerID), "
-				+ "articleID INT REFERENCES SUBMISSION(submissionID), "
+				+ "submissionID INT REFERENCES SUBMISSION(submissionID), "
 				+ "criticism TEXT,"
 				+ "answer TEXT)";
-	}
-	
-	public static String createTableAcademicRoles() {
-		return "CREATE TABLE ACADEMICROLES ("
-				+ "academicID INT REFERENCES ACADEMICS(academicID), "
-				+ "roleID INT REFERENCES ROLES(roleID))";
-	}
-	
-	public static String createTableRoles() {
-		return "CREATE TABLE ROLES("
-				+ "roleID INT PRIMARY KEY AUTO_INCREMENT, "
-				+ "role TEXT)";
-	}
-	
-	public static String fillTableRoles() {
-		String insert = "INSERT INTO ROLES VALUES";
-		for(int i = 0; i < roles.length; i++) {
-			insert+= "(null,'"+ roles[i] + "')";
-			if(i < roles.length-1)
-				insert+=",";
-		}
-		insert+=";";
-		return insert;
 	}
 
 	public static void printAllRecords(String tblName) {
@@ -239,18 +197,14 @@ public class CreateDatabase extends Database{
 			res = statement.executeQuery("SHOW TABLES LIKE 'PDF';");
 			if(!res.next())
 				statement.execute(createTablePDF());
-			
-			res = statement.executeQuery("SHOW TABLES LIKE 'CHIEFEDITORS';");
-			if(!res.next())
-				statement.execute(createTableChiefEditors());
 
 			res = statement.executeQuery("SHOW TABLES LIKE 'EDITORS';");
 			if(!res.next())
 				statement.execute(createTableEditors());
 			
-			res = statement.executeQuery("SHOW TABLES LIKE 'EDITOROF';");
+			res = statement.executeQuery("SHOW TABLES LIKE 'EDITOROFJOURNAL';");
 			if(!res.next())
-				statement.execute(createTableEditorOf());
+				statement.execute(createTableEditorOfJournal());
 
 			res = statement.executeQuery("SHOW TABLES LIKE 'PUBLISHEDARTICLES';");
 			if(!res.next())
@@ -269,40 +223,21 @@ public class CreateDatabase extends Database{
 			if(!res.next())
 				statement.execute(createTableAuthors());
 			
-			res = statement.executeQuery("SHOW TABLES LIKE 'AUTHOROF';");
+			res = statement.executeQuery("SHOW TABLES LIKE 'AUTHOROFARTICLE';");
 			if(!res.next())
-				statement.execute(createTableAuthorOf());
+				statement.execute(createTableAuthorOfArticle());
 
 			res = statement.executeQuery("SHOW TABLES LIKE 'REVIEWERS';");
 			if(!res.next())
 				statement.execute(createTableReviewers());
-			
-			res = statement.executeQuery("SHOW TABLES LIKE 'REVIEWEROF';");
-			if(!res.next())
-				statement.execute(createTableReviewerOf());
 
 			res = statement.executeQuery("SHOW TABLES LIKE 'REVIEWS';");
 			if(!res.next())
 				statement.execute(createTableReviews());
 
-			res = statement.executeQuery("SHOW TABLES LIKE 'RESPONSES';");
+			res = statement.executeQuery("SHOW TABLES LIKE 'CRITICISMS';");
 			if(!res.next())
-				statement.execute(createTableResponses());
-
-			res = statement.executeQuery("SHOW TABLES LIKE 'REMARKS';");
-			if(!res.next())
-				statement.execute(createTableRemarks());
-			
-			res = statement.executeQuery("SHOW TABLES LIKE 'ROLES';");
-			if(!res.next()) {
-				statement.execute(createTableRoles());
-				statement.execute(fillTableRoles());
-			}
-			
-			res = statement.executeQuery("SHOW TABLES LIKE 'ACADEMICROLES';");
-			if(!res.next())
-				statement.execute(createTableAcademicRoles());
-
+				statement.execute(createTableCriticisms());
 
 		}catch (SQLException ex) {
 			ex.printStackTrace();
@@ -318,10 +253,10 @@ public class CreateDatabase extends Database{
 			System.out.println(list.nextElement());
 		System.out.println();
 
-		//dropTables();
-		//createTables();
+		dropTables();
+		createTables();
 	
-        printAllRecords("Academic");
+//        printAllRecords("Academic");
         
 	}
 	
