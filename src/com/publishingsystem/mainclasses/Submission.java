@@ -1,16 +1,28 @@
 package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
-public class Submission extends Article{
+public class Submission{
 	private ArrayList<Review> reviews;
 	private Decision decision;
 	private SubmissionStatus status;
 	private int submissionId;
+	private Article article;
 	
-	public Submission(String title, String summary, String journalName, PDF pdf) {
-		super(title, summary, journalName, pdf);
+	public Submission(Article a) {
+		this.article = a;
 		this.status = SubmissionStatus.SUBMITTED;
 		this.reviews = new ArrayList<Review>();
+	}
+	
+	public Submission(Article a, int submissionId) {
+		this.submissionId = submissionId;
+		this.article = a;
+		this.status = SubmissionStatus.SUBMITTED;
+		this.reviews = new ArrayList<Review>();
+	}
+	
+	public Article getArticle() {
+		return this.article;
 	}
 	
 	public void setSubmissionId(int id) {
@@ -36,28 +48,6 @@ public class Submission extends Article{
 	
 	public ArrayList<Review> getReviews() {
 		return this.reviews;
-	}
-	
-	public Review getReview(int reviewerId) {
-		for(Review r : this.reviews) {
-			if(r.getReviewer().getReviewerId() == reviewerId) {
-				return r;
-			}
-		}
-		return null;
-	}
-
-	public void setVerdict(int reviewerId, Verdict v) {
-		
-		Review r = getReview(reviewerId);
-		r.setVerdict(v);
-		
-//		if(numVerdicts == 3) {
-//			if(this.status.equals(SubmissionStatus.REVIEWSRECEIVED))
-//				this.status = SubmissionStatus.INITIALVERDICT;
-//			else if(this.status.equals(SubmissionStatus.RESPONSESRECEIVED))
-//				this.status = SubmissionStatus.FINALVERDICT;
-//		}
 	}
 
 	public void addReview(Review r) {

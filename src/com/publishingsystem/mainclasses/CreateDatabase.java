@@ -71,6 +71,7 @@ public class CreateDatabase extends Database{
 	public static String createTableArticles(){
 		return "CREATE TABLE ARTICLES ("
 				+ "articleID INT PRIMARY KEY AUTO_INCREMENT,"
+				+ "ISSN INT REFERENCES JOURNAL(ISSN), "
 				+ "title TEXT,"
 				+ "summary TEXT)";
 	}

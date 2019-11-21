@@ -56,7 +56,7 @@ public class Editor extends Academic{
 	
 	public void registerEditors(Journal j, ArrayList<Editor> editors) {
 		for(Editor e : editors) {
-			EditorOfJournal editorOfJournal = new EditorOfJournal(j, e);
+			EditorOfJournal editorOfJournal = new EditorOfJournal(j, e, false);
 			e.addEditorOfJournal(editorOfJournal);
 			j.addEditorToBoard(editorOfJournal);
 		}

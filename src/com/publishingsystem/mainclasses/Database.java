@@ -23,8 +23,21 @@ public class Database {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
+			
 			for(Editor e : editors) {
-				String query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
+				boolean academicExists = false;
+				String query = "SELECT 1 FROM ACADEMICS WHERE emailAddress = ?";
+				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+					preparedStmt.setString(1, e.getEmailId());
+					ResultSet res = preparedStmt.executeQuery();
+					if (res.next())
+						academicExists = true;
+				}catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+				if(academicExists)
+					continue;
+				query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setString(1, e.getTitle());
 					preparedStmt.setString(2, e.getForename());
@@ -66,7 +79,20 @@ public class Database {
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 			for(Author a : authors) {
-				String query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
+				boolean academicExists = false;
+				String query = "SELECT 1 FROM ACADEMICS WHERE emailAddress = ?";
+				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+					preparedStmt.setString(1, a.getEmailId());
+					ResultSet res = preparedStmt.executeQuery();
+					if (res.next())
+						academicExists = true;
+				}catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+				if(academicExists)
+					continue;
+				
+				query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setString(1, a.getTitle());
 					preparedStmt.setString(2, a.getForename());
@@ -139,22 +165,24 @@ public class Database {
 		}
 	}
 
-	public static void addSubmission(Submission s) {
+	public static void addSubmission(Article article) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
+			
 			//Add submission to article table
-			String query = "INSERT INTO ARTICLES values (null, ?, ?)";
+			String query = "INSERT INTO ARTICLES values (null, ?, ?, ?)";
 
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setString(1, s.getTitle());
-				preparedStmt.setString(2, s.getSummary());
+				preparedStmt.setInt(1, article.getJournal().getISSN());
+				preparedStmt.setString(2, article.getTitle());
+				preparedStmt.setString(3, article.getSummary());
 				preparedStmt.execute();
 
 				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ARTICLES");
 				while(rs.next())
-					s.setArticleId(Integer.valueOf(rs.getString("last_id")));
+					article.setArticleId(Integer.valueOf(rs.getString("last_id")));
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
@@ -162,22 +190,22 @@ public class Database {
 			query = "INSERT INTO SUBMISSIONS values (null, ?, ?)";
 
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, s.getArticleId());
+				preparedStmt.setInt(1, article.getArticleId());
 				preparedStmt.setString(2, SubmissionStatus.SUBMITTED.asString());
 				preparedStmt.execute();
 
 				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from SUBMISSIONS");
 				while(rs.next())
-					s.setSubmissionId(Integer.valueOf(rs.getString("last_id")));
+					article.getSubmission().setSubmissionId(Integer.valueOf(rs.getString("last_id")));
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
 
-			for(AuthorOfArticle a : s.getAuthorsOfArticle()) {
+			for(AuthorOfArticle a : article.getAuthorsOfArticle()) {
 				query = "INSERT INTO AUTHOROFARTICLE values (?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, a.getAuthor().getAuthorId());
-					preparedStmt.setInt(2, s.getArticleId());
+					preparedStmt.setInt(2, article.getArticleId());
 					if(a.isMainAuthor())
 						preparedStmt.setBoolean(3, true);
 					else
@@ -188,11 +216,11 @@ public class Database {
 				}
 			}
 
-			ArrayList<PDF> pdfs = s.getVersions();
+			ArrayList<PDF> pdfs = article.getVersions();
 			PDF pdf = pdfs.get(pdfs.size()-1);
 			query = "INSERT INTO PDF values (null, ?, ?, ?)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, s.getSubmissionId());
+				preparedStmt.setInt(1, article.getSubmission().getSubmissionId());
 				preparedStmt.setString(2, pdf.getPdfLink());
 				preparedStmt.setDate(3, pdf.getDate());
 
@@ -228,13 +256,12 @@ public class Database {
 		}
 	}
 
-	public static void addReview(Review review) {
+	public static void addReview(Reviewer reviewer, Review review) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 			
-			Reviewer reviewer =  review.getReviewer();
 			Submission submission = review.getSubmission();
 			
 			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, null)";
@@ -294,13 +321,12 @@ public class Database {
 		}
 	}
 
-	public static void setVerdict(Review r) {
+	public static void setVerdict(Reviewer reviewer, Review r) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 			
-			Reviewer reviewer =  r.getReviewer();
 			Submission submission = r.getSubmission();
 
 			String query = "UPDATE REVIEWS SET verdict = ? WHERE reviewerID = ? and submissionID = ?";
@@ -431,13 +457,26 @@ public class Database {
 			ex.printStackTrace();
 		}
 	}
+	
+	public static void acceptArticle(Submission s) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			
+			
+			
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
 
 	public static boolean academicExists(String email) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			String query = "SELECT academicID, hash, salt FROM ACADEMICS WHERE emailAddress = ?";
+			String query = "SELECT 1 FROM ACADEMICS WHERE emailAddress = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setString(1, email.trim());
 				ResultSet res = preparedStmt.executeQuery();
@@ -445,6 +484,8 @@ public class Database {
 					return true;
 				else
 					return false;
+			}catch (SQLException ex) {
+				ex.printStackTrace();
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();

@@ -9,6 +9,11 @@ public class Criticism {
 		this.criticism = criticism;
 	}
 	
+	public Criticism(String criticism, String answer) {
+		this.criticism = criticism;
+		this.answer = answer;
+	}
+	
 	public int getCriticismId() {
 		return criticismId;
 	}

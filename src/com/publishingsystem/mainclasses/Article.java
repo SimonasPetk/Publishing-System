@@ -2,28 +2,38 @@ package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Article {
-	protected ArrayList<AuthorOfArticle> authorsOfArticle;
-	protected String title;
-	protected String summary;
-	protected int articleId;
-	protected String journalName;
+	private ArrayList<AuthorOfArticle> authorsOfArticle;
+	private String title;
+	private String summary;
+	private int articleId;
+	private Journal journal;
+	private Submission submission;
 	private ArrayList<PDF> versions;
 	
-	public Article(String title, String summary, String journalName, PDF pdf) {
+	public Article(String title, String summary, Journal journal, PDF pdf) {
 		this.title = title;
 		this.summary = summary;
-		this.journalName = journalName;
+		this.journal = journal;
 		this.authorsOfArticle = new ArrayList<AuthorOfArticle>();
 		this.versions = new ArrayList<PDF>();
 		this.versions.add(pdf);
 	}
 	
-	public Article(String title, String summary, String journalName) {
+	public Article(int articleId, String title, String summary, Journal journal) {
+		this.articleId = articleId;
 		this.title = title;
 		this.summary = summary;
-		this.journalName = journalName;
+		this.journal = journal;
 		this.authorsOfArticle = new ArrayList<AuthorOfArticle>();
 		this.versions = new ArrayList<PDF>();
+	}
+	
+	public void submit(Submission s) {
+		this.submission = s;
+	}
+	
+	public Submission getSubmission() {
+		return this.submission;
 	}
 	
 	public void addVersion(PDF pdf) {
@@ -71,8 +81,8 @@ public class Article {
 		return articleId;
 	}
 	
-	public String getJournalName() {
-		return this.journalName;
+	public Journal getJournal() {
+		return this.journal;
 	}
 	
 	public ArrayList<PDF> getPDFVersions() {

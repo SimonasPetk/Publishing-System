@@ -5,15 +5,10 @@ public class AuthorOfArticle {
 	private Author author;
 	private boolean mainAuthor;
 	
-	public AuthorOfArticle(Article article, Author author) {
-		this.article = article;
-		this.author = author;
-	}
-	
 	public AuthorOfArticle(Article article, Author author, boolean mainAuthor) {
 		this.article = article;
 		this.author = author;
-		this.mainAuthor = true;
+		this.mainAuthor = mainAuthor;
 	}
 
 	public Article getArticle() {

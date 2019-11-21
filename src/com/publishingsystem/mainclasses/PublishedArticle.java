@@ -8,7 +8,7 @@ public class PublishedArticle extends Article{
 	private int editionNumber;
 	
 	public PublishedArticle(Article a, String pageRange, String journalName, int editionNumber) {
-		super(a.getTitle(), a.getSummary(), a.getJournalName());
+		super(a.getArticleId(), a.getTitle(), a.getSummary(), a.getJournal());
 		this.pageRange = pageRange;
 		this.editionNumber = editionNumber;
 	}

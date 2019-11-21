@@ -7,15 +7,10 @@ public class EditorOfJournal {
 	private Editor editor;
 	private boolean chiefEditor;
 	
-	public EditorOfJournal(Journal j, Editor e) {
-		this.journal = j;
-		this.editor = e;
-	}
-	
 	public EditorOfJournal(Journal j, Editor e, boolean chiefEditor) {
 		this.journal = j;
 		this.editor = e;
-		this.chiefEditor = true;
+		this.chiefEditor = chiefEditor;
 	}
 	
 	public Journal getJournal() {

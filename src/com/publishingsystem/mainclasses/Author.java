@@ -3,12 +3,16 @@ import java.util.ArrayList;
 
 public class Author extends Academic{
 	private ArrayList<AuthorOfArticle> authorOfArticles;
-	private ArrayList<Submission> submissions;
 	private int authorId;
 	
 	public Author(String title ,String forename, String surname, String emailId, String university, Hash hash) {
 		super(title, forename, surname, emailId, university, hash);
-		submissions = new ArrayList<Submission>();
+		authorOfArticles = new ArrayList<AuthorOfArticle>();
+	}
+	
+	public Author(int authorId, String title ,String forename, String surname, String emailId, String university, Hash hash) {
+		super(title, forename, surname, emailId, university, hash);
+		this.authorId = authorId;
 		authorOfArticles = new ArrayList<AuthorOfArticle>();
 	}
 	
@@ -20,10 +24,6 @@ public class Author extends Academic{
 		return this.authorId;
 	}
 
-	public ArrayList<Submission> getSubmissions() {
-		return this.submissions;
-	}
-	
 	public SubmissionStatus getSubmissionStatus(Submission submission) {
 		return submission.getStatus();
 	}
@@ -36,18 +36,22 @@ public class Author extends Academic{
 		this.authorOfArticles.add(a);
 	}
 	
-	//Main Author
-	public void submit(Submission s) {
-		AuthorOfArticle authorOfArticle = new AuthorOfArticle(s, this, true);
-		this.authorOfArticles.add(authorOfArticle);
-		s.addAuthorOfArticle(authorOfArticle);
-		
-		this.submissions.add(s);
+	public ArrayList<AuthorOfArticle> getAuthorOfArticles(){
+		return this.authorOfArticles;
 	}
 	
-	public void submitRevisedVersion(Submission s, PDF pdf) {
-		s.addVersion(pdf);
-		pdf.setArticle(s);
+	//Main Author
+	public void submit(Article article) {
+		AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, this, true);
+		Submission submission = new Submission(article);
+		authorOfArticle.getArticle().submit(submission);
+		this.authorOfArticles.add(authorOfArticle);
+		article.addAuthorOfArticle(authorOfArticle);
+	}
+	
+	public void submitRevisedVersion(Article a, PDF pdf) {
+		a.addVersion(pdf);
+		pdf.setArticle(a);
 	}
 	
 	public void respond(Review review, ArrayList<String> answers) {
@@ -59,7 +63,7 @@ public class Author extends Academic{
 	
 	public void registerCoAuthors(Article article, ArrayList<Author> coauthors) {
 		for(Author author : coauthors) {
-			AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, author);
+			AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, author, false);
 			author.addAuthorOfArticle(authorOfArticle);
 			article.addAuthorOfArticle(authorOfArticle);
 		}
