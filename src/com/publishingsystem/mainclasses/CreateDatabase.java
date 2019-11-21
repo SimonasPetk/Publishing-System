@@ -27,16 +27,16 @@ public class CreateDatabase extends Database{
 
 	public static String createTableVolumes() {
 		return "CREATE TABLE VOLUMES ("
-				+ "volNum INT PRIMARY KEY,"
+				+ "volNum INT PRIMARY KEY AUTO_INCREMENT,"
 				+ "year DATE, "
 				+ "ISSN INT REFERENCES JOURNALS(ISSN))";
 	}
 
 	public static String createTableEditions() {
 		return "CREATE TABLE EDITIONS ("
+				+ "edNum INT PRIMARY KEY AUTO_INCREMENT, "
 				+ "volNum INT REFERENCES VOLUMES(volNum), "
-				+ "month DATE, "
-				+ "edNum INT PRIMARY KEY)";
+				+ "month DATE)";
 	}
 
 	public static String createTablePDF() {
@@ -57,7 +57,7 @@ public class CreateDatabase extends Database{
 		return "CREATE TABLE EDITOROFJOURNAL ("
 				+ "editorID INT REFERENCES EDITORS(editorID),"
 				+ "ISSN INT REFERENCES JOURNALS(ISSN),"
-				+ "mainEditor BOOLEAN, "
+				+ "ChiefEditor BOOLEAN, "
 				+ "PRIMARY KEY (editorID, ISSN))";
 	}
 	

@@ -10,6 +10,12 @@ public class Editor extends Academic{
 		super(title, forename, surname, emailId, university, hash);
 		this.editorOfJournals = new ArrayList<EditorOfJournal>();
 	}
+	
+	public Editor(int editorId, String title, String forename, String surname, String emailId, String university, Hash hash) {
+		super(title, forename, surname, emailId, university, hash);
+		this.editorOfJournals = new ArrayList<EditorOfJournal>();
+		this.editorId = editorId;
+	}
 
 	public void setEditorId(int id) {
 		this.editorId = id;
