@@ -555,7 +555,7 @@ public class Database {
 					password = ""; //Delete password by setting it to an empty string
 					return newHash.getHash().equals(dbHash);
 				}
-			}catch (SQLException ex) {
+			} catch (SQLException ex) {
 				ex.printStackTrace();
 			}
 		} catch (SQLException ex) {

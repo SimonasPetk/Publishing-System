@@ -321,7 +321,7 @@ public class CreateDatabase extends Database{
 		//dropTables();
 		//createTables();
 	
-        printAllRecords("Academic");
+        printAllRecords("JOURNALS");
         
 	}
 	

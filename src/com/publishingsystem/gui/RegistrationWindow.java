@@ -122,7 +122,7 @@ public class RegistrationWindow {
 		btnRegister.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				// 1. Get entered details
+				// Get entered details
 			    String title = comboTitle.getSelectedItem().toString();
 			    String forenames = txtfldForenames.getText().trim();
 			    String surname = txtfldSurname.getText().trim();
@@ -130,15 +130,15 @@ public class RegistrationWindow {
 			    String email = txtfldEmail.getText();
 			    String password = new String(pwdfldPassword.getPassword());
 			    
-	            // 2. Calculate password hash and salt
+	            // Calculate password hash and salt
                 Hash pwdHash = new Hash(password);
 
-			    // 3. Validate entered details
+			    // Validate entered details
 			    boolean validCredentials = true;
 			    if (title == " " || forenames.isEmpty() || surname.isEmpty() || university.isEmpty() || email.isEmpty() || password.isEmpty()) {
                     validCredentials = false;
                     JOptionPane.showMessageDialog(null, "Please fill in all of the fields", "Registration Form", 0);
-			    }
+                }
 			    if (validCredentials) {
 			        char[] characters = (forenames + surname + university).toCharArray();
 			        int i = 0;
@@ -148,9 +148,12 @@ public class RegistrationWindow {
 			        }
                     if (!validCredentials) JOptionPane.showMessageDialog(null, "Names must only contain letters", "Registration Form", 0);
 			    }
+			    
+			    // Add academic's details to database if entered details are valid
 			    if (!Database.academicExists(email)) {
-			    	// 4. Add academic's details to database if entered details are valid
-			    	switch(r) {
+                    JOptionPane.showMessageDialog(null, "Registration Successful", "Registration Form", 1);
+                    frmRegistrationForm.dispose();
+			        switch(r) {
 			    		case AUTHOR:
 			    			Author author = new Author(title, forenames, surname, university, email, pwdHash);
 			    			new SubmitArticle(author);
@@ -164,8 +167,6 @@ public class RegistrationWindow {
 			    			break;
 			    		default:
 			    	}
-			        JOptionPane.showMessageDialog(null, "Registration Successful", "Registration Form", 1);
-			        frmRegistrationForm.dispose();
 		        }else {
 		        	JOptionPane.showMessageDialog(null, "Email address already in use", "Registration Form", 0);
 		        }
