@@ -2,22 +2,33 @@ package com.publishingsystem.mainclasses;
 import java.sql.Date;
 
 public class PDF {
-	private Article article;
+	private Submission submission;
 	private String pdfLink;
 	private String content;
 	private Date date;
-	
-	public PDF(String pdfLink, Date date) {
+	private int pdfId;
+
+	public PDF(int pdfId, String pdfLink, Date date, Submission s) {
+		this.pdfId = pdfId;
 		this.pdfLink = pdfLink;
 		this.date = date;
+		this.submission = s;
 	}
 	
-	public void setArticle(Article a) {
-		this.article = a;
+	public int getPdfId() {
+		return pdfId;
+	}
+	
+	public void setPdfId(int pdfId) {
+		this.pdfId = pdfId;
 	}
 
-	public Article getArticle() {
-		return article;
+	public void setSubmission(Submission s) {
+		this.submission = s;
+	}
+
+	public Submission getSubmission() {
+		return this.submission;
 	}
 
 	public String getPdfLink() {

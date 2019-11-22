@@ -5,11 +5,13 @@ public class Reviewer extends Academic{
 	private ArrayList<Review> reviews;
 	private int reviewerId;
 	
-	public Reviewer(String title ,String forename, String surname, String emailId, String university, int reviewerId, Hash hash) {
+	public Reviewer(int reviewerId, String title ,String forename, String surname, String emailId, String university, Hash hash) {
 		super(title, forename, surname, emailId, university, hash);
 		this.reviews = new ArrayList<Review>();
+		this.reviewerId = reviewerId;
 	}
 	
+	//---POSSIBLY DELETE LATER---
 	public Reviewer(Author a) {
 		super(a.getTitle(), a.getForename(), a.getSurname(), a.getEmailId(), a.getUniversity(), a.getHash());
 		setAcademicId(a.getAcademicId());

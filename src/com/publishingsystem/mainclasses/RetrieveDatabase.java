@@ -107,10 +107,8 @@ public class RetrieveDatabase extends Database{
 						author = new Author(res.getInt("authorID"), title, forename, surname, emailId, university, null);
 					Journal journal = new Journal(res.getInt("ISSN"), res.getString("NAME"), res.getDate("dateOfPublication"));
 					Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), journal);
-					boolean mainAuthor = res.getBoolean("MAINAUTHOR");
-					if(mainAuthor)
-						article.submit(new Submission(article, res.getInt("SUBMISSIONID")));
-					AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, author, mainAuthor);
+					article.submit(new Submission( res.getInt("SUBMISSIONID"), article, SubmissionStatus.valueOf(res.getString("STATUS")), null));
+					AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, author, res.getBoolean("MAINAUTHOR"));
 					article.addAuthorOfArticle(authorOfArticle);
 					author.addAuthorOfArticle(authorOfArticle);
 				}
@@ -130,7 +128,7 @@ public class RetrieveDatabase extends Database{
 							int reviewerID = reviewRes.getInt("REVIEWERID");
 							for(AuthorOfArticle aoa : author.getAuthorOfArticles()) {
 								Submission s = aoa.getArticle().getSubmission();
-								if(s != null) {
+								if(aoa.isMainAuthor()) {
 									query = "SELECT CRITICISMID, CRITICISM, ANSWER FROM CRITICISMS WHERE SUBMISSIONID = ? AND REVIEWERID = ?";
 									try(PreparedStatement preparedStmt2 = con.prepareStatement(query)){
 										preparedStmt2.setInt(1, s.getSubmissionId());
@@ -140,7 +138,7 @@ public class RetrieveDatabase extends Database{
 										while(crticismRes.next()) {
 											criticisms.add(new Criticism(crticismRes.getString("CRITICISM"), crticismRes.getString("ANSWER")));
 										}
-										Review review = new Review(s, reviewRes.getString("SUMMARY"), reviewRes.getString("TYPINGERRORS"), criticisms);
+										Review review = new Review(null, s, reviewRes.getString("SUMMARY"), reviewRes.getString("TYPINGERRORS"), criticisms);
 										s.addReview(review);
 									}catch (SQLException ex) {
 										ex.printStackTrace();
@@ -157,13 +155,40 @@ public class RetrieveDatabase extends Database{
 				ex.printStackTrace();
 			}
 			
-			query = "SELECT reviewerID FROM REVIEWERS WHERE academicID = ?";
+			query = "SELECT R.REVIEWERID, Rev.SUMMARY, TYPINGERRORS, REV.SUBMISSIONID, S.ARTICLEID, "
+					+ "S.STATUS, A.TITLE, A.SUMMARY AS ARTICLESUMMARY, J.ISSN, J.NAME, J.DATEOFPUBLICATION "
+					+ "FROM REVIEWERS R, REVIEWS REV, SUBMISSIONS S, ARTICLES A, JOURNALS J "
+					+ "WHERE R.REVIEWERID = Rev.REVIEWERID "
+					+ "AND Rev.SUBMISSIONID = S.SUBMISSIONID "
+					+ "AND S.ARTICLEID = A.ARTICLEID "
+					+ "AND A.ISSN = J.ISSN "
+					+ "AND R.ACADEMICID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, academicId);
 				ResultSet res = preparedStmt.executeQuery();
-				if(res.next()) {
-					
+				Reviewer reviewer = null;
+				while(res.next()) {
+					if(reviewer == null)
+						reviewer = new Reviewer(res.getInt("REVIEWERID"), title, forename, surname, emailId, university, null);
+					Journal journal = new Journal(res.getInt("ISSN"), res.getString("NAME"), res.getDate("dateOfPublication"));
+					Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("ARTICLESUMMARY"), journal);
+					Submission submission = new Submission(res.getInt("SUBMISSIONID"), article, SubmissionStatus.valueOf(res.getString("STATUS")), null);
+					query = "SELECT CRITICISMID, CRITICISM, ANSWER FROM CRITICISMS WHERE SUBMISSIONID = ? AND REVIEWERID = ?";
+					try(PreparedStatement preparedStmt2 = con.prepareStatement(query)){
+						preparedStmt2.setInt(1, submission.getSubmissionId());
+						preparedStmt2.setInt(2, reviewer.getReviewerId());
+						ResultSet crticismRes = preparedStmt2.executeQuery();
+						ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
+						while(crticismRes.next()) {
+							criticisms.add(new Criticism(crticismRes.getString("CRITICISM"), crticismRes.getString("ANSWER")));
+						}
+						Review review = new Review(reviewer, submission, res.getString("SUMMARY"), res.getString("TYPINGERRORS"), criticisms);
+						reviewer.addReview(submission, review);
+					}catch (SQLException ex) {
+						ex.printStackTrace();
+					}
 				}
+				roles.add(reviewer);
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
@@ -177,30 +202,33 @@ public class RetrieveDatabase extends Database{
 	}
 	
 	public static void main(String[] args) {
-		ArrayList<Academic> roles = RetrieveDatabase.getRoles("j.smith@uniofsmith.ac.uk");
-		for(Academic a : roles) {
+		ArrayList<Academic> roles1 = RetrieveDatabase.getRoles("j.doe@uniofdoe.ac.uk");
+		for(Academic a : roles1) {
 			if(a instanceof Editor) {
 				Editor e = (Editor)a;
 				System.out.println(e);
 				for(EditorOfJournal eoj : e.getEditorOfJournals()){
 					System.out.println(eoj.getEditor().getEditorId() +" "+ eoj.getJournal().getISSN()+" ChiefEditor: "+eoj.isChiefEditor());
 				};
-			}
-		}
-		System.out.println();
-		ArrayList<Academic> roles1 = RetrieveDatabase.getRoles("j.doe@uniofdoe.ac.uk");
-		for(Academic a : roles1) {
-			if(a instanceof Author) {
+			}else if(a instanceof Author) {
 				Author author = (Author)a;
-				System.out.println(author);
+				System.out.println("Author: "+author);
 				for(AuthorOfArticle aoa : author.getAuthorOfArticles()){
 					System.out.println(aoa.getAuthor().getAuthorId()+" "+aoa.getArticle().getArticleId()+" MainAuthor: "+aoa.isMainAuthor());
 					Article article = aoa.getArticle();
 					Submission s = article.getSubmission();
+					System.out.println(s.getStatus());
+					System.out.println();
 					if(s != null)
 						for(Review r : s.getReviews())
 							System.out.println(r);
 				};
+			}else if(a instanceof Reviewer) {
+				Reviewer reviewer = (Reviewer)a;
+				System.out.println("Reviewer "+reviewer);
+				for(Review review : reviewer.getReviews()) {
+					System.out.println(review);
+				}
 			}
 		}
 	}

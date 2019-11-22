@@ -8,16 +8,7 @@ public class Article {
 	private int articleId;
 	private Journal journal;
 	private Submission submission;
-	private ArrayList<PDF> versions;
-	
-	public Article(String title, String summary, Journal journal, PDF pdf) {
-		this.title = title;
-		this.summary = summary;
-		this.journal = journal;
-		this.authorsOfArticle = new ArrayList<AuthorOfArticle>();
-		this.versions = new ArrayList<PDF>();
-		this.versions.add(pdf);
-	}
+	private PDF pdf;
 	
 	public Article(int articleId, String title, String summary, Journal journal) {
 		this.articleId = articleId;
@@ -25,7 +16,6 @@ public class Article {
 		this.summary = summary;
 		this.journal = journal;
 		this.authorsOfArticle = new ArrayList<AuthorOfArticle>();
-		this.versions = new ArrayList<PDF>();
 	}
 	
 	public void submit(Submission s) {
@@ -36,12 +26,13 @@ public class Article {
 		return this.submission;
 	}
 	
-	public void addVersion(PDF pdf) {
-		this.versions.add(pdf);
+	
+	public void setPDF(PDF pdf) {
+		this.pdf = pdf;
 	}
 	
-	public ArrayList<PDF> getVersions() {
-		return this.versions;
+	public PDF getPDF() {
+		return this.pdf;
 	}
 
 	
@@ -56,11 +47,7 @@ public class Article {
 	public void setSummary(String summary) {
 		this.summary = summary;
 	}
-	
-	public void addPDF(PDF pdf) {
-		this.versions.add(pdf);
-	}
-	
+
 	public String getTitle() {
 		return title;
 	}
@@ -84,10 +71,5 @@ public class Article {
 	public Journal getJournal() {
 		return this.journal;
 	}
-	
-	public ArrayList<PDF> getPDFVersions() {
-		return this.versions;
-	}
-	
 	
 }

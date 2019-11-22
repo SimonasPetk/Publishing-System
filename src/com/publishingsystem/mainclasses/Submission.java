@@ -7,20 +7,25 @@ public class Submission{
 	private SubmissionStatus status;
 	private int submissionId;
 	private Article article;
+	private ArrayList<PDF> versions;
 	
-	public Submission(Article a) {
-		this.article = a;
-		this.status = SubmissionStatus.SUBMITTED;
-		this.reviews = new ArrayList<Review>();
-	}
-	
-	public Submission(Article a, int submissionId) {
+	public Submission(int submissionId, Article a, SubmissionStatus status, PDF pdf) {
 		this.submissionId = submissionId;
 		this.article = a;
-		this.status = SubmissionStatus.SUBMITTED;
+		this.status = status;
 		this.reviews = new ArrayList<Review>();
+		this.versions = new ArrayList<PDF>();
+		this.versions.add(pdf);
 	}
 	
+	public ArrayList<PDF> getVersions() {
+		return versions;
+	}
+	
+	public void addVersion(PDF pdf) {
+		this.versions.add(pdf);
+	}
+
 	public Article getArticle() {
 		return this.article;
 	}

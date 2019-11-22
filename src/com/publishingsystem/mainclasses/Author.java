@@ -5,11 +5,6 @@ public class Author extends Academic{
 	private ArrayList<AuthorOfArticle> authorOfArticles;
 	private int authorId;
 	
-	public Author(String title ,String forename, String surname, String emailId, String university, Hash hash) {
-		super(title, forename, surname, emailId, university, hash);
-		authorOfArticles = new ArrayList<AuthorOfArticle>();
-	}
-	
 	public Author(int authorId, String title ,String forename, String surname, String emailId, String university, Hash hash) {
 		super(title, forename, surname, emailId, university, hash);
 		this.authorId = authorId;
@@ -41,17 +36,17 @@ public class Author extends Academic{
 	}
 	
 	//Main Author
-	public void submit(Article article) {
+	public void submit(Article article, PDF pdf) {
 		AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, this, true);
-		Submission submission = new Submission(article);
+		Submission submission = new Submission(-1, article, SubmissionStatus.SUBMITTED, pdf);
+		pdf.setSubmission(submission);
 		authorOfArticle.getArticle().submit(submission);
 		this.authorOfArticles.add(authorOfArticle);
 		article.addAuthorOfArticle(authorOfArticle);
 	}
 	
-	public void submitRevisedVersion(Article a, PDF pdf) {
-		a.addVersion(pdf);
-		pdf.setArticle(a);
+	public void submitRevisedVersion(PDF pdf) {
+		pdf.getSubmission().addVersion(pdf);
 	}
 	
 	public void respond(Review review, ArrayList<String> answers) {
@@ -63,9 +58,11 @@ public class Author extends Academic{
 	
 	public void registerCoAuthors(Article article, ArrayList<Author> coauthors) {
 		for(Author author : coauthors) {
-			AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, author, false);
-			author.addAuthorOfArticle(authorOfArticle);
-			article.addAuthorOfArticle(authorOfArticle);
+			if(author.authorId != this.authorId) {
+				AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, author, false);
+				author.addAuthorOfArticle(authorOfArticle);
+				article.addAuthorOfArticle(authorOfArticle);
+			}
 		}
 	}
 

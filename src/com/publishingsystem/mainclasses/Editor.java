@@ -5,11 +5,6 @@ import java.util.ArrayList;
 public class Editor extends Academic{
 	private int editorId;
 	private ArrayList<EditorOfJournal> editorOfJournals;
-
-	public Editor(String title, String forename, String surname, String emailId, String university, Hash hash) {
-		super(title, forename, surname, emailId, university, hash);
-		this.editorOfJournals = new ArrayList<EditorOfJournal>();
-	}
 	
 	public Editor(int editorId, String title, String forename, String surname, String emailId, String university, Hash hash) {
 		super(title, forename, surname, emailId, university, hash);
@@ -56,9 +51,11 @@ public class Editor extends Academic{
 	
 	public void registerEditors(Journal j, ArrayList<Editor> editors) {
 		for(Editor e : editors) {
-			EditorOfJournal editorOfJournal = new EditorOfJournal(j, e, false);
-			e.addEditorOfJournal(editorOfJournal);
-			j.addEditorToBoard(editorOfJournal);
+			if(e.editorId != this.editorId) {
+				EditorOfJournal editorOfJournal = new EditorOfJournal(j, e, false);
+				e.addEditorOfJournal(editorOfJournal);
+				j.addEditorToBoard(editorOfJournal);
+			}
 		}
 	}
 

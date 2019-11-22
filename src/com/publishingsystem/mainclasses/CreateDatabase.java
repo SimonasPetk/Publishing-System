@@ -43,7 +43,7 @@ public class CreateDatabase extends Database{
 	public static String createTablePDF() {
 		return "CREATE TABLE PDF ("
 				+ "pdfID INT PRIMARY KEY AUTO_INCREMENT, "
-				+ "articleID INT REFERENCES ARTICLE(articleID),"
+				+ "submissionID INT REFERENCES SUBMISSION(submissionID),"
 				+ "pdfLink TEXT, "
 				+ "uploadDate DATE)";
 	}
@@ -73,6 +73,7 @@ public class CreateDatabase extends Database{
 		return "CREATE TABLE ARTICLES ("
 				+ "articleID INT PRIMARY KEY AUTO_INCREMENT,"
 				+ "ISSN INT REFERENCES JOURNAL(ISSN), "
+				+ "pdfID INT REFERENCES PDF(pdfID), "
 				+ "title TEXT,"
 				+ "summary TEXT)";
 	}
@@ -255,21 +256,21 @@ public class CreateDatabase extends Database{
 			System.out.println(list.nextElement());
 		System.out.println();
 
-		//dropTables();
-		//createTables();
-        
-		try (Connection con = DriverManager.getConnection(CONNECTION)) {
-            Statement statement = con.createStatement();
-            statement.execute("USE "+DATABASE+";");
-            createTableJournals();
-		} catch (SQLException ex) {
-		    ex.printStackTrace();
-		}		
-		
-        //Database.addJournal(new Journal(12345, "Journal Number One", new java.sql.Date(System.currentTimeMillis())));
-        //Database.addJournal(new Journal(67890, "Journal Number Two", new java.sql.Date(0)));
-        //Database.addJournal(new Journal(19285, "Journal Number Three", new java.sql.Date(876578657)));
-        
-        printAllRecords("JOURNALS");
+		dropTables();
+		createTables();
+//        
+//		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+//            Statement statement = con.createStatement();
+//            statement.execute("USE "+DATABASE+";");
+//            createTableJournals();
+//		} catch (SQLException ex) {
+//		    ex.printStackTrace();
+//		}		
+//		
+//        //Database.addJournal(new Journal(12345, "Journal Number One", new java.sql.Date(System.currentTimeMillis())));
+//        //Database.addJournal(new Journal(67890, "Journal Number Two", new java.sql.Date(0)));
+//        //Database.addJournal(new Journal(19285, "Journal Number Three", new java.sql.Date(876578657)));
+//        
+//        printAllRecords("JOURNALS");
     }
 }
