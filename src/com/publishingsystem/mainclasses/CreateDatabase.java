@@ -1,6 +1,7 @@
 package com.publishingsystem.mainclasses;
 
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 
 public class CreateDatabase extends Database{
@@ -254,11 +255,21 @@ public class CreateDatabase extends Database{
 			System.out.println(list.nextElement());
 		System.out.println();
 
-		dropTables();
-		createTables();
-
+		//dropTables();
+		//createTables();
+        
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            createTableJournals();
+		} catch (SQLException ex) {
+		    ex.printStackTrace();
+		}		
+		
+        //Database.addJournal(new Journal(12345, "Journal Number One", new java.sql.Date(System.currentTimeMillis())));
+        //Database.addJournal(new Journal(67890, "Journal Number Two", new java.sql.Date(0)));
+        //Database.addJournal(new Journal(19285, "Journal Number Three", new java.sql.Date(876578657)));
+        
         printAllRecords("JOURNALS");
-
-	}
-
+    }
 }

@@ -49,13 +49,16 @@ public class Journal {
 		this.volumes.add(v);
 	}
 
-
 	public ArrayList<EditorOfJournal> getBoardOfEditors() {
 		return this.boardOfEditors;
 	}
 	
 	public void addEditorToBoard(EditorOfJournal e) {
 		this.boardOfEditors.add(e);
+	}
+	
+	public String toString() {
+	    return this.iSSN + ", " + this.journalName + ", " + this.dateOfPublication + ", " + this.boardOfEditors + ", " + this.volumes;
 	}
 	
 }
