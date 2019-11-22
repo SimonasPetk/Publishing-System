@@ -162,7 +162,7 @@ public class RegistrationWindow {
 			    			Author coAuthor = new Author(title, forenames, surname, university, email, pwdHash);
 			    			submitArticleGUI.addCoAuthor(coAuthor);
 			    		case CHIEFEDITOR:
-			    			ChiefEditor chiefEditor = new ChiefEditor(title, forenames, surname, university, email, pwdHash);
+			    			Editor chiefEditor = new Editor(title, forenames, surname, university, email, pwdHash);
 			    			new AddJournal(chiefEditor);
 			    			break;
 			    		default:

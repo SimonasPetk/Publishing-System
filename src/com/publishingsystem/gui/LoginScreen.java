@@ -56,17 +56,17 @@ public class LoginScreen {
 		frmLogInScreen.setBounds(100, 100, 700, 500);
 		frmLogInScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmLogInScreen.setVisible(true);
-		
+
 		JLabel lblEmail = new JLabel("Email Address:");
 		lblEmail.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		emailField = new JTextField();
 		emailField.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		emailField.setColumns(10);
-		
+
 		JLabel lblPassword = new JLabel("Password:");
 		lblPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		passwordField = new JPasswordField();
 		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		JButton btnLogin = new JButton("Login");
@@ -79,7 +79,7 @@ public class LoginScreen {
 
 			    boolean validCredentials = true;
 			    if (email.isEmpty() || password.isEmpty()) validCredentials = false;
-			    
+
 			    if (validCredentials) {
 			        // Check if the generated hash from password is same as stored hash
 			    	boolean correctPassword = Database.validateCredentials(email, password);
@@ -93,11 +93,11 @@ public class LoginScreen {
 			}
 		});
 		btnLogin.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JLabel lblWelcomeBack = new JLabel("Welcome Back!");
 		lblWelcomeBack.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWelcomeBack.setFont(new Font("Tahoma", Font.PLAIN, 25));
-		
+
 		JButton btnLoginAsA = new JButton("Login as a Reader");
 		btnLoginAsA.addMouseListener(new MouseAdapter() {
 			@Override
@@ -107,7 +107,7 @@ public class LoginScreen {
 			}
 		});
 		btnLoginAsA.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		GroupLayout groupLayout = new GroupLayout(frmLogInScreen.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)

@@ -11,7 +11,7 @@ import java.awt.Font;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 
-import com.publishingsystem.mainclasses.ChiefEditor;
+import com.publishingsystem.mainclasses.Editor;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -43,14 +43,14 @@ public class AddJournal {
 	/**
 	 * Create the application.
 	 */
-	public AddJournal(ChiefEditor chiefEditor) {
+	public AddJournal(Editor chiefEditor) {
 		initialize(chiefEditor);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(ChiefEditor chiefEditor) {
+	private void initialize(Editor chiefEditor) {
 		frmAddJournal = new JFrame();
 		frmAddJournal.setTitle("Add Journal");
 		frmAddJournal.setBounds(100, 100, 591, 283);

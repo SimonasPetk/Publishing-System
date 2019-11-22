@@ -4,14 +4,17 @@ import java.util.ArrayList;
 
 public class PublishedArticle extends Article{
 	private String pageRange;
+	private String journalName;
 	private int editionNumber;
 	
-	public PublishedArticle(String title, String summary, int journalId, ArrayList<Author> authors) {
-		super(title, summary, journalId, authors);
+	public PublishedArticle(Article a, String pageRange, String journalName, int editionNumber) {
+		super(a.getArticleId(), a.getTitle(), a.getSummary(), a.getJournal());
+		this.pageRange = pageRange;
+		this.editionNumber = editionNumber;
 	}
 	
-	public PublishedArticle(Article a) {
-		super(a.getTitle(), a.getSummary(), a.getJournalId(), a.getAuthors());
+	public String getJournalName() {
+		return journalName;
 	}
 	
 	public void setEditionNumber(int en) {

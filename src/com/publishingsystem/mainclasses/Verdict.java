@@ -11,7 +11,7 @@ public enum Verdict{
 			case WEAKREJECT:
 				return "Weak Reject";
 			case STRONGREJECT:
-				return "Strong Rseject";
+				return "Strong Reject";
 			default:
 				return "";
 		}
