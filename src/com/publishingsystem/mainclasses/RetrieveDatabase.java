@@ -91,7 +91,7 @@ public class RetrieveDatabase extends Database{
 			
 			query = "SELECT Aut.AUTHORID, MAINAUTHOR, Art.articleID, J.ISSN, name,"
 					+ " dateOfPublication, title, summary, submissionID, status "
-					+ "FROM AUTHORS Aut, AUTHOROFARTICLE Aoa, ARTICLES Art, Submissions S, JOURNALS J "
+					+ "FROM AUTHORS Aut, AUTHOROFARTICLE Aoa, ARTICLES Art, SUBMISSIONS S, JOURNALS J "
 					+ "WHERE Art.ARTICLEID = Aoa.ARTICLEID "
 					+ "AND Aut.AUTHORID = Aoa.AUTHORID "
 					+ "AND S.articleID = Art.articleID "
@@ -155,11 +155,11 @@ public class RetrieveDatabase extends Database{
 				ex.printStackTrace();
 			}
 			
-			query = "SELECT R.REVIEWERID, Rev.SUMMARY, TYPINGERRORS, REV.SUBMISSIONID, S.ARTICLEID, "
+			query = "SELECT R.REVIEWERID, REV.SUMMARY, TYPINGERRORS, REV.SUBMISSIONID, S.ARTICLEID, "
 					+ "S.STATUS, A.TITLE, A.SUMMARY AS ARTICLESUMMARY, J.ISSN, J.NAME, J.DATEOFPUBLICATION "
 					+ "FROM REVIEWERS R, REVIEWS REV, SUBMISSIONS S, ARTICLES A, JOURNALS J "
-					+ "WHERE R.REVIEWERID = Rev.REVIEWERID "
-					+ "AND Rev.SUBMISSIONID = S.SUBMISSIONID "
+					+ "WHERE R.REVIEWERID = REV.REVIEWERID "
+					+ "AND REV.SUBMISSIONID = S.SUBMISSIONID "
 					+ "AND S.ARTICLEID = A.ARTICLEID "
 					+ "AND A.ISSN = J.ISSN "
 					+ "AND R.ACADEMICID = ?";
@@ -220,7 +220,62 @@ public class RetrieveDatabase extends Database{
         return result;
     }
 
+    public static int getAcademicIdByEmail(String email) {
+        int result = -1;
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            String query = "SELECT academicID FROM ACADEMICS WHERE emailAddress = '" + email + "';";
+            System.out.println(query);
+            ResultSet res = statement.executeQuery(query);
+            if (res.next()) result = res.getInt(1);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return result;
+    }
+    
+    public static Author getAuthorByID(int academicID) {
+        Author result = null;
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            String query = "SELECT title, forename, surname, emailAddress, university, hash FROM ACADEMICS WHERE academicID = " + academicID + ";";
+            ResultSet res = statement.executeQuery(query);
+            if (res.next()) {
+                String resTitle = res.getString(1);
+                String resForenames = res.getString(2);
+                String resSurname = res.getString(3);
+                String resEmail = res.getString(4);
+                String resUniversity = res.getString(5);
+                //Hash resHash = res.getString(6);
+                Hash resHash = null;
+                
+                result = new Author(academicID, resTitle, resForenames, resSurname, resEmail, resUniversity, resHash);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return result;        
+    }
 	
+    public static String[] getNamesByID(int academicID) {
+        String[] results = new String[2];
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            String query = "SELECT forename, surname FROM ACADEMICS WHERE academicID = " + academicID + ";";
+            ResultSet res = statement.executeQuery(query);
+            if (res.next()) {
+                results[0] = res.getString(1);
+                results[1] = res.getString(2);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return results;
+    }
+    
 	public static void main(String[] args) {
 		ArrayList<Academic> roles1 = RetrieveDatabase.getRoles("j.doe@uniofdoe.ac.uk");
 		for(Academic a : roles1) {

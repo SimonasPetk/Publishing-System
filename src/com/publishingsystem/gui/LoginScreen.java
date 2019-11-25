@@ -18,6 +18,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 public class LoginScreen {
 
@@ -87,6 +88,9 @@ public class LoginScreen {
                     if (correctPassword) {
                         JOptionPane.showMessageDialog(null, "Login Successful", "Login", 1);
                         password = ""; // clear password for security
+                        
+                        int academicID = RetrieveDatabase.getAcademicIdByEmail(email);
+                        new JournalWindow(academicID);
                         frmLogInScreen.dispose();
                         // open next window
                     } else JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
@@ -98,16 +102,6 @@ public class LoginScreen {
 		JLabel lblWelcomeBack = new JLabel("Welcome Back!");
 		lblWelcomeBack.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWelcomeBack.setFont(new Font("Tahoma", Font.PLAIN, 25));
-
-		JButton btnLoginAsA = new JButton("Login as a Reader");
-		btnLoginAsA.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				new JournalWindow();
-				frmLogInScreen.dispose();
-			}
-		});
-		btnLoginAsA.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 		GroupLayout groupLayout = new GroupLayout(frmLogInScreen.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -132,10 +126,8 @@ public class LoginScreen {
 					.addComponent(btnLogin, GroupLayout.PREFERRED_SIZE, 129, GroupLayout.PREFERRED_SIZE))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(290)
-					.addComponent(btnLoginAsA))
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(480))
-		);
+					.addGap(480))));
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
@@ -152,7 +144,6 @@ public class LoginScreen {
 					.addGap(11)
 					.addComponent(btnLogin, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
 					.addGap(15)
-					.addComponent(btnLoginAsA, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED, 173, Short.MAX_VALUE))
 		);
 		frmLogInScreen.getContentPane().setLayout(groupLayout);

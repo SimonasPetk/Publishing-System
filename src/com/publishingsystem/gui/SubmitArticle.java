@@ -15,6 +15,8 @@ import javax.swing.SwingConstants;
 
 import com.publishingsystem.mainclasses.Author;
 import com.publishingsystem.mainclasses.Database;
+import com.publishingsystem.mainclasses.Journal;
+import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.Role;
 
 import javax.swing.JTextField;
@@ -117,7 +119,11 @@ public class SubmitArticle {
 			public void mouseClicked(MouseEvent e) {
 				coAuthors.add(a);
 				Database.registerAuthors(coAuthors);
+				
+				// Why do we need this?
 				JOptionPane.showMessageDialog(null, "To access your Author/Reviewer roles please Log Out and Login In again to the system. Thank you!");
+
+				new JournalWindow(a.getAcademicId());
 				frmSubmitAnArticle.dispose();
 			}
 		});
@@ -212,9 +218,18 @@ public class SubmitArticle {
 		JList listOfJournals = new JList();
 		listOfJournals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane.setViewportView(listOfJournals);
+		
+		ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
+        String[] listContents = new String[allJournals.size()];
+        for (int i=0; i<allJournals.size(); i++) {
+            listContents[i] = allJournals.get(i).getJournalName() + " (ISSN " + allJournals.get(i).getISSN() + ")";
+        }
+        
 		listOfJournals.setModel(new AbstractListModel() {
-			String[] values = new String[] {"First Journal", "Second journal", "Third Journal", "", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal"};
-			public int getSize() {
+			//String[] values = new String[] {"First Journal", "Second journal", "Third Journal", "", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal"};
+            String[] values = listContents;
+            
+		    public int getSize() {
 				return values.length;
 			}
 			public Object getElementAt(int index) {

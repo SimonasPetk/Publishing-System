@@ -54,7 +54,7 @@ public class JournalWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					JournalWindow window = new JournalWindow();
+					JournalWindow window = new JournalWindow(0);
 					window.frmJournalWindow.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -66,21 +66,21 @@ public class JournalWindow {
 	/**
 	 * Create the application.
 	 */
-	public JournalWindow() {
-		initialize();
+	public JournalWindow(int academicID) {
+		initialize(academicID);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize(int academicID) {
 		frmJournalWindow = new JFrame();
-		frmJournalWindow.setTitle("Available Journals, Volumes & Editions");
+		frmJournalWindow.setTitle("View Journals");
 		frmJournalWindow.setBounds(100, 100, 540, 331);
 		frmJournalWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmJournalWindow.setVisible(true);
 		
-		JLabel lblAvailabeJournals = new JLabel("Choose which journal, volume or edition you would like to read:");
+		JLabel lblAvailabeJournals = new JLabel("Choose a journal to view");
 		lblAvailabeJournals.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		
 		JScrollPane scrollPanelJournal = new JScrollPane();
@@ -152,27 +152,44 @@ public class JournalWindow {
 		
 		JMenuBar menuBar = new JMenuBar();
 		frmJournalWindow.setJMenuBar(menuBar);
+				
+		JLabel lblLoggedInAs = new JLabel();
+		lblLoggedInAs.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		menuBar.add(lblLoggedInAs);
 		
-		JButton btnLogIn = new JButton("Log In");
-		btnLogIn.addMouseListener(new MouseAdapter() {
+		JButton btnLogInOut = new JButton();
+		if (academicID == 0) btnLogInOut.setText("Log In");
+		else {
+		    String[] loggedInName = RetrieveDatabase.getNamesByID(academicID);
+		    btnLogInOut.setText("Logged in as " + loggedInName[0] + " " + loggedInName[1] + ". Log Out");
+		}
+
+		btnLogInOut.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
-				
-				new LoginScreen();
-				frmJournalWindow.dispose();
-				
-			}
-		});
-		menuBar.add(btnLogIn);
+			    if (academicID == 0) {
+			        new LoginScreen();
+			    } else {
+			        new JournalWindow(0);
+			    }
+                frmJournalWindow.dispose();
+			}});
+		menuBar.add(btnLogInOut);
 		
 		JButton btnSubmitArticle = new JButton("Submit Article");
 		btnSubmitArticle.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
-				new RegistrationWindow(Role.AUTHOR);
-				frmJournalWindow.dispose();
+				if (academicID == 0) {
+				    // Let the user register as an academic/AUTHOR if they are not logged in
+				    new RegistrationWindow(Role.AUTHOR, (SubmitArticle)null);
+				    frmJournalWindow.dispose();	                
+                } else {
+                    // Display the SubmitArticle window if the user is logged in
+                    Author loggedInAuthor = RetrieveDatabase.getAuthorByID(academicID);                    
+                    new SubmitArticle(loggedInAuthor);
+				    frmJournalWindow.dispose();
+				}
 			}
 		});
 		menuBar.add(btnSubmitArticle);
