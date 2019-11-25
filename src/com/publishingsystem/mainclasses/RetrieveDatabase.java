@@ -85,8 +85,10 @@ public class RetrieveDatabase extends Database{
 				ResultSet res = preparedStmt.executeQuery();
 				Editor editor = null;
 				while(res.next()) {
-					if(editor == null)
+					if(editor == null) {
 						editor = new Editor(res.getInt("editorID"), title, forename, surname, emailId, university, null);
+						editor.setAcademicId(academicId);
+					}
 					Journal journal = new Journal(res.getInt("ISSN"), res.getString("NAME"), res.getDate("dateOfPublication"));
 					boolean chiefEditor = res.getBoolean("chiefEditor");
 					EditorOfJournal editorOfJournal = new EditorOfJournal(journal, editor, chiefEditor);
@@ -112,8 +114,10 @@ public class RetrieveDatabase extends Database{
 				ResultSet res = preparedStmt.executeQuery();
 				Author author = null;
 				while(res.next()) {
-					if(author == null)
+					if(author == null) {
 						author = new Author(res.getInt("authorID"), title, forename, surname, emailId, university, null);
+						author.setAcademicId(academicId);
+					}
 					Journal journal = new Journal(res.getInt("ISSN"), res.getString("NAME"), res.getDate("dateOfPublication"));
 					Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), journal);
 					article.submit(new Submission( res.getInt("SUBMISSIONID"), article, SubmissionStatus.valueOf(res.getString("STATUS")), null));
@@ -179,8 +183,10 @@ public class RetrieveDatabase extends Database{
 				ResultSet res = preparedStmt.executeQuery();
 				Reviewer reviewer = null;
 				while(res.next()) {
-					if(reviewer == null)
+					if(reviewer == null) {
 						reviewer = new Reviewer(res.getInt("REVIEWERID"), title, forename, surname, emailId, university, null);
+						reviewer.setAcademicId(academicId);
+					}
 					Journal journal = new Journal(res.getInt("ISSN"), res.getString("NAME"), res.getDate("dateOfPublication"));
 					Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("ARTICLESUMMARY"), journal);
 					Submission submission = new Submission(res.getInt("SUBMISSIONID"), article, SubmissionStatus.valueOf(res.getString("STATUS")), null);
@@ -244,23 +250,25 @@ public class RetrieveDatabase extends Database{
 		return 0;
 	}
 	
-	public static ArrayList<Submission> getSubmissions(String email){
+	public static ArrayList<Submission> getSubmissions(String university){
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
             statement.close();
-            String query = "SELECT S.SUBMISSIONID, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY, "
-	            		+ "J.ISSN, J.NAME, J.DATEOFPUBLICATION "
-	            		+ "FROM SUBMISSIONS S, ARTICLES Art, JOURNALS J, AUTHOROFARTICLE Aoa, AUTHORS A "
-	            		+ "WHERE S.ARTICLEID = Art.ARTICLEID "
-	            		+ "AND Art.ARTICLEID = Aoa.ARTICLEID "
-	            		+ "AND Aoa.AUTHORID = A.AUTHORID "
-	            		+ "AND Art.ISSN = J.ISSN "
-	            		+ "AND A.UNIVERSITY != ? "
-	            		+ "GROUP BY S.SUBMISSIONID";
+            String query = "SELECT S.SUBMISSIONID, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY, J.ISSN, J.NAME, J.DATEOFPUBLICATION "
+            			+ "FROM SUBMISSIONS S, ARTICLES Art, JOURNALS J "
+            			+ "WHERE S.ARTICLEID = Art.ARTICLEID "
+            			+ "AND Art.ISSN = J.ISSN "
+            			+ "AND SUBMISSIONID NOT IN "
+            			+ "(SELECT S.SUBMISSIONID "
+            			+ "FROM AUTHORS A, AUTHOROFARTICLE Aoa, ARTICLES Art, SUBMISSIONS S "
+            			+ "WHERE Aoa.AUTHORID = A.AUTHORID "
+            			+ "AND Aoa.ARTICLEID = Art.ARTICLEID "
+            			+ "AND Art.ARTICLEID = S.ARTICLEID "
+            			+ "AND UNIVERSITY = ?)";
             ArrayList<Submission> submissions = new ArrayList<Submission>();
             try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setString(1, email);
+            	preparedStmt.setString(1, university);
 				ResultSet res = preparedStmt.executeQuery();
 				while(res.next()) {
 					Journal journal = new Journal(res.getInt("ISSN"), res.getString("name"), res.getDate("dateOfPublication"));
@@ -366,7 +374,7 @@ public class RetrieveDatabase extends Database{
 		if(a != null) {
 			System.out.println("Author: "+a);
 			System.out.println("Number of reviews done by team: "+RetrieveDatabase.getNumberOfReviewsDone(a.getAuthorOfArticles().get(1).getArticle()));
-			for(Submission s : RetrieveDatabase.getSubmissions(a.getEmailId())){
+			for(Submission s : RetrieveDatabase.getSubmissions(a.getUniversity())){
 				System.out.println(s);
 			}
 //				for(AuthorOfArticle aoa : a.getAuthorOfArticles()){
