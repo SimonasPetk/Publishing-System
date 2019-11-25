@@ -4,12 +4,12 @@ import java.util.*;
 import java.sql.Date;
 
 public class Database {
-//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-//	protected static final String DATABASE = "team022";
+	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+	protected static final String DATABASE = "team022";
 
 	//localhost
-	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-	protected static final String DATABASE = "publishing_system";
+	//protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+	//protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -536,54 +536,6 @@ public class Database {
 		}
 		return false;
 	}
-	
-	public static ArrayList<Journal> getAllJournals() {
-	    ArrayList<Journal> results = new ArrayList<Journal>();
-	    try (Connection con = DriverManager.getConnection(CONNECTION)) {
-	        Statement statement = con.createStatement();
-	        statement.execute("USE "+DATABASE+";");
-	        String query = "SELECT * FROM JOURNALS";
-	        ResultSet res = statement.executeQuery(query);
-	        while (res.next()) {
-                int resISSN = res.getInt(1);
-                String resName = res.getString(2);
-                Date resDate = res.getDate(3);
-                results.add(new Journal(resISSN, resName, resDate));
-	        }
-	    } catch (SQLException ex) {
-	        ex.printStackTrace();
-	    }
-	    for (Journal jour : results) {
-	        System.out.println(jour);
-	    }
-	    return results;
-	}
-	
-    public static ArrayList<Journal> getJournals(int issn, String name, Date dateOfPublication) {
-        ArrayList<Journal> results = new ArrayList<Journal>();
-        try (Connection con = DriverManager.getConnection(CONNECTION)) {
-            Statement statement = con.createStatement();
-            String query = "SELECT ISSN, name, dateOfPublication FROM JOURNALS WHERE";
-            if (issn != -1) {
-                query = query + "issn = " + issn + " AND ";
-            }
-            if (name != "") {
-                query = query + "name = " + name + " AND ";
-            }
-            if (dateOfPublication != null) {
-                query = query + "dateOfPublication = " + dateOfPublication;
-            }
-            ResultSet res = statement.executeQuery(query);
-            if (res.next()) {
-                int resISSN = res.getInt(1);
-                String resName = res.getString(2);
-                results.add(new Journal(resISSN, resName, null));
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return results;
-    }
 
 	public static void main(String[] args) {
 		System.out.println("\nDrivers loaded as properties:");

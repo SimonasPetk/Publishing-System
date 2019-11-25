@@ -21,6 +21,7 @@ import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.Author;
 import com.publishingsystem.mainclasses.Database;
 import com.publishingsystem.mainclasses.Journal;
+import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.Role;
 
 import javax.swing.JToolBar;
@@ -110,7 +111,7 @@ public class JournalWindow {
 		tblJournal.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				String selectedJournal = (String)tblJournal.getValueAt(tblJournal.rowAtPoint(arg0.getPoint()), 0);
+				int selectedJournal = (int)tblJournal.getValueAt(tblJournal.rowAtPoint(arg0.getPoint()), 2);
 				System.out.println(selectedJournal);
 
 				/*if (arg0.getClickCount() == 2 && tblJournal.rowAtPoint(arg0.getPoint()) == 0) {
@@ -118,13 +119,13 @@ public class JournalWindow {
 			        JOptionPane.showMessageDialog(tblJournal, "row #" + 0 + " is clicked");
 				}*/
 				
-				//new ArticlesWindow();
+				new ArticlesWindow(selectedJournal);
 				//frmJournalWindow.dispose();
 			} 
 		});
 		tblJournal.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		ArrayList<Journal> allJournals = Database.getAllJournals();
+		ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
 		Object[][] tableContents = new Object[allJournals.size()][3];
 		for (int i=0; i<allJournals.size(); i++) {
 		    Journal currentJournal = allJournals.get(i);

@@ -256,21 +256,24 @@ public class CreateDatabase extends Database{
 			System.out.println(list.nextElement());
 		System.out.println();
 
-		dropTables();
-		createTables();
-//        
-//		try (Connection con = DriverManager.getConnection(CONNECTION)) {
-//            Statement statement = con.createStatement();
-//            statement.execute("USE "+DATABASE+";");
-//            createTableJournals();
-//		} catch (SQLException ex) {
-//		    ex.printStackTrace();
-//		}		
-//		
-//        //Database.addJournal(new Journal(12345, "Journal Number One", new java.sql.Date(System.currentTimeMillis())));
-//        //Database.addJournal(new Journal(67890, "Journal Number Two", new java.sql.Date(0)));
-//        //Database.addJournal(new Journal(19285, "Journal Number Three", new java.sql.Date(876578657)));
-//        
-//        printAllRecords("JOURNALS");
+		//dropTables();
+		//createTables();
+        
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            /*
+            statement.execute("INSERT INTO ARTICLES VALUES (1, 12345, 1, 'Title of Article', 'This is a brief summary of this article.');");            
+            statement.execute("INSERT INTO VOLUMES VALUES (null, null, 12345);");
+            statement.execute("INSERT INTO EDITIONS VALUES (null, 1, null);");
+            statement.execute("INSERT INTO PUBLISHEDARTICLES VALUES (null, 52, 1);");*/
+		} catch (SQLException ex) {
+		    ex.printStackTrace();
+		}		
+
+        printAllRecords("JOURNALS");
+        printAllRecords("VOLUMES");
+        printAllRecords("EDITIONS");        
+        printAllRecords("PUBLISHEDARTICLES");
     }
 }

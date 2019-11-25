@@ -201,6 +201,26 @@ public class RetrieveDatabase extends Database{
 			
 	}
 	
+    public static Journal getJournal(int issn) {
+        Journal result = null;
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            String query = "SELECT ISSN, name, dateOfPublication dateOfPublication FROM JOURNALS WHERE issn = " + issn + ";";
+            ResultSet res = statement.executeQuery(query);
+            if (res.next()) {
+                int resISSN = res.getInt(1);
+                String resName = res.getString(2);
+                Date resDate = res.getDate(3);
+                result = new Journal(resISSN, resName, resDate);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return result;
+    }
+
+	
 	public static void main(String[] args) {
 		ArrayList<Academic> roles1 = RetrieveDatabase.getRoles("j.doe@uniofdoe.ac.uk");
 		for(Academic a : roles1) {
