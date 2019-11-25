@@ -123,7 +123,7 @@ public class SubmitArticle {
 				// Why do we need this?
 				JOptionPane.showMessageDialog(null, "To access your Author/Reviewer roles please Log Out and Login In again to the system. Thank you!");
 
-				new JournalWindow(a.getAcademicId());
+				new JournalWindow(roles);
 				frmSubmitAnArticle.dispose();
 			}
 		});
