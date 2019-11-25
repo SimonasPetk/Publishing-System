@@ -36,6 +36,7 @@ public class TestRun {
 		a1.registerCoAuthors(article, authors);
 		
 		a1.submit(article, new PDF(-1, "TEST_PDF.pdf", new java.sql.Date(calendar.getTime().getTime()), null));
+		System.out.println(a1.getAuthorOfArticles().size());
 		
 		//Adding to DB
 		Database.registerAuthors(authors);
@@ -50,20 +51,20 @@ public class TestRun {
 		ArrayList<Author> authorsReviewers = new ArrayList<Author>();
 		authorsReviewers.add(a1);
 		authorsReviewers.add(a5);
+		authorsReviewers.add(a4);
 //		
 		Article tempS = new Article(-1, "Temp article", "Article about temp", j);
 	
 		a4.registerCoAuthors(tempS, authorsReviewers);
-		authorsReviewers.add(a4);
 		a4.submit(tempS, new PDF(-1, "temp.pdf", new java.sql.Date(calendar.getTime().getTime()), null));
 		
 		Database.registerAuthors(authorsReviewers);
 		Database.addSubmission(tempS);
 
 		ArrayList<Reviewer> reviewers = new ArrayList<Reviewer>();
-		reviewers.add(new Reviewer(a1));
-		reviewers.add(new Reviewer(a4));
-		reviewers.add(new Reviewer(a5));
+		reviewers.add(new Reviewer(a1.getAuthorOfArticles().get(0)));
+		reviewers.add(new Reviewer(a4.getAuthorOfArticles().get(0)));
+		reviewers.add(new Reviewer(a5.getAuthorOfArticles().get(0)));
 		
 		Database.addReviewers(reviewers);
 //		
@@ -72,7 +73,7 @@ public class TestRun {
 			ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
 			criticisms.add(new Criticism("Perhaps explain origin of doe"));
 			
-			Review review = new Review(r, article.getSubmission(), "Good", "None", criticisms);
+			Review review = new Review(r, article.getSubmission(), "Good", "None", criticisms, r.getAuthorOfArticle().getArticle());
 			r.addReview(article.getSubmission(), review);
 			Database.addReview(review);
 

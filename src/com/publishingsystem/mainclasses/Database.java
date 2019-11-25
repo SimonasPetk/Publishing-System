@@ -4,12 +4,12 @@ import java.util.*;
 import java.sql.Date;
 
 public class Database {
-	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	protected static final String DATABASE = "team022";
+//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+//	protected static final String DATABASE = "team022";
 
 	//localhost
-	//protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-	//protected static final String DATABASE = "publishing_system";
+	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -112,9 +112,12 @@ public class Database {
 					ex.printStackTrace();
 				}
 
-				query = "INSERT INTO AUTHORS values (null, ?)";
+				query = "INSERT INTO AUTHORS values (null, ?, ?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, a.getAcademicId());
+					preparedStmt.setString(2, a.getForename()+a.getSurname());
+					preparedStmt.setString(3, a.getUniversity());
+					preparedStmt.setString(4, a.getEmailId());
 					preparedStmt.execute();
 
 					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from AUTHORS");
@@ -147,7 +150,7 @@ public class Database {
 			}
 
 			for(EditorOfJournal e : j.getBoardOfEditors()) {
-				query = "INSERT INTO EDITOROFJOURNAL values (?, ?, ?)";
+				query = "INSERT INTO EDITOROFJOURNAL values (?, ?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, e.getEditor().getEditorId());
 					preparedStmt.setInt(2, j.getISSN());
@@ -155,6 +158,7 @@ public class Database {
 						preparedStmt.setBoolean(3, true);
 					else
 						preparedStmt.setBoolean(3, false);
+					preparedStmt.setBoolean(4, e.isTempRetired());
 					preparedStmt.execute();
 				}catch (SQLException ex) {
 					ex.printStackTrace();
@@ -170,9 +174,9 @@ public class Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			statement.close();
 			
 			//Add submission to article table
+			
 			String query = "INSERT INTO ARTICLES values (null, ?, null, ?, ?)";
 
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
@@ -180,7 +184,8 @@ public class Database {
 				preparedStmt.setString(2, article.getTitle());
 				preparedStmt.setString(3, article.getSummary());
 				preparedStmt.execute();
-
+		
+				
 				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ARTICLES");
 				while(rs.next())
 					article.setArticleId(Integer.valueOf(rs.getString("last_id")));
@@ -188,54 +193,54 @@ public class Database {
 				ex.printStackTrace();
 			}
 
-			query = "INSERT INTO SUBMISSIONS values (null, ?, ?)";
+		    query = "INSERT INTO SUBMISSIONS values (null, ?, ?)";
 
-			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, article.getArticleId());
-				preparedStmt.setString(2, SubmissionStatus.SUBMITTED.asString());
-				preparedStmt.execute();
+		    try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+		    	preparedStmt.setInt(1, article.getArticleId());
+		    	preparedStmt.setString(2, SubmissionStatus.SUBMITTED.asString());
+		    	preparedStmt.execute();
 
-				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from SUBMISSIONS");
-				while(rs.next())
-					article.getSubmission().setSubmissionId(Integer.valueOf(rs.getString("last_id")));
-			}catch (SQLException ex) {
-				ex.printStackTrace();
-			}
+		    	ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from SUBMISSIONS");
+		    	while(rs.next())
+		    		article.getSubmission().setSubmissionId(Integer.valueOf(rs.getString("last_id")));
+		    }catch (SQLException ex) {
+		    	ex.printStackTrace();
+		    }
 
-			for(AuthorOfArticle a : article.getAuthorsOfArticle()) {
-				query = "INSERT INTO AUTHOROFARTICLE values (?, ?, ?)";
-				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setInt(1, a.getAuthor().getAuthorId());
-					preparedStmt.setInt(2, article.getArticleId());
-					if(a.isMainAuthor())
-						preparedStmt.setBoolean(3, true);
-					else
-						preparedStmt.setBoolean(3, false);
-					preparedStmt.execute();
-				}catch (SQLException ex) {
-					ex.printStackTrace();
-				}
-			}
+		    for(AuthorOfArticle a : article.getAuthorsOfArticle()) {
+		    	query = "INSERT INTO AUTHOROFARTICLE values (?, ?, ?)";
+		    	try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+		    		preparedStmt.setInt(1, a.getAuthor().getAuthorId());
+		    		preparedStmt.setInt(2, article.getArticleId());
+		    		if(a.isMainAuthor())
+		    			preparedStmt.setBoolean(3, true);
+		    		else
+		    			preparedStmt.setBoolean(3, false);
+		    		preparedStmt.execute();
+		    	}catch (SQLException ex) {
+		    		ex.printStackTrace();
+		    	}
+		    }
 
-			ArrayList<PDF> pdfs = article.getSubmission().getVersions();
-			PDF pdf = pdfs.get(pdfs.size()-1);
-			query = "INSERT INTO PDF values (null, ?, ?, ?)";
-			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, article.getSubmission().getSubmissionId());
-				preparedStmt.setString(2, pdf.getPdfLink());
-				preparedStmt.setDate(3, pdf.getDate());
+		    ArrayList<PDF> pdfs = article.getSubmission().getVersions();
+		    PDF pdf = pdfs.get(pdfs.size()-1);
+		    query = "INSERT INTO PDF values (null, ?, ?, ?)";
+		    try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+		    	preparedStmt.setInt(1, article.getSubmission().getSubmissionId());
+		    	preparedStmt.setString(2, pdf.getPdfLink());
+		    	preparedStmt.setDate(3, pdf.getDate());
 
-				preparedStmt.execute();
-				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from PDF");
-				while(rs.next())
-					pdf.setPdfId(Integer.valueOf(rs.getString("last_id")));
-			}catch (SQLException ex) {
-				ex.printStackTrace();
-			}
+		    	preparedStmt.execute();
+		    	ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from PDF");
+		    	while(rs.next())
+		    		pdf.setPdfId(Integer.valueOf(rs.getString("last_id")));
+		    }catch (SQLException ex) {
+		    	ex.printStackTrace();
+		    }
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-	}
+    }
 
 	public static void addReviewers(ArrayList<Reviewer> reviewers) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
@@ -243,9 +248,10 @@ public class Database {
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 			for(Reviewer r : reviewers) {
-				String query = "INSERT INTO REVIEWERS values (null, ?)";
+				String query = "INSERT INTO REVIEWERS values (null, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setInt(1, r.getAcademicId());
+					preparedStmt.setInt(1, r.getAuthorOfArticle().getAuthor().getAuthorId());
+					preparedStmt.setInt(2, r.getAuthorOfArticle().getArticle().getArticleId());
 					preparedStmt.execute();
 
 					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
@@ -268,12 +274,13 @@ public class Database {
 			Reviewer reviewer = review.getReviewer();
 			Submission submission = review.getSubmission();
 			
-			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, null)";
+			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, ?, null)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, reviewer.getReviewerId());
 				preparedStmt.setInt(2, submission.getSubmissionId());
-				preparedStmt.setString(3, review.getSummary());
-				preparedStmt.setString(4, review.getTypingErrors());
+				preparedStmt.setInt(3, review.getArticle().getArticleId());
+				preparedStmt.setString(4, review.getSummary());
+				preparedStmt.setString(5, review.getTypingErrors());
 
 				preparedStmt.execute();
 			}catch (SQLException ex) {

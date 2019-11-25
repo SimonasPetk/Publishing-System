@@ -58,7 +58,7 @@ public class Author extends Academic{
 	
 	public void registerCoAuthors(Article article, ArrayList<Author> coauthors) {
 		for(Author author : coauthors) {
-			if(author.authorId != this.authorId) {
+			if(!author.emailId.equals(this.emailId)) {
 				AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, author, false);
 				author.addAuthorOfArticle(authorOfArticle);
 				article.addAuthorOfArticle(authorOfArticle);

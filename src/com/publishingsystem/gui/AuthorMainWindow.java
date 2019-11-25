@@ -80,7 +80,7 @@ public class AuthorMainWindow {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
-				new SubmitArticle();
+				new SubmitArticle(loggedInUser);
 			}
 		});
 		btnSubmitAnArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));

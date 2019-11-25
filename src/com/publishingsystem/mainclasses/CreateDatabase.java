@@ -59,6 +59,7 @@ public class CreateDatabase extends Database{
 				+ "editorID INT REFERENCES EDITORS(editorID),"
 				+ "ISSN INT REFERENCES JOURNALS(ISSN),"
 				+ "ChiefEditor BOOLEAN, "
+				+ "Retired BOOLEAN, "
 				+ "PRIMARY KEY (editorID, ISSN))";
 	}
 
@@ -88,7 +89,10 @@ public class CreateDatabase extends Database{
 	public static String createTableAuthors(){
 		return "CREATE TABLE AUTHORS ("
 				+ "authorID INT PRIMARY KEY AUTO_INCREMENT,"
-				+ "academicID INT REFERENCES ACADEMICS(academicID))";
+				+ "academicID INT REFERENCES ACADEMICS(academicID),"
+				+ "authorName TEXT, "
+				+ "university TEXT, "
+				+ "emailAddress TEXT)";
 	}
 
 	public static String createTableAuthorOfArticle(){
@@ -101,14 +105,16 @@ public class CreateDatabase extends Database{
 
 	public static String createTableReviewers() {
 		return "CREATE TABLE REVIEWERS ("
-				+ "reviewerID INT PRIMARY KEY AUTO_INCREMENT,"
-				+ "academicID INT REFERENCES ACADEMIC(academicID))";
+				+ "reviewerID INT PRIMARY KEY AUTO_INCREMENT, "
+				+ "authorID INT REFERENCES AUTHOROFARTICLE(authorID), "
+				+ "articleID INT REFERENCES AUTHOROFARTICLE(articleID))";
 	}
 
 	public static String createTableReviews() {
 		return "CREATE TABLE REVIEWS ("
 				+ "reviewerID INT REFERENCES REVIEWERS(academicID),"
 				+ "submissionID INT REFERENCES SUBMISSIONS(submissionID),"
+				+ "articleID INT REFERENCES REVIEWER(articleID), "
 				+ "summary TEXT,"
 				+ "typingErrors TEXT,"
 				+ "verdict TEXT,"
@@ -256,21 +262,21 @@ public class CreateDatabase extends Database{
 			System.out.println(list.nextElement());
 		System.out.println();
 
-		//dropTables();
-		//createTables();
+		dropTables();
+		createTables();
         
-		try (Connection con = DriverManager.getConnection(CONNECTION)) {
-            Statement statement = con.createStatement();
-            statement.execute("USE "+DATABASE+";");
-            /*
-            statement.execute("INSERT INTO ARTICLES VALUES (1, 12345, 1, 'Title of Article', 'This is a brief summary of this article.');");            
-            statement.execute("INSERT INTO VOLUMES VALUES (null, null, 12345);");
-            statement.execute("INSERT INTO EDITIONS VALUES (null, 1, null);");
-            statement.execute("INSERT INTO PUBLISHEDARTICLES VALUES (null, 52, 1);");*/
-		} catch (SQLException ex) {
-		    ex.printStackTrace();
-		}		
-
-        printAllRecords("ARTICLES");
+//		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+//            Statement statement = con.createStatement();
+//            statement.execute("USE "+DATABASE+";");
+//            /*
+//            statement.execute("INSERT INTO ARTICLES VALUES (1, 12345, 1, 'Title of Article', 'This is a brief summary of this article.');");            
+//            statement.execute("INSERT INTO VOLUMES VALUES (null, null, 12345);");
+//            statement.execute("INSERT INTO EDITIONS VALUES (null, 1, null);");
+//            statement.execute("INSERT INTO PUBLISHEDARTICLES VALUES (null, 52, 1);");*/
+//		} catch (SQLException ex) {
+//		    ex.printStackTrace();
+//		}		
+//
+//        printAllRecords("ACADEMICS");
     }
 }

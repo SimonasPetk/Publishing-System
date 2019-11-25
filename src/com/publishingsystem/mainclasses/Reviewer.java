@@ -4,6 +4,7 @@ import java.util.ArrayList;
 public class Reviewer extends Academic{
 	private ArrayList<Review> reviews;
 	private int reviewerId;
+	private AuthorOfArticle authorOfArticle;
 	
 	public Reviewer(int reviewerId, String title ,String forename, String surname, String emailId, String university, Hash hash) {
 		super(title, forename, surname, emailId, university, hash);
@@ -12,12 +13,17 @@ public class Reviewer extends Academic{
 	}
 	
 	//---POSSIBLY DELETE LATER---
-	public Reviewer(Author a) {
-		super(a.getTitle(), a.getForename(), a.getSurname(), a.getEmailId(), a.getUniversity(), a.getHash());
-		setAcademicId(a.getAcademicId());
+	public Reviewer(AuthorOfArticle a) {
+		super(a.getAuthor().getTitle(), a.getAuthor().getForename(), a.getAuthor().getSurname(), a.getAuthor().getEmailId(), a.getAuthor().getUniversity(), a.getAuthor().getHash());
+		setAcademicId(a.getAuthor().getAcademicId());
+		this.authorOfArticle = a;
 		this.reviews = new ArrayList<Review>();
 	}
 	
+	public AuthorOfArticle getAuthorOfArticle() {
+		return authorOfArticle;
+	}
+
 	public void setReviewerId(int id) {
 		this.reviewerId = id;
 	}
