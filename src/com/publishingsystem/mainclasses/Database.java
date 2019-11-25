@@ -174,6 +174,7 @@ public class Database {
 			
 			//Add submission to article table
 			String query = "INSERT INTO ARTICLES values (null, ?, null, ?, ?)";
+			//String query = "INSERT INTO ARTICLES VALUES (null, '" + article.getJournal().getISSN() + "', null,'" + article.getTitle() + "','" + article.getSummary() + "')";
 
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, article.getJournal().getISSN());
@@ -181,6 +182,18 @@ public class Database {
 				preparedStmt.setString(3, article.getSummary());
 				preparedStmt.execute();
 
+				/*
+				 * 
+		return "CREATE TABLE ARTICLES ("
+				+ "articleID INT PRIMARY KEY AUTO_INCREMENT,"
+				+ "ISSN INT REFERENCES JOURNAL(ISSN), "
+				+ "pdfID INT REFERENCES PDF(pdfID), "
+				+ "title TEXT,"
+				+ "summary TEXT)";
+	}
+	*/
+				 
+				
 				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ARTICLES");
 				while(rs.next())
 					article.setArticleId(Integer.valueOf(rs.getString("last_id")));

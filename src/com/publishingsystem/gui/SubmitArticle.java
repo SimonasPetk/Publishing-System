@@ -13,8 +13,10 @@ import java.awt.Font;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 
+import com.publishingsystem.mainclasses.Article;
 import com.publishingsystem.mainclasses.Author;
 import com.publishingsystem.mainclasses.Database;
+import com.publishingsystem.mainclasses.Hash;
 import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.Role;
@@ -47,7 +49,7 @@ public class SubmitArticle {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SubmitArticle window = new SubmitArticle(null);
+					SubmitArticle window = new SubmitArticle(new Author(1, "Dr", "kb", "kb", "Sheffield", "kb@gm.com",  new Hash("9d5be6810a8de8673cf2a5b83f2030393028b71127dd034beb9bd03f3a946302")));
 					window.frmSubmitAnArticle.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -113,24 +115,49 @@ public class SubmitArticle {
 		
 		JLabel lblPdfIsNot = new JLabel("PDF is not yet uploaded");
 		
+		JList list = new JList();
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		scrPaneAuthors.setViewportView(list);
+		
+		JList listOfJournals = new JList();
+		listOfJournals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		scrollPane.setViewportView(listOfJournals);
+		
+		ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
+        String[] listContents = new String[allJournals.size()];
+        for (int i=0; i<allJournals.size(); i++) {
+            listContents[i] = allJournals.get(i).getJournalName();// + " (ISSN " + allJournals.get(i).getISSN() + ")";
+        }
+		
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				coAuthors.add(a);
+				System.out.println(coAuthors);
 				Database.registerAuthors(coAuthors);
 				
 				// Why do we need this?
 				JOptionPane.showMessageDialog(null, "To access your Author/Reviewer roles please Log Out and Login In again to the system. Thank you!");
-
-				new JournalWindow(a.getAcademicId());
+				String title = txtfldTitle.toString();
+				String summary = scrPaneAbstract.toString();
+				Journal journal = null;
+				for (Journal item: allJournals) {	
+					if (item.getJournalName() == listOfJournals.getSelectedValue()) {
+						journal = item;
+					}
+				}
+				System.out.println(journal.toString());
+				Database.addSubmission(new Article(-1, title, summary, journal));
+				//Don't see a reason to open the addjournal window here JournalWindow(a.getAcademicId());
+				//This is for just addding co-authors
 				frmSubmitAnArticle.dispose();
 			}
 		});
 		btnSubmit.setFont(new Font("Tahoma", Font.BOLD, 15));
 		
 		SubmitArticle submitArticleGUI = this;
-		JButton btnRegisterANew = new JButton("Register a New Author");
+		JButton btnRegisterANew = new JButton("Register a New Co-Author");
 		btnRegisterANew.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -208,22 +235,8 @@ public class SubmitArticle {
 					.addGap(13))
 		);
 		
-		JList list = new JList();
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		scrPaneAuthors.setViewportView(list);
-		
 		JEditorPane editPaneAbstract = new JEditorPane();
 		scrPaneAbstract.setViewportView(editPaneAbstract);
-		
-		JList listOfJournals = new JList();
-		listOfJournals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		scrollPane.setViewportView(listOfJournals);
-		
-		ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
-        String[] listContents = new String[allJournals.size()];
-        for (int i=0; i<allJournals.size(); i++) {
-            listContents[i] = allJournals.get(i).getJournalName() + " (ISSN " + allJournals.get(i).getISSN() + ")";
-        }
         
 		listOfJournals.setModel(new AbstractListModel() {
 			//String[] values = new String[] {"First Journal", "Second journal", "Third Journal", "", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal"};

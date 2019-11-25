@@ -271,6 +271,6 @@ public class CreateDatabase extends Database{
 		    ex.printStackTrace();
 		}		
 
-        printAllRecords("ARTICLES");
+        printAllRecords("ACADEMICS");
     }
 }
