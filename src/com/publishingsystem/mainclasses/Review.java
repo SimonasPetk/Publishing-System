@@ -4,20 +4,26 @@ import java.util.ArrayList;
 public class Review {
 	private Reviewer reviewer;
 	private Submission submission;
+	private Article article;
 	private String summary;
 	private String typingErrors;
 	private ArrayList<Criticism> criticisms;
 	private Verdict verdict;
 	
-	public Review(Reviewer reviewer, Submission submission, String summary, String typingErrors, ArrayList<Criticism> criticisms) {
+	public Review(Reviewer reviewer, Submission submission, String summary, String typingErrors, ArrayList<Criticism> criticisms, Article article) {
 		this.reviewer = reviewer;
 		this.submission = submission;
 		this.summary = summary;
 		this.typingErrors = typingErrors;
 		this.criticisms = new ArrayList<Criticism>();
 		this.criticisms = criticisms;
+		this.article = article;
 	}
 	
+	public Article getArticle() {
+		return article;
+	}
+
 	public void setVerdict(Verdict v) {
 		this.verdict = v;
 	}

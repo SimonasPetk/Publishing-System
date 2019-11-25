@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class RetrieveDatabase extends Database{
@@ -138,7 +139,7 @@ public class RetrieveDatabase extends Database{
 										while(crticismRes.next()) {
 											criticisms.add(new Criticism(crticismRes.getString("CRITICISM"), crticismRes.getString("ANSWER")));
 										}
-										Review review = new Review(null, s, reviewRes.getString("SUMMARY"), reviewRes.getString("TYPINGERRORS"), criticisms);
+										Review review = new Review(null, s, reviewRes.getString("SUMMARY"), reviewRes.getString("TYPINGERRORS"), criticisms, null);
 										s.addReview(review);
 									}catch (SQLException ex) {
 										ex.printStackTrace();
@@ -156,13 +157,15 @@ public class RetrieveDatabase extends Database{
 			}
 			
 			query = "SELECT R.REVIEWERID, REV.SUMMARY, TYPINGERRORS, REV.SUBMISSIONID, S.ARTICLEID, "
-					+ "S.STATUS, A.TITLE, A.SUMMARY AS ARTICLESUMMARY, J.ISSN, J.NAME, J.DATEOFPUBLICATION "
-					+ "FROM REVIEWERS R, REVIEWS REV, SUBMISSIONS S, ARTICLES A, JOURNALS J "
+					+ "S.STATUS, A.TITLE, A.SUMMARY AS ARTICLESUMMARY, J.ISSN, J.NAME, J.DATEOFPUBLICATION FROM "
+					+ "REVIEWERS R, REVIEWS REV, SUBMISSIONS S, ARTICLES A, AUTHOROFARTICLE Aoa, AUTHORS Aut, JOURNALS J "
 					+ "WHERE R.REVIEWERID = REV.REVIEWERID "
 					+ "AND REV.SUBMISSIONID = S.SUBMISSIONID "
 					+ "AND S.ARTICLEID = A.ARTICLEID "
 					+ "AND A.ISSN = J.ISSN "
-					+ "AND R.ACADEMICID = ?";
+					+ "AND R.AUTHORID = Aoa.AUTHORID "
+					+ "AND Aoa.AUTHORID = Aut.AUTHORID "
+					+ "AND Aut.ACADEMICID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, academicId);
 				ResultSet res = preparedStmt.executeQuery();
@@ -182,7 +185,7 @@ public class RetrieveDatabase extends Database{
 						while(crticismRes.next()) {
 							criticisms.add(new Criticism(crticismRes.getString("CRITICISM"), crticismRes.getString("ANSWER")));
 						}
-						Review review = new Review(reviewer, submission, res.getString("SUMMARY"), res.getString("TYPINGERRORS"), criticisms);
+						Review review = new Review(reviewer, submission, res.getString("SUMMARY"), res.getString("TYPINGERRORS"), criticisms, null);
 						reviewer.addReview(submission, review);
 					}catch (SQLException ex) {
 						ex.printStackTrace();
@@ -199,6 +202,38 @@ public class RetrieveDatabase extends Database{
 		}
 		return null;
 			
+	}
+	
+	public static int getNumberOfReviewsDone(Article article) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            statement.close();
+            int numReviewsDone = 0;
+			String query = "SELECT Art.ARTICLEID, A.AUTHORID, R.REVIEWERID, Count(*) AS REVIEWS "
+						+ "FROM ARTICLES Art, AUTHOROFARTICLE Aoa, AUTHORS A, REVIEWERS R, REVIEWS Rev "
+						+ "WHERE Aoa.AUTHORID = A.AUTHORID "
+						+ "AND Aoa.ARTICLEID = Art.ARTICLEID "
+						+ "AND R.AUTHORID = Aoa.AUTHORID "
+						+ "AND R.REVIEWERID = Rev.REVIEWERID "
+						+ "AND Aoa.ARTICLEID = R.ARTICLEID "
+						+ "AND Rev.ARTICLEID = R.ARTICLEID "
+						+ "AND Art.ARTICLEID = ? "
+						+ "GROUP BY A.AUTHORID, R.REVIEWERID";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, article.getArticleId());
+	            ResultSet res = preparedStmt.executeQuery();
+				while(res.next()) {
+					numReviewsDone++;
+				}
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			return numReviewsDone;
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return 0;
 	}
 	
     public static Journal getJournal(int issn) {
@@ -288,22 +323,23 @@ public class RetrieveDatabase extends Database{
 			}else if(a instanceof Author) {
 				Author author = (Author)a;
 				System.out.println("Author: "+author);
-				for(AuthorOfArticle aoa : author.getAuthorOfArticles()){
-					System.out.println(aoa.getAuthor().getAuthorId()+" "+aoa.getArticle().getArticleId()+" MainAuthor: "+aoa.isMainAuthor());
-					Article article = aoa.getArticle();
-					Submission s = article.getSubmission();
-					System.out.println(s.getStatus());
-					System.out.println();
-					if(s != null)
-						for(Review r : s.getReviews())
-							System.out.println(r);
-				};
+				System.out.println("Number of reviews done by team: "+RetrieveDatabase.getNumberOfReviewsDone(author.getAuthorOfArticles().get(1).getArticle()));
+//				for(AuthorOfArticle aoa : author.getAuthorOfArticles()){
+//					System.out.println(aoa.getAuthor().getAuthorId()+" "+aoa.getArticle().getArticleId()+" MainAuthor: "+aoa.isMainAuthor());
+//					Article article = aoa.getArticle();
+//					Submission s = article.getSubmission();
+//					System.out.println(s.getStatus());
+//					System.out.println();
+//					if(s != null)
+//						for(Review r : s.getReviews())
+//							System.out.println(r);
+//				};
 			}else if(a instanceof Reviewer) {
 				Reviewer reviewer = (Reviewer)a;
-				System.out.println("Reviewer "+reviewer);
-				for(Review review : reviewer.getReviews()) {
-					System.out.println(review);
-				}
+//				System.out.println("Reviewer "+reviewer);
+//				for(Review review : reviewer.getReviews()) {
+//					System.out.println(review);
+//				}
 			}
 		}
 	}
