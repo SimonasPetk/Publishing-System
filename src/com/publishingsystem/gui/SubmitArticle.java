@@ -157,8 +157,9 @@ public class SubmitArticle {
 						journal = item;
 					}
 				}
-				System.out.println(journal.toString());
+				//System.out.println(journal.toString());
 				Database.addSubmission(new Article(10, title, summary, journal));
+				
 				//Don't see a reason to open the addjournal window here JournalWindow(a.getAcademicId());
 				//This is for just adding co-authors
 				frmSubmitAnArticle.dispose();

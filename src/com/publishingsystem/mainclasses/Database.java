@@ -183,9 +183,9 @@ public class Database {
 				preparedStmt.setString(3, article.getSummary());
 				preparedStmt.execute();		
 				
-				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ARTICLES");
-				while(rs.next())
-					article.setArticleId(Integer.valueOf(rs.getString("last_id")));
+				//ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ARTICLES");
+				//while(rs.next())
+				//	article.setArticleId(Integer.valueOf(rs.getString("last_id")));
 			} catch (SQLException ex) {
 				ex.printStackTrace();
 			}
@@ -197,9 +197,9 @@ public class Database {
 		    	preparedStmt.setString(2, SubmissionStatus.SUBMITTED.asString());
 		    	preparedStmt.execute();
 
-		    	ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from SUBMISSIONS");
-		    	while(rs.next())
-		    		article.getSubmission().setSubmissionId(Integer.valueOf(rs.getString("last_id")));
+		    	//ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from SUBMISSIONS");
+		    	//while(rs.next())
+		    		//article.getSubmission().setSubmissionId(Integer.valueOf(rs.getString("last_id")));
 		    } catch (SQLException ex) {
 		    	ex.printStackTrace();
 		    }
@@ -219,22 +219,25 @@ public class Database {
 		    		ex.printStackTrace();
 		    	}
 		    }
+		    //This breaks because we have not got adding pdf's yet
+		    //When we have it can be uncommented
+		    //System.out.println("This is just before line for creating the pdf");
+		    //System.out.println(article.getSubmission());
+		    //ArrayList<PDF> pdfs = article.getSubmission().getVersions();
+		    //PDF pdf = pdfs.get(pdfs.size()-1);
+		    //query = "INSERT INTO PDF values (null, ?, ?, ?)";
+		    //try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+		    	//preparedStmt.setInt(1, article.getSubmission().getSubmissionId());
+		    	//preparedStmt.setString(2, pdf.getPdfLink());
+		    	//preparedStmt.setDate(3, pdf.getDate());
 
-		    ArrayList<PDF> pdfs = article.getSubmission().getVersions();
-		    PDF pdf = pdfs.get(pdfs.size()-1);
-		    query = "INSERT INTO PDF values (null, ?, ?, ?)";
-		    try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-		    	preparedStmt.setInt(1, article.getSubmission().getSubmissionId());
-		    	preparedStmt.setString(2, pdf.getPdfLink());
-		    	preparedStmt.setDate(3, pdf.getDate());
-
-		    	preparedStmt.execute();
-		    	ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from PDF");
-		    	while(rs.next())
-		    		pdf.setPdfId(Integer.valueOf(rs.getString("last_id")));
-		    }catch (SQLException ex) {
-		    	ex.printStackTrace();
-		    }
+		    	//preparedStmt.execute();
+		    	//ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from PDF");
+		    	//while(rs.next())
+		    		//pdf.setPdfId(Integer.valueOf(rs.getString("last_id")));
+		    //}catch (SQLException ex) {
+		    	//ex.printStackTrace();
+		    //}
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -562,6 +565,11 @@ public class Database {
 			while(res.next()) {
 				System.out.println(res.getString(1));
 			}
+			Statement printStatements = con.createStatement();
+			printStatements.execute("USE "+DATABASE+";");
+			printStatements.execute("SELECT * FROM SUBMISSIONS;");
+			printStatements.close();
+			System.out.println("Done");
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
