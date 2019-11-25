@@ -8,8 +8,8 @@ public class Database {
 	protected static final String DATABASE = "team022";
 
 	//localhost
-	//protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-	//protected static final String DATABASE = "publishing_system";
+//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+//	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -173,27 +173,21 @@ public class Database {
 			
 			//Add submission to article table
 			
-			/*String query = "INSERT INTO ARTICLES values (null, ?, null, ?, ?)";
+			String query = "INSERT INTO ARTICLES values (null, ?, null, ?, ?)";
 
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, article.getJournal().getISSN());
 				preparedStmt.setString(2, article.getTitle());
 				preparedStmt.setString(3, article.getSummary());
 				preparedStmt.execute();
-			*/
-
-			String query = "INSERT INTO ARTICLES VALUES (null, '" + article.getJournal().getISSN() + "', null,'" + article.getTitle() + "','" + article.getSummary() + "')";
-			System.out.println(query);
-			statement.execute(query);
-			statement.close();
-						 
+		
 				
-				//ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ARTICLES");
-				//while(rs.next())
-					//article.setArticleId(Integer.valueOf(rs.getString("last_id")));
-		//}catch (SQLException ex) {
-			//ex.printStackTrace();
-		//}
+				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ARTICLES");
+				while(rs.next())
+					article.setArticleId(Integer.valueOf(rs.getString("last_id")));
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
 
 		    query = "INSERT INTO SUBMISSIONS values (null, ?, ?)";
 
