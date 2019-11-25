@@ -234,6 +234,30 @@ public class RetrieveDatabase extends Database{
         }
         return result;
     }
+    
+    public static Author getAuthorByID(int academicID) {
+        Author result = null;
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            String query = "SELECT title, forename, surname, emailAddress, university, hash FROM ACADEMICS WHERE academicID = " + academicID + ";";
+            ResultSet res = statement.executeQuery(query);
+            if (res.next()) {
+                String resTitle = res.getString(1);
+                String resForenames = res.getString(2);
+                String resSurname = res.getString(3);
+                String resEmail = res.getString(4);
+                String resUniversity = res.getString(5);
+                //Hash resHash = res.getString(6);
+                Hash resHash = null;
+                
+                result = new Author(academicID, resTitle, resForenames, resSurname, resEmail, resUniversity, resHash);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return result;        
+    }
 	
     public static String[] getNamesByID(int academicID) {
         String[] results = new String[2];

@@ -181,14 +181,14 @@ public class JournalWindow {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (academicID == 0) {
-                    JOptionPane.showMessageDialog(null, "Please login before submitting an article", "Submit Article", 0);
-				} else {
-				    //new RegistrationWindow(Role.AUTHOR);
-				    
-				    for (Academic acad : RetrieveDatabase.getRoles("kb@gm.com")) System.out.println(acad);
-				    
-				    //new SubmitArticle(loggedInAuthor);
-				    //frmJournalWindow.dispose();
+				    // Let the user register as an academic/AUTHOR if they are not logged in
+				    new RegistrationWindow(Role.AUTHOR, (SubmitArticle)null);
+				    frmJournalWindow.dispose();	                
+                } else {
+                    // Display the SubmitArticle window if the user is logged in
+                    Author loggedInAuthor = RetrieveDatabase.getAuthorByID(academicID);                    
+                    new SubmitArticle(loggedInAuthor);
+				    frmJournalWindow.dispose();
 				}
 			}
 		});
