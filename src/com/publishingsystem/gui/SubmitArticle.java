@@ -39,7 +39,7 @@ public class SubmitArticle {
 
 	private JFrame frmSubmitAnArticle;
 	private JTextField txtfldTitle;
-	
+	private String selectedJournalName;
 	private ArrayList<Author> coAuthors;
 
 	/**
@@ -49,8 +49,8 @@ public class SubmitArticle {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					//SubmitArticle window = new SubmitArticle(new Author(1, "Dr", "kb", "kb", "Sheffield", "kb@gm.com", new Hash("9d5be6810a8de8673cf2a5b83f2030393028b71127dd034beb9bd03f3a946302")));
-					SubmitArticle window = new SubmitArticle(null);
+					SubmitArticle window = new SubmitArticle(new Author(1, "Dr", "kb", "kb", "Sheffield", "kb@gm.com", new Hash("9d5be6810a8de8673cf2a5b83f2030393028b71127dd034beb9bd03f3a946302")));
+					//SubmitArticle window = new SubmitArticle(null);
 					window.frmSubmitAnArticle.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -80,7 +80,7 @@ public class SubmitArticle {
 		frmSubmitAnArticle.setBounds(100, 100, 700, 552);
 		frmSubmitAnArticle.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmSubmitAnArticle.setVisible(true);
-		
+		selectedJournalName = null;
 		JScrollPane scrollPane = new JScrollPane();
 		
 		JLabel lblSubmitANewArticle = new JLabel("Submit a New Article");
@@ -124,11 +124,13 @@ public class SubmitArticle {
 		listOfJournals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane.setViewportView(listOfJournals);
 		listOfJournals.addMouseListener(new MouseAdapter() {
+			
 			public void mousePressed(MouseEvent e) {
-				String selectedJournalName = (String)listOfJournals.getSelectedValue();
-				System.out.println(selectedJournalName);
+				selectedJournalName = (String)listOfJournals.getSelectedValue();
 			}
+			
 		});
+		System.out.println(selectedJournalName);
 
 		
 		ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
@@ -151,14 +153,14 @@ public class SubmitArticle {
 				String summary = null;
 				Journal journal = null;
 				for (Journal item: allJournals) {	
-					if (item.getJournalName() == listOfJournals.getSelectedValue()) {
+					if (item.getJournalName() == selectedJournalName) {
 						journal = item;
 					}
 				}
 				System.out.println(journal.toString());
-				Database.addSubmission(new Article(-1, title, summary, journal));
+				Database.addSubmission(new Article(10, title, summary, journal));
 				//Don't see a reason to open the addjournal window here JournalWindow(a.getAcademicId());
-				//This is for just addding co-authors
+				//This is for just adding co-authors
 				frmSubmitAnArticle.dispose();
 			}
 		});
