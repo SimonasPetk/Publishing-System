@@ -40,6 +40,7 @@ public class SubmitArticle {
 	private JFrame frmSubmitAnArticle;
 	private JTextField txtfldTitle;
 	private String selectedJournalName;
+
 	private ArrayList<Author> coAuthors;
 
 	/**
@@ -66,7 +67,7 @@ public class SubmitArticle {
 		initialize(a);
 		coAuthors = new ArrayList<Author>();
 	}
-	
+
 	public void addCoAuthor(Author coAuthor) {
 		this.coAuthors.add(coAuthor);
 	}
@@ -80,46 +81,48 @@ public class SubmitArticle {
 		frmSubmitAnArticle.setBounds(100, 100, 700, 552);
 		frmSubmitAnArticle.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmSubmitAnArticle.setVisible(true);
+
 		selectedJournalName = null;
+
 		JScrollPane scrollPane = new JScrollPane();
-		
+
 		JLabel lblSubmitANewArticle = new JLabel("Submit a New Article");
 		lblSubmitANewArticle.setHorizontalAlignment(SwingConstants.CENTER);
 		lblSubmitANewArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JLabel lblChooseAJournal = new JLabel("Choose a Journal to which Publish to:");
 		lblChooseAJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JLabel lblTitle = new JLabel("Title:");
 		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		txtfldTitle = new JTextField();
 		txtfldTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		txtfldTitle.setColumns(10);
-		
+
 		JLabel lblAbstract = new JLabel("Abstract:");
 		lblAbstract.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JScrollPane scrPaneAbstract = new JScrollPane();
 		scrPaneAbstract.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		
+
 		JLabel lblAuthors = new JLabel("Authors:");
 		lblAuthors.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JScrollPane scrPaneAuthors = new JScrollPane();
 		scrPaneAuthors.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		
+
 		JLabel lblNewLabel_2 = new JLabel("Please Register Your Article's Every Co-Author");
-		
+
 		JButton btnUploadPdf = new JButton("Upload PDF");
 		btnUploadPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JLabel lblPdfIsNot = new JLabel("PDF is not yet uploaded");
-		
+
 		JList list = new JList();
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrPaneAuthors.setViewportView(list);
-		
+
 		JList listOfJournals = new JList();
 		listOfJournals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane.setViewportView(listOfJournals);
@@ -132,13 +135,13 @@ public class SubmitArticle {
 		});
 		System.out.println(selectedJournalName);
 
-		
+
 		ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
         String[] listContents = new String[allJournals.size()];
         for (int i=0; i<allJournals.size(); i++) {
             listContents[i] = allJournals.get(i).getJournalName();// + " (ISSN " + allJournals.get(i).getISSN() + ")";
         }
-		
+
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.addMouseListener(new MouseAdapter() {
 			@Override
@@ -146,12 +149,13 @@ public class SubmitArticle {
 				coAuthors.add(a);
 				System.out.println(coAuthors);
 				Database.registerAuthors(coAuthors);
-				
+
 				// Why do we need this?
 				JOptionPane.showMessageDialog(null, "To access your Author/Reviewer roles please Log Out and Login In again to the system. Thank you!");
 				String title = txtfldTitle.getText();
 				String summary = null;
 				Journal journal = null;
+
 				for (Journal item: allJournals) {	
 					if (item.getJournalName() == selectedJournalName) {
 						journal = item;
@@ -165,15 +169,15 @@ public class SubmitArticle {
 			}
 		});
 		btnSubmit.setFont(new Font("Tahoma", Font.BOLD, 15));
-		
+
 		SubmitArticle submitArticleGUI = this;
 		JButton btnRegisterANew = new JButton("Register a New Co-Author");
 		btnRegisterANew.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				
+
 				new RegistrationWindow(Role.COAUTHOR, submitArticleGUI);
-				
+
 			}
 		});
 		btnRegisterANew.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -244,14 +248,14 @@ public class SubmitArticle {
 					.addComponent(btnSubmit)
 					.addGap(13))
 		);
-		
+
 		JEditorPane editPaneAbstract = new JEditorPane();
 		scrPaneAbstract.setViewportView(editPaneAbstract);
-        
+
 		listOfJournals.setModel(new AbstractListModel() {
 			//String[] values = new String[] {"First Journal", "Second journal", "Third Journal", "", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal"};
             String[] values = listContents;
-            
+
 		    public int getSize() {
 				return values.length;
 			}

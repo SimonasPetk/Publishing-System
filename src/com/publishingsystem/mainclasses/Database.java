@@ -4,12 +4,12 @@ import java.util.*;
 import java.sql.Date;
 
 public class Database {
-	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	protected static final String DATABASE = "team022";
+//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+//	protected static final String DATABASE = "team022";
 
 	//localhost
-//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-//	protected static final String DATABASE = "publishing_system";
+	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -112,9 +112,12 @@ public class Database {
 					ex.printStackTrace();
 				}
 
-				query = "INSERT INTO AUTHORS values (null, ?)";
+				query = "INSERT INTO AUTHORS values (null, ?, ?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, a.getAcademicId());
+					preparedStmt.setString(2, a.getForename()+a.getSurname());
+					preparedStmt.setString(3, a.getUniversity());
+					preparedStmt.setString(4, a.getEmailId());
 					preparedStmt.execute();
 
 					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from AUTHORS");
@@ -147,7 +150,7 @@ public class Database {
 			}
 
 			for(EditorOfJournal e : j.getBoardOfEditors()) {
-				query = "INSERT INTO EDITOROFJOURNAL values (?, ?, ?)";
+				query = "INSERT INTO EDITOROFJOURNAL values (?, ?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, e.getEditor().getEditorId());
 					preparedStmt.setInt(2, j.getISSN());
@@ -155,6 +158,7 @@ public class Database {
 						preparedStmt.setBoolean(3, true);
 					else
 						preparedStmt.setBoolean(3, false);
+					preparedStmt.setBoolean(4, e.isTempRetired());
 					preparedStmt.execute();
 				}catch (SQLException ex) {
 					ex.printStackTrace();
@@ -244,9 +248,10 @@ public class Database {
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 			for(Reviewer r : reviewers) {
-				String query = "INSERT INTO REVIEWERS values (null, ?)";
+				String query = "INSERT INTO REVIEWERS values (null, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setInt(1, r.getAcademicId());
+					preparedStmt.setInt(1, r.getAuthorOfArticle().getAuthor().getAuthorId());
+					preparedStmt.setInt(2, r.getAuthorOfArticle().getArticle().getArticleId());
 					preparedStmt.execute();
 
 					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
@@ -269,12 +274,13 @@ public class Database {
 			Reviewer reviewer = review.getReviewer();
 			Submission submission = review.getSubmission();
 			
-			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, null)";
+			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, ?, null)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, reviewer.getReviewerId());
 				preparedStmt.setInt(2, submission.getSubmissionId());
-				preparedStmt.setString(3, review.getSummary());
-				preparedStmt.setString(4, review.getTypingErrors());
+				preparedStmt.setInt(3, review.getArticle().getArticleId());
+				preparedStmt.setString(4, review.getSummary());
+				preparedStmt.setString(5, review.getTypingErrors());
 
 				preparedStmt.execute();
 			}catch (SQLException ex) {
