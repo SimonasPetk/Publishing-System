@@ -58,4 +58,8 @@ public class Submission{
 	public void addReview(Review r) {
 		this.reviews.add(r);
 	}
+	
+	public String toString() {
+		return "Submission: "+this.article.getTitle()+" "+this.article.getSummary()+" "+this.getArticle().getJournal().getJournalName();
+	}
 }

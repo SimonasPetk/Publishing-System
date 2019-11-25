@@ -41,12 +41,20 @@ public class RetrieveDatabase extends Database{
 		return null;
 	}
 	
-	public static ArrayList<Academic> getRoles(String email){
+	/** 
+	 * getRoles
+	 * Get the possible roles of an academic.
+	 * @param email The email of the academic
+	 * @return Academic[] an array of academic roles,  
+	 * where the zeroth index is editor, first is author
+	 * second is reviewer
+	 */
+	public static Academic[] getRoles(String email){
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			ArrayList<Academic> roles = new ArrayList<Academic>();
+			Academic[] roles = new Academic[3];
 			
 			String query = "SELECT academicID, title, forename, surname, university, emailAddress FROM ACADEMICS WHERE emailAddress = ?";
 			int academicId = -1;
@@ -85,7 +93,7 @@ public class RetrieveDatabase extends Database{
 					journal.addEditorToBoard(editorOfJournal);
 					editor.addEditorOfJournal(editorOfJournal);
 				}
-				roles.add(editor);
+				roles[0] = editor;
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
@@ -147,7 +155,7 @@ public class RetrieveDatabase extends Database{
 								}
 							}
 						}
-						roles.add(author);
+						roles[1] = author;
 					}catch (SQLException ex) {
 						ex.printStackTrace();
 					}
@@ -191,7 +199,7 @@ public class RetrieveDatabase extends Database{
 						ex.printStackTrace();
 					}
 				}
-				roles.add(reviewer);
+				roles[2] = reviewer;
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
@@ -234,6 +242,39 @@ public class RetrieveDatabase extends Database{
 			ex.printStackTrace();
 		}
 		return 0;
+	}
+	
+	public static ArrayList<Submission> getSubmissions(String email){
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            statement.close();
+            String query = "SELECT S.SUBMISSIONID, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY, "
+	            		+ "J.ISSN, J.NAME, J.DATEOFPUBLICATION "
+	            		+ "FROM SUBMISSIONS S, ARTICLES Art, JOURNALS J, AUTHOROFARTICLE Aoa, AUTHORS A "
+	            		+ "WHERE S.ARTICLEID = Art.ARTICLEID "
+	            		+ "AND Art.ARTICLEID = Aoa.ARTICLEID "
+	            		+ "AND Aoa.AUTHORID = A.AUTHORID "
+	            		+ "AND Art.ISSN = J.ISSN "
+	            		+ "AND A.UNIVERSITY != ? "
+	            		+ "GROUP BY S.SUBMISSIONID";
+            ArrayList<Submission> submissions = new ArrayList<Submission>();
+            try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setString(1, email);
+				ResultSet res = preparedStmt.executeQuery();
+				while(res.next()) {
+					Journal journal = new Journal(res.getInt("ISSN"), res.getString("name"), res.getDate("dateOfPublication"));
+					Article	article = new Article(res.getInt("articleID"), res.getString("title"), res.getString("summary"), journal);
+					submissions.add(new Submission(res.getInt("submissionID"), article, SubmissionStatus.valueOf(res.getString("status")), null));
+				}
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+            return submissions;
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return null;
 	}
 	
     public static Journal getJournal(int issn) {
@@ -312,19 +353,23 @@ public class RetrieveDatabase extends Database{
     }
     
 	public static void main(String[] args) {
-		ArrayList<Academic> roles1 = RetrieveDatabase.getRoles("j.doe@uniofdoe.ac.uk");
-		for(Academic a : roles1) {
-			if(a instanceof Editor) {
-				Editor e = (Editor)a;
-				System.out.println(e);
-				for(EditorOfJournal eoj : e.getEditorOfJournals()){
-					System.out.println(eoj.getEditor().getEditorId() +" "+ eoj.getJournal().getISSN()+" ChiefEditor: "+eoj.isChiefEditor());
-				};
-			}else if(a instanceof Author) {
-				Author author = (Author)a;
-				System.out.println("Author: "+author);
-				System.out.println("Number of reviews done by team: "+RetrieveDatabase.getNumberOfReviewsDone(author.getAuthorOfArticles().get(1).getArticle()));
-//				for(AuthorOfArticle aoa : author.getAuthorOfArticles()){
+		Academic[] roles1 = RetrieveDatabase.getRoles("j.doe@uniofdoe.ac.uk");
+		Editor e = (Editor)roles1[0];
+		Author a = (Author)roles1[1];
+		Reviewer r = (Reviewer)roles1[2];
+		if(e != null) {
+			System.out.println(e);
+			for(EditorOfJournal eoj : e.getEditorOfJournals()){
+				System.out.println(eoj.getEditor().getEditorId() +" "+ eoj.getJournal().getISSN()+" ChiefEditor: "+eoj.isChiefEditor());
+			};
+		}
+		if(a != null) {
+			System.out.println("Author: "+a);
+			System.out.println("Number of reviews done by team: "+RetrieveDatabase.getNumberOfReviewsDone(a.getAuthorOfArticles().get(1).getArticle()));
+			for(Submission s : RetrieveDatabase.getSubmissions(a.getEmailId())){
+				System.out.println(s);
+			}
+//				for(AuthorOfArticle aoa : a.getAuthorOfArticles()){
 //					System.out.println(aoa.getAuthor().getAuthorId()+" "+aoa.getArticle().getArticleId()+" MainAuthor: "+aoa.isMainAuthor());
 //					Article article = aoa.getArticle();
 //					Submission s = article.getSubmission();
@@ -334,13 +379,12 @@ public class RetrieveDatabase extends Database{
 //						for(Review r : s.getReviews())
 //							System.out.println(r);
 //				};
-			}else if(a instanceof Reviewer) {
-				Reviewer reviewer = (Reviewer)a;
-//				System.out.println("Reviewer "+reviewer);
-//				for(Review review : reviewer.getReviews()) {
+		}
+		if(r != null) {
+//				System.out.println("Reviewer "+r);
+//				for(Review review : r.getReviews()) {
 //					System.out.println(review);
 //				}
-			}
 		}
 	}
 }
