@@ -89,7 +89,10 @@ public class CreateDatabase extends Database{
 	public static String createTableAuthors(){
 		return "CREATE TABLE AUTHORS ("
 				+ "authorID INT PRIMARY KEY AUTO_INCREMENT,"
-				+ "academicID INT REFERENCES ACADEMICS(academicID))";
+				+ "academicID INT REFERENCES ACADEMICS(academicID),"
+				+ "authorName TEXT, "
+				+ "university TEXT, "
+				+ "emailAddress TEXT)";
 	}
 
 	public static String createTableAuthorOfArticle(){

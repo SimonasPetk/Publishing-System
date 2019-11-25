@@ -4,12 +4,12 @@ import java.util.*;
 import java.sql.Date;
 
 public class Database {
-	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	protected static final String DATABASE = "team022";
+//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+//	protected static final String DATABASE = "team022";
 
 	//localhost
-//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-//	protected static final String DATABASE = "publishing_system";
+	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -112,9 +112,12 @@ public class Database {
 					ex.printStackTrace();
 				}
 
-				query = "INSERT INTO AUTHORS values (null, ?)";
+				query = "INSERT INTO AUTHORS values (null, ?, ?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, a.getAcademicId());
+					preparedStmt.setString(2, a.getForename()+a.getSurname());
+					preparedStmt.setString(3, a.getUniversity());
+					preparedStmt.setString(4, a.getEmailId());
 					preparedStmt.execute();
 
 					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from AUTHORS");
