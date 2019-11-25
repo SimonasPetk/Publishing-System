@@ -4,12 +4,12 @@ import java.util.*;
 import java.sql.Date;
 
 public class Database {
-//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-//	protected static final String DATABASE = "team022";
+	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+	protected static final String DATABASE = "team022";
 
 	//localhost
-	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-	protected static final String DATABASE = "publishing_system";
+//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+//	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -175,26 +175,23 @@ public class Database {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			
-			//Add submission to article table
-			
+			// Add submission to article table
 			String query = "INSERT INTO ARTICLES values (null, ?, null, ?, ?)";
-
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, article.getJournal().getISSN());
 				preparedStmt.setString(2, article.getTitle());
 				preparedStmt.setString(3, article.getSummary());
-				preparedStmt.execute();
-		
+				preparedStmt.execute();		
 				
 				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ARTICLES");
 				while(rs.next())
 					article.setArticleId(Integer.valueOf(rs.getString("last_id")));
-			}catch (SQLException ex) {
+			} catch (SQLException ex) {
 				ex.printStackTrace();
 			}
 
+			// Add submission to submissions table
 		    query = "INSERT INTO SUBMISSIONS values (null, ?, ?)";
-
 		    try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 		    	preparedStmt.setInt(1, article.getArticleId());
 		    	preparedStmt.setString(2, SubmissionStatus.SUBMITTED.asString());
@@ -203,13 +200,14 @@ public class Database {
 		    	ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from SUBMISSIONS");
 		    	while(rs.next())
 		    		article.getSubmission().setSubmissionId(Integer.valueOf(rs.getString("last_id")));
-		    }catch (SQLException ex) {
+		    } catch (SQLException ex) {
 		    	ex.printStackTrace();
 		    }
 
+		    // Register each author as an author of the article
 		    for(AuthorOfArticle a : article.getAuthorsOfArticle()) {
 		    	query = "INSERT INTO AUTHOROFARTICLE values (?, ?, ?)";
-		    	try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+		    	try(PreparedStatement preparedStmt = con.prepareStatement(query)) {
 		    		preparedStmt.setInt(1, a.getAuthor().getAuthorId());
 		    		preparedStmt.setInt(2, article.getArticleId());
 		    		if(a.isMainAuthor())
@@ -217,7 +215,7 @@ public class Database {
 		    		else
 		    			preparedStmt.setBoolean(3, false);
 		    		preparedStmt.execute();
-		    	}catch (SQLException ex) {
+		    	} catch (SQLException ex) {
 		    		ex.printStackTrace();
 		    	}
 		    }

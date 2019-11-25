@@ -89,12 +89,10 @@ public class LoginScreen {
                         JOptionPane.showMessageDialog(null, "Login Successful", "Login", 1);
                         password = ""; // clear password for security
                         
-                        ArrayList<Academic> userRoles = RetrieveDatabase.getRoles(email);
+                        // Open next window
+                        Academic[] userRoles = RetrieveDatabase.getRoles(email);
                         new JournalWindow(userRoles);
-                        //int academicID = RetrieveDatabase.getAcademicIdByEmail(email);
-                        //new JournalWindow(academicID);
                         frmLogInScreen.dispose();
-                        // open next window
                     } else JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
 			    } else JOptionPane.showMessageDialog(null, "Please fill in all fields", "Login", 0);
 			}

@@ -181,7 +181,7 @@ public class JournalWindow {
 				    frmJournalWindow.dispose();	                
                 } else {
                     // Display the SubmitArticle window if the user is logged in
-                    new SubmitArticle(roles[1]);
+                    new SubmitArticle((Author)roles[1]);
 				    frmJournalWindow.dispose();
 				}
 			}
