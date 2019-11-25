@@ -2,18 +2,20 @@ package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Reviewer extends Academic{
-	private ArrayList<Submission> submissionsInReview;
+	private ArrayList<Review> reviews;
 	private int reviewerId;
 	
-	public Reviewer(String title ,String forename, String surname, String emailId, String university, int reviewerId, Hash hash) {
+	public Reviewer(int reviewerId, String title ,String forename, String surname, String emailId, String university, Hash hash) {
 		super(title, forename, surname, emailId, university, hash);
-		this.submissionsInReview = new ArrayList<Submission>();
+		this.reviews = new ArrayList<Review>();
+		this.reviewerId = reviewerId;
 	}
 	
+	//---POSSIBLY DELETE LATER---
 	public Reviewer(Author a) {
 		super(a.getTitle(), a.getForename(), a.getSurname(), a.getEmailId(), a.getUniversity(), a.getHash());
 		setAcademicId(a.getAcademicId());
-		this.submissionsInReview = new ArrayList<Submission>();
+		this.reviews = new ArrayList<Review>();
 	}
 	
 	public void setReviewerId(int id) {
@@ -24,16 +26,17 @@ public class Reviewer extends Academic{
 		return this.reviewerId;
 	}
 
-	public void addSubmissionToReview(Submission s) {
-		this.submissionsInReview.add(s);
-	}
-	
-	public void setVerdict(Submission s, Verdict v) {
-		s.setVerdict(this.reviewerId, v);
-	}
-	
 	public void addReview(Submission s, Review r) {
+		this.reviews.add(r);
 		s.addReview(r);
+	}
+	
+	public void setVerdict(Review r, Verdict v) {
+		r.setVerdict(v);
+	}
+	
+	public ArrayList<Review> getReviews(){
+		return this.reviews;
 	}
 	
 }

@@ -6,14 +6,14 @@ public class Journal {
 	private String journalName;
 	private int iSSN;
 	private Date dateOfPublication;
-	private ArrayList<Editor> boardOfEditors;
+	private ArrayList<EditorOfJournal> boardOfEditors;
 	private ArrayList<Volume> volumes;
 	
-	public Journal(int iSSN, String journalName, Date dateOfPublication, ArrayList<Editor> boardOfEditors) {
+	public Journal(int iSSN, String journalName, Date dateOfPublication) {
 		this.journalName = journalName;
 		this.iSSN = iSSN;
 		this.dateOfPublication = dateOfPublication;
-		this.boardOfEditors = boardOfEditors;
+		this.boardOfEditors = new ArrayList<EditorOfJournal>();
 		this.volumes = new ArrayList<Volume>();
 	}
 
@@ -49,13 +49,16 @@ public class Journal {
 		this.volumes.add(v);
 	}
 
-
-	public ArrayList<Editor> getBoardOfEditors() {
+	public ArrayList<EditorOfJournal> getBoardOfEditors() {
 		return this.boardOfEditors;
 	}
 	
-	public void addEditorToBoard(Editor e) {
+	public void addEditorToBoard(EditorOfJournal e) {
 		this.boardOfEditors.add(e);
+	}
+	
+	public String toString() {
+	    return this.iSSN + ", " + this.journalName + ", " + this.dateOfPublication + ", " + this.boardOfEditors + ", " + this.volumes;
 	}
 	
 }

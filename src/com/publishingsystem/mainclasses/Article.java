@@ -2,27 +2,37 @@ package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Article {
-	protected ArrayList<Author> authors;
-	protected String title;
-	protected String summary;
-	protected int articleId;
-	protected int journalId;
-	protected int mainAuthorId;
-	protected String pdf;
+	private ArrayList<AuthorOfArticle> authorsOfArticle;
+	private String title;
+	private String summary;
+	private int articleId;
+	private Journal journal;
+	private Submission submission;
+	private PDF pdf;
 	
-	public Article(String title, String summary, int journalId, ArrayList<Author> authors) {
+	public Article(int articleId, String title, String summary, Journal journal) {
+		this.articleId = articleId;
 		this.title = title;
 		this.summary = summary;
-		this.authors = authors;
-		this.journalId = journalId;
+		this.journal = journal;
+		this.authorsOfArticle = new ArrayList<AuthorOfArticle>();
 	}
 	
-	public void setMainAuthorId(int id) {
-		this.mainAuthorId = id;
+	public void submit(Submission s) {
+		this.submission = s;
 	}
 	
-	public int getMainAuthorId() {
-		return this.mainAuthorId;
+	public Submission getSubmission() {
+		return this.submission;
+	}
+	
+	
+	public void setPDF(PDF pdf) {
+		this.pdf = pdf;
+	}
+	
+	public PDF getPDF() {
+		return this.pdf;
 	}
 
 	
@@ -37,11 +47,7 @@ public class Article {
 	public void setSummary(String summary) {
 		this.summary = summary;
 	}
-	
-	public void setPDF(String pdf) {
-		this.pdf = pdf;
-	}
-	
+
 	public String getTitle() {
 		return title;
 	}
@@ -50,21 +56,20 @@ public class Article {
 		return summary;
 	}
 
-	public ArrayList<Author> getAuthors() {
-		return authors;
+	public ArrayList<AuthorOfArticle> getAuthorsOfArticle() {
+		return this.authorsOfArticle;
+	}
+	
+	public void addAuthorOfArticle(AuthorOfArticle a) {
+		this.authorsOfArticle.add(a);
 	}
 
 	public int getArticleId() {
 		return articleId;
 	}
 	
-	public int getJournalId() {
-		return this.journalId;
+	public Journal getJournal() {
+		return this.journal;
 	}
-	
-	public String getPDF() {
-		return this.pdf;
-	}
-	
 	
 }

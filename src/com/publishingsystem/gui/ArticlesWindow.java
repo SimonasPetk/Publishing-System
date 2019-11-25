@@ -9,6 +9,10 @@ import javax.swing.JScrollPane;
 import javax.swing.AbstractListModel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import com.publishingsystem.mainclasses.Journal;
+import com.publishingsystem.mainclasses.RetrieveDatabase;
+
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -35,7 +39,7 @@ public class ArticlesWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ArticlesWindow window = new ArticlesWindow();
+					ArticlesWindow window = new ArticlesWindow(12345);
 					window.frmAvailableJournalArticles.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -47,16 +51,18 @@ public class ArticlesWindow {
 	/**
 	 * Create the application.
 	 */
-	public ArticlesWindow() {
-		initialize();
+	public ArticlesWindow(int journalID) {
+		initialize(journalID);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize(int journalID) {
+	    Journal selJournal = RetrieveDatabase.getJournal(journalID);
+	    
 		frmAvailableJournalArticles = new JFrame();
-		frmAvailableJournalArticles.setTitle("Available Article");
+		frmAvailableJournalArticles.setTitle("View Articles");
 		frmAvailableJournalArticles.setBounds(100, 100, 850, 700);
 		frmAvailableJournalArticles.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAvailableJournalArticles.setVisible(true);
@@ -152,7 +158,7 @@ public class ArticlesWindow {
 		tblArticles.getColumnModel().getColumn(3).setPreferredWidth(60);
 		scrollPane.setViewportView(tblArticles);
 		
-		JLabel lblNewLabel = new JLabel("List Of Articles:");
+		JLabel lblNewLabel = new JLabel(selJournal.getJournalName());
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JLabel lblAbstract = new JLabel("Abstract:");
@@ -166,7 +172,7 @@ public class ArticlesWindow {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
 						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE))
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()

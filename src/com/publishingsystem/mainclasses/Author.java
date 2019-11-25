@@ -2,12 +2,13 @@ package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Author extends Academic{
-	private ArrayList<Submission> submissions;
+	private ArrayList<AuthorOfArticle> authorOfArticles;
 	private int authorId;
 	
-	public Author(String title ,String forename, String surname, String emailId, String university, Hash hash) {
+	public Author(int authorId, String title ,String forename, String surname, String emailId, String university, Hash hash) {
 		super(title, forename, surname, emailId, university, hash);
-		submissions = new ArrayList<Submission>();
+		this.authorId = authorId;
+		authorOfArticles = new ArrayList<AuthorOfArticle>();
 	}
 	
 	public void setAuthorId(int id) {
@@ -18,10 +19,6 @@ public class Author extends Academic{
 		return this.authorId;
 	}
 
-	public ArrayList<Submission> getSubmissions() {
-		return this.submissions;
-	}
-	
 	public SubmissionStatus getSubmissionStatus(Submission submission) {
 		return submission.getStatus();
 	}
@@ -30,18 +27,43 @@ public class Author extends Academic{
 		return submission.getReviews();
 	}
 	
+	public void addAuthorOfArticle(AuthorOfArticle a) {
+		this.authorOfArticles.add(a);
+	}
+	
+	public ArrayList<AuthorOfArticle> getAuthorOfArticles(){
+		return this.authorOfArticles;
+	}
+	
 	//Main Author
-	public void submit(Submission submission) {
-		submission.setMainAuthorId(this.authorId);
-		this.submissions.add(submission);
+	public void submit(Article article, PDF pdf) {
+		AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, this, true);
+		Submission submission = new Submission(-1, article, SubmissionStatus.SUBMITTED, pdf);
+		pdf.setSubmission(submission);
+		authorOfArticle.getArticle().submit(submission);
+		this.authorOfArticles.add(authorOfArticle);
+		article.addAuthorOfArticle(authorOfArticle);
 	}
 	
-	public void submitRevisedVersion(Submission s, PDF pdf) {
-		s.addVersion(pdf);
+	public void submitRevisedVersion(PDF pdf) {
+		pdf.getSubmission().addVersion(pdf);
 	}
 	
-	public void respond(Submission s, Reviewer reviewer, Response response) {
-		s.addResponse(reviewer.getReviewerId(), response);
+	public void respond(Review review, ArrayList<String> answers) {
+		ArrayList<Criticism> criticisms = review.getCriticisms();
+		for(int i = 0; i < criticisms.size(); i++){
+			criticisms.get(i).answer(answers.get(i));
+		}
+	}
+	
+	public void registerCoAuthors(Article article, ArrayList<Author> coauthors) {
+		for(Author author : coauthors) {
+			if(author.authorId != this.authorId) {
+				AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, author, false);
+				author.addAuthorOfArticle(authorOfArticle);
+				article.addAuthorOfArticle(authorOfArticle);
+			}
+		}
 	}
 
 }

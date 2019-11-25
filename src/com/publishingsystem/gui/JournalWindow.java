@@ -19,6 +19,9 @@ import javax.swing.table.DefaultTableModel;
 
 import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.Author;
+import com.publishingsystem.mainclasses.Database;
+import com.publishingsystem.mainclasses.Journal;
+import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.Role;
 
 import javax.swing.JToolBar;
@@ -30,6 +33,11 @@ import javax.swing.JPopupMenu;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
@@ -103,48 +111,30 @@ public class JournalWindow {
 		tblJournal.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				
-				tblJournal.setValueAt("Press Again", 0, 0);
+				int selectedJournal = (int)tblJournal.getValueAt(tblJournal.rowAtPoint(arg0.getPoint()), 2);
+				System.out.println(selectedJournal);
 
-				if (arg0.getClickCount() == 2 && tblJournal.rowAtPoint(arg0.getPoint()) == 0) {
+				/*if (arg0.getClickCount() == 2 && tblJournal.rowAtPoint(arg0.getPoint()) == 0) {
 
 			        JOptionPane.showMessageDialog(tblJournal, "row #" + 0 + " is clicked");
-				}
+				}*/
 				
-				new ArticlesWindow();
-				frmJournalWindow.dispose();
+				new ArticlesWindow(selectedJournal);
+				//frmJournalWindow.dispose();
 			} 
 		});
 		tblJournal.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
+		Object[][] tableContents = new Object[allJournals.size()][3];
+		for (int i=0; i<allJournals.size(); i++) {
+		    Journal currentJournal = allJournals.get(i);
+		    tableContents[i][0] = currentJournal.getJournalName();
+		    tableContents[i][1] = currentJournal.getDateOfPublication().toString();
+		    tableContents[i][2] = currentJournal.getISSN();
+		}
 		tblJournal.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-				{null, null, null},
-			},
+			tableContents,
 			new String[] {
 				"Name", "Date", "Number"
 			}
