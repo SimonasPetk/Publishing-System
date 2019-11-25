@@ -49,7 +49,8 @@ public class SubmitArticle {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SubmitArticle window = new SubmitArticle(new Author(1, "Dr", "kb", "kb", "Sheffield", "kb@gm.com",  new Hash("9d5be6810a8de8673cf2a5b83f2030393028b71127dd034beb9bd03f3a946302")));
+					//SubmitArticle window = new SubmitArticle(new Author(1, "Dr", "kb", "kb", "Sheffield", "kb@gm.com", new Hash("9d5be6810a8de8673cf2a5b83f2030393028b71127dd034beb9bd03f3a946302")));
+					SubmitArticle window = new SubmitArticle(null);
 					window.frmSubmitAnArticle.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -122,6 +123,13 @@ public class SubmitArticle {
 		JList listOfJournals = new JList();
 		listOfJournals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane.setViewportView(listOfJournals);
+		listOfJournals.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				String selectedJournalName = (String)listOfJournals.getSelectedValue();
+				System.out.println(selectedJournalName);
+			}
+		});
+
 		
 		ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
         String[] listContents = new String[allJournals.size()];
@@ -139,8 +147,8 @@ public class SubmitArticle {
 				
 				// Why do we need this?
 				JOptionPane.showMessageDialog(null, "To access your Author/Reviewer roles please Log Out and Login In again to the system. Thank you!");
-				String title = txtfldTitle.toString();
-				String summary = scrPaneAbstract.toString();
+				String title = txtfldTitle.getText();
+				String summary = null;
 				Journal journal = null;
 				for (Journal item: allJournals) {	
 					if (item.getJournalName() == listOfJournals.getSelectedValue()) {
