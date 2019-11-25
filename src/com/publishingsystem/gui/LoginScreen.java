@@ -1,6 +1,7 @@
 package com.publishingsystem.gui;
 import java.awt.EventQueue;
 import com.publishingsystem.mainclasses.*;
+import com.publishingsystem.gui.*;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
