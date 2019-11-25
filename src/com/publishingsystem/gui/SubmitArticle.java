@@ -117,7 +117,11 @@ public class SubmitArticle {
 			public void mouseClicked(MouseEvent e) {
 				coAuthors.add(a);
 				Database.registerAuthors(coAuthors);
+				
+				// Why do we need this?
 				JOptionPane.showMessageDialog(null, "To access your Author/Reviewer roles please Log Out and Login In again to the system. Thank you!");
+
+				new JournalWindow(a.getAcademicId());
 				frmSubmitAnArticle.dispose();
 			}
 		});

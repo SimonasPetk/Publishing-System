@@ -153,16 +153,17 @@ public class RegistrationWindow {
 			    if (!Database.academicExists(email)) {
                     JOptionPane.showMessageDialog(null, "Registration Successful", "Registration Form", 1);
                     frmRegistrationForm.dispose();
+                    int academicID = RetrieveDatabase.getAcademicIdByEmail(email);
 			        switch(r) {
 			    		case AUTHOR:
-			    			Author author = new Author(title, forenames, surname, university, email, pwdHash);
+                            Author author = new Author(academicID, title, forenames, surname, email, university, pwdHash);
 			    			new SubmitArticle(author);
 			    			break;
 			    		case COAUTHOR:
-			    			Author coAuthor = new Author(title, forenames, surname, university, email, pwdHash);
+                            Author coAuthor = new Author(academicID, title, forenames, surname, email, university, pwdHash);
 			    			submitArticleGUI.addCoAuthor(coAuthor);
 			    		case CHIEFEDITOR:
-			    			Editor chiefEditor = new Editor(title, forenames, surname, university, email, pwdHash);
+			    			Editor chiefEditor = new Editor(academicID, title, forenames, surname, email, university, pwdHash);
 			    			new AddJournal(chiefEditor);
 			    			break;
 			    		default:
