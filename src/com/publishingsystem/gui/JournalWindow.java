@@ -177,8 +177,12 @@ public class JournalWindow {
 		btnSubmitArticle.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-			    new RegistrationWindow(Role.AUTHOR);
-			    frmJournalWindow.dispose();	                
+				if(roles == null) {
+				    new RegistrationWindow(Role.AUTHOR);
+				}else {
+					new SubmitArticle(roles);
+				}
+				frmJournalWindow.dispose();	
 			}
 		});
 		menuBar.add(btnSubmitArticle);
