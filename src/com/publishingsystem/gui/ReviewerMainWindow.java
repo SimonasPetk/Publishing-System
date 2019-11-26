@@ -19,6 +19,9 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.DefaultTableModel;
 
+import com.publishingsystem.mainclasses.Academic;
+import com.publishingsystem.mainclasses.Editor;
+import com.publishingsystem.mainclasses.EditorOfJournal;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 
 import java.awt.event.MouseAdapter;
@@ -42,7 +45,7 @@ public class ReviewerMainWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ReviewerMainWindow window = new ReviewerMainWindow();
+					ReviewerMainWindow window = new ReviewerMainWindow(null);
 					window.frmReviewDashboard.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -54,14 +57,14 @@ public class ReviewerMainWindow {
 	/**
 	 * Create the application.
 	 */
-	public ReviewerMainWindow() {
-		initialize();
+	public ReviewerMainWindow(Academic[] roles) {
+		initialize(roles);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize(Academic[] roles) {
 		frmReviewDashboard = new JFrame();
 		frmReviewDashboard.setBounds(100, 100, 900, 740);
 		frmReviewDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -272,50 +275,55 @@ public class ReviewerMainWindow {
 		JMenu mnChangeRole = new JMenu("Change My Role");
 		menuBar.add(mnChangeRole);
 		
-		JMenuItem mntmToAuthor = new JMenuItem("Author");
-		mntmToAuthor.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				
-				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A AUTHOR IF NOT MAKE ERROR MESSAGE
-				//new AuthorMainWindow();
-				frmReviewDashboard.dispose();
-			}
-		});
-		mnChangeRole.add(mntmToAuthor);
 		
-		JMenuItem mntmChiefEditor = new JMenuItem("Chief Editor");
-		mntmChiefEditor.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				
-				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A CHIEF EDITOR IF NOT MAKE ERROR MESSAGE
-				
-				new ChiefMainWindow();
-				frmReviewDashboard.dispose();
+		if(roles[0] != null) {
+			Editor chiefEditor = (Editor)roles[0];
+			boolean isChiefEditor = false;
+			for(EditorOfJournal eoj : chiefEditor.getEditorOfJournals()) {
+				if(eoj.isChiefEditor()) {
+					isChiefEditor = true;
+					break;
+				}
 			}
-		});
-		mnChangeRole.add(mntmChiefEditor);
+			if(isChiefEditor) {
+				JMenuItem mntmToEditor = new JMenuItem("Chief Editor");
+				mntmToEditor.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mousePressed(MouseEvent e) {
+						new ChiefMainWindow(roles);
+						frmReviewDashboard.dispose();
+					}
+				});
+				mnChangeRole.add(mntmToEditor);
+			}
+			JMenuItem mntmToEditor = new JMenuItem("Editor");
+			mntmToEditor.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					new EditorMainWindow(roles);
+					frmReviewDashboard.dispose();
+				}
+			});
+			mnChangeRole.add(mntmToEditor);
+		}
 		
-		JMenuItem mntmToEditor = new JMenuItem("Editor");
-		mntmToEditor.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				
-				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A EDITOR IF NOT MAKE ERROR MESSAGE
-				new EditorMainWindow();
-				frmReviewDashboard.dispose();
-			}
-		});
-		mnChangeRole.add(mntmToEditor);
+		if(roles[1] != null) {
+			JMenuItem mntmToEditor = new JMenuItem("Author");
+			mntmToEditor.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					new AuthorMainWindow(roles);
+					frmReviewDashboard.dispose();
+				}
+			});
+			mnChangeRole.add(mntmToEditor);
+		}
 		
 		JMenuItem mntmToReader = new JMenuItem("Reader");
 		mntmToReader.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				
-				// Allow this always
-				new JournalWindow();
+				new JournalWindow(roles);
 				frmReviewDashboard.dispose();
 			}
 		});

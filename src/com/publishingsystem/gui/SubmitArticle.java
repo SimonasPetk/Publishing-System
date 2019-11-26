@@ -80,12 +80,34 @@ public class SubmitArticle {
 	 */
 	public SubmitArticle(Author a) {
         coAuthors = new ArrayList<Author>();
-		initialize(a, null);
+        Academic[] newRoles = new Academic[3];
+		newRoles[1] = a;
+		initialize(a, newRoles);
 	}
 	
-	public SubmitArticle(Author a, AuthorMainWindow amw) {
-        coAuthors = new ArrayList<Author>();
-		initialize(a, amw);
+	public SubmitArticle(Academic[] roles) {
+		coAuthors = new ArrayList<Author>();
+		Author a = null;
+		if(roles[1] == null) {
+			Academic aca = null;
+			for(Academic role : roles) {
+				if(roles != null) {
+					aca = role;
+					break;
+				}
+			}
+			a = new Author(aca.getAcademicId(), 
+								aca.getTitle(), 
+								aca.getForename(), 
+								aca.getSurname(), 
+								aca.getEmailId(), 
+								aca.getUniversity(), null);
+			roles[1] = a;
+	        coAuthors = new ArrayList<Author>();
+		}else {
+			a = (Author)roles[1];
+		}
+		initialize(a, roles);
 	}
 
 	public void addCoAuthor(Author coAuthor) {
@@ -99,7 +121,7 @@ public class SubmitArticle {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Author mainAuthor, AuthorMainWindow amw) {
+	private void initialize(Author mainAuthor, Academic[] roles) {
 		frmSubmitAnArticle = new JFrame();
 		frmSubmitAnArticle.setTitle("Submit an Article");
 		frmSubmitAnArticle.setBounds(100, 100, 700, 552);
@@ -241,13 +263,8 @@ public class SubmitArticle {
 					Database.registerAuthors(coAuthors);
 					Database.addSubmission(article, pdf);
 			
-					if(amw == null) {
-						Academic[] roles = new Academic[3];
-						roles[1] = mainAuthor;
-						new AuthorMainWindow(roles);
-					}else {
-						amw.refreshArticles();
-					}
+			
+					new AuthorMainWindow(roles);
 					//This is for just adding co-authors
 					frmSubmitAnArticle.dispose();
 				}

@@ -20,6 +20,8 @@ import javax.swing.table.DefaultTableModel;
 import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.Author;
 import com.publishingsystem.mainclasses.Database;
+import com.publishingsystem.mainclasses.Editor;
+import com.publishingsystem.mainclasses.EditorOfJournal;
 import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.Role;
@@ -175,8 +177,12 @@ public class JournalWindow {
 		btnSubmitArticle.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-			    new RegistrationWindow(Role.AUTHOR);
-			    frmJournalWindow.dispose();	                
+				if(roles == null) {
+				    new RegistrationWindow(Role.AUTHOR);
+				}else {
+					new SubmitArticle(roles);
+				}
+				frmJournalWindow.dispose();	
 			}
 		});
 		menuBar.add(btnSubmitArticle);
@@ -197,11 +203,30 @@ public class JournalWindow {
 			menuBar.add(mnChangeRole);
 			
 			if(roles[0] != null) {
+				Editor chiefEditor = (Editor)roles[0];
+				boolean isChiefEditor = false;
+				for(EditorOfJournal eoj : chiefEditor.getEditorOfJournals()) {
+					if(eoj.isChiefEditor()) {
+						isChiefEditor = true;
+						break;
+					}
+				}
+				if(isChiefEditor) {
+					JMenuItem mntmToEditor = new JMenuItem("Chief Editor");
+					mntmToEditor.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mousePressed(MouseEvent e) {
+							new ChiefMainWindow(roles);
+							frmJournalWindow.dispose();
+						}
+					});
+					mnChangeRole.add(mntmToEditor);
+				}
 				JMenuItem mntmToEditor = new JMenuItem("Editor");
 				mntmToEditor.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mousePressed(MouseEvent e) {
-						new EditorMainWindow();
+						new EditorMainWindow(roles);
 						frmJournalWindow.dispose();
 					}
 				});
@@ -227,7 +252,7 @@ public class JournalWindow {
 					@Override
 					public void mousePressed(MouseEvent e) {
 						
-						new ReviewerMainWindow();
+						new ReviewerMainWindow(roles);
 						frmJournalWindow.dispose();
 					}
 				});

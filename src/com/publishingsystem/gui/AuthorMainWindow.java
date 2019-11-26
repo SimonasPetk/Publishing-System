@@ -63,21 +63,6 @@ public class AuthorMainWindow {
 		this.author = (Author)roles[1];
 		initialize(roles);
 	}
-	
-	public void refreshArticles() {
-		DefaultTableModel dm = (DefaultTableModel)tblSubmitted.getModel();
-		dm.setRowCount(0);
-		ArrayList<AuthorOfArticle> authorOfArticles = this.author.getAuthorOfArticles();
-	    for(int i = 0; i < authorOfArticles.size(); i++) {
-	    	Article article = authorOfArticles.get(i).getArticle();
-	    	String[] articles = new String[3];
-	    	articles[0] = String.valueOf(article.getArticleId());
-	    	articles[1] = article.getTitle();
-	    	articles[2] = article.getSummary();
-	    	dm.addRow(articles);
-	    }
-		
-	}
 
 	/**
 	 * Initialize the contents of the frame.
@@ -94,17 +79,6 @@ public class AuthorMainWindow {
 		lblArticleList.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JScrollPane scrSubmitted = new JScrollPane();
-		
-		AuthorMainWindow authorMainWindow = this;
-		JButton btnSubmitAnArticle = new JButton("Submit an Article");
-		btnSubmitAnArticle.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				
-				new SubmitArticle(author, authorMainWindow);
-			}
-		});
-		btnSubmitAnArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JScrollPane scrReview = new JScrollPane();
 		scrReview.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -144,8 +118,7 @@ public class AuthorMainWindow {
 										.addComponent(scrReview)))))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 610, Short.MAX_VALUE)
-							.addComponent(btnSubmitAnArticle)))
+							.addPreferredGap(ComponentPlacement.RELATED, 610, Short.MAX_VALUE)))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
@@ -153,8 +126,7 @@ public class AuthorMainWindow {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-						.addComponent(btnSubmitAnArticle))
+						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
 					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
@@ -236,13 +208,30 @@ public class AuthorMainWindow {
 		menuBar.add(mnChangeRole);
 		
 		if(roles[0] != null) {
+			Editor chiefEditor = (Editor)roles[0];
+			boolean isChiefEditor = false;
+			for(EditorOfJournal eoj : chiefEditor.getEditorOfJournals()) {
+				if(eoj.isChiefEditor()) {
+					isChiefEditor = true;
+					break;
+				}
+			}
+			if(isChiefEditor) {
+				JMenuItem mntmToEditor = new JMenuItem("Chief Editor");
+				mntmToEditor.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mousePressed(MouseEvent e) {
+						new ChiefMainWindow(roles);
+						frmAuthorsDashboard.dispose();
+					}
+				});
+				mnChangeRole.add(mntmToEditor);
+			}
 			JMenuItem mntmToEditor = new JMenuItem("Editor");
 			mntmToEditor.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mousePressed(MouseEvent e) {
-					
-					// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A EDITOR IF NOT MAKE ERROR MESSAGE
-					new EditorMainWindow();
+					new EditorMainWindow(roles);
 					frmAuthorsDashboard.dispose();
 				}
 			});
@@ -255,7 +244,7 @@ public class AuthorMainWindow {
 				@Override
 				public void mousePressed(MouseEvent e) {
 					
-					new ReviewerMainWindow();
+					new ReviewerMainWindow(roles);
 					frmAuthorsDashboard.dispose();
 				}
 			});
