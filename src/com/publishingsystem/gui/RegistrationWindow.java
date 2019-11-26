@@ -53,21 +53,21 @@ public class RegistrationWindow {
 	 * Create the application.
 	 */
 	public RegistrationWindow(Role r) {
-		initialize(r, null, null, null);
+		initialize(r, null, null);
 	}
 	
-	public RegistrationWindow(Role r, SubmitArticle submitArticleGUI, Author loggedInAuthor) {
-		initialize(r, submitArticleGUI, null, loggedInAuthor);
+	public RegistrationWindow(Role r, SubmitArticle submitArticleGUI) {
+		initialize(r, submitArticleGUI, null);
 	}
 	
 	public RegistrationWindow(Role r, AddJournal addJournalGUI) {
-		initialize(r, null, addJournalGUI, null);
+		initialize(r, null, addJournalGUI);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Role r, SubmitArticle submitArticleGUI, AddJournal addJournalGUI, Author loggedInAuthor) {
+	private void initialize(Role r, SubmitArticle submitArticleGUI, AddJournal addJournalGUI) {
 		frmRegistrationForm = new JFrame();
 		frmRegistrationForm.setTitle("Registration Form");
 		frmRegistrationForm.setBounds(500, 100, 653, 559);
@@ -152,7 +152,7 @@ public class RegistrationWindow {
 			    // Add academic's details to database if entered details are valid
 			    if (!Database.academicExists(email)) {
                     JOptionPane.showMessageDialog(null, "Registration Successful", "Registration Form", 1);
-                    // change to getRoles
+                    frmRegistrationForm.dispose();
                     int academicID = RetrieveDatabase.getAcademicIdByEmail(email);
 			        switch(r) {
 			    		case AUTHOR:
@@ -162,14 +162,12 @@ public class RegistrationWindow {
 			    		case COAUTHOR:
                             Author coAuthor = new Author(academicID, title, forenames, surname, email, university, pwdHash);
 			    			submitArticleGUI.addCoAuthor(coAuthor);
-			    			new SubmitArticle(loggedInAuthor);
 			    		case CHIEFEDITOR:
 			    			Editor chiefEditor = new Editor(academicID, title, forenames, surname, email, university, pwdHash);
 			    			new AddJournal(chiefEditor);
 			    			break;
 			    		default:
 			    	}
-			        frmRegistrationForm.dispose();
 		        }else {
 		        	JOptionPane.showMessageDialog(null, "Email address already in use", "Registration Form", 0);
 		        }
