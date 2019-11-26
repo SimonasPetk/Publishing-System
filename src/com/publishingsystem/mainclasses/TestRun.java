@@ -35,7 +35,7 @@ public class TestRun {
 		Article article = new Article(-1, "How doe works", "Article about how doe works", j);
 		a1.registerCoAuthors(article, authors);
 		
-		a1.submit(article, new PDF(-1, "TEST_PDF.pdf", new java.sql.Date(calendar.getTime().getTime()), null));
+		a1.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), null));
 		System.out.println(a1.getAuthorOfArticles().size());
 		
 		//Adding to DB
@@ -56,7 +56,7 @@ public class TestRun {
 		Article tempS = new Article(-1, "Temp article", "Article about temp", j);
 	
 		a4.registerCoAuthors(tempS, authorsReviewers);
-		a4.submit(tempS, new PDF(-1, "temp.pdf", new java.sql.Date(calendar.getTime().getTime()), null));
+		a4.submit(tempS, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), null));
 		
 		Database.registerAuthors(authorsReviewers);
 		Database.addSubmission(tempS);
@@ -96,7 +96,7 @@ public class TestRun {
 //		
 		
 		//Revised article
-		PDF revisedPDF = new PDF(-1, "revisedS.pdf", new java.sql.Date(calendar.getTime().getTime()), tempS.getSubmission());
+		PDF revisedPDF = new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), tempS.getSubmission());
 		a1.submitRevisedVersion(revisedPDF);
 		Database.addRevisedSubmission(revisedPDF);
 		System.out.println(revisedPDF.getPdfId());
