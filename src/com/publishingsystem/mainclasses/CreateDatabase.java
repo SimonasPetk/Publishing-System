@@ -264,8 +264,7 @@ public class CreateDatabase extends Database{
 
 		//dropTables();
 		//createTables();
-        
-//    try (Connection con = DriverManager.getConnection(CONNECTION)) {
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
 //          Statement statement = con.createStatement();
 //          statement.execute("USE "+DATABASE+";");
 //    		try (Connection con = DriverManager.getConnection(CONNECTION)) {
@@ -276,11 +275,11 @@ public class CreateDatabase extends Database{
 //          statement.execute("INSERT INTO VOLUMES VALUES (null, null, 12345);");
 //          statement.execute("INSERT INTO EDITIONS VALUES (null, 1, null);");
 //          statement.execute("INSERT INTO PUBLISHEDARTICLES VALUES (null, 52, 1);");*/
-//			printAllRecords("ACADEMICS");
-//		} catch (SQLException ex) {
-//		    ex.printStackTrace();
-//		}		
-//
+			printAllRecords("ARTICLES");
+		} catch (SQLException ex) {
+		    ex.printStackTrace();
+		}		
+
 //	    } catch (SQLException ex) {
 //		    ex.printStackTrace();
 //		}		
