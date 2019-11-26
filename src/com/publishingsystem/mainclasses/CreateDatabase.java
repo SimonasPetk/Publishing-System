@@ -265,23 +265,9 @@ public class CreateDatabase extends Database{
 		//dropTables();
 		//createTables();
         try (Connection con = DriverManager.getConnection(CONNECTION)) {
-//          Statement statement = con.createStatement();
-//          statement.execute("USE "+DATABASE+";");
-//    		try (Connection con = DriverManager.getConnection(CONNECTION)) {
-//          Statement statement = con.createStatement();
-//          statement.execute("USE "+DATABASE+";");
-//          /*
-//          statement.execute("INSERT INTO ARTICLES VALUES (1, 12345, 1, 'Title of Article', 'This is a brief summary of this article.');");            
-//          statement.execute("INSERT INTO VOLUMES VALUES (null, null, 12345);");
-//          statement.execute("INSERT INTO EDITIONS VALUES (null, 1, null);");
-//          statement.execute("INSERT INTO PUBLISHEDARTICLES VALUES (null, 52, 1);");*/
 			printAllRecords("ARTICLES");
 		} catch (SQLException ex) {
 		    ex.printStackTrace();
 		}		
-
-//	    } catch (SQLException ex) {
-//		    ex.printStackTrace();
-//		}		
     }
 }
