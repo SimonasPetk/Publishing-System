@@ -1,5 +1,6 @@
 package com.publishingsystem.gui;
 import java.awt.EventQueue;
+import java.awt.FileDialog;
 
 import javax.swing.JFrame;
 import javax.swing.GroupLayout;
@@ -18,6 +19,7 @@ import com.publishingsystem.mainclasses.Author;
 import com.publishingsystem.mainclasses.Database;
 import com.publishingsystem.mainclasses.Hash;
 import com.publishingsystem.mainclasses.Journal;
+import com.publishingsystem.mainclasses.PDFConverter;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.Role;
 
@@ -31,6 +33,11 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import javax.swing.ListSelectionModel;
@@ -41,6 +48,7 @@ public class SubmitArticle {
 	private JTextField txtfldTitle;
 	private String selectedJournalName;
 	private ArrayList<Author> coAuthors;
+	private String pdfPath;
 
 	/**
 	 * Launch the application.
@@ -131,10 +139,31 @@ public class SubmitArticle {
         });
         btnRegisterANew.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
+        
+        
 		JButton btnUploadPdf = new JButton("Upload PDF");
-		btnUploadPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
-
 		JLabel lblPdfIsNot = new JLabel("PDF is not yet uploaded");
+		btnUploadPdf.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				FileDialog fd = new FileDialog(new JFrame());
+				fd.setVisible(true);
+				File[] f = fd.getFiles();
+
+				if(f.length > 0){
+					pdfPath = fd.getFiles()[0].getAbsolutePath();
+					System.out.println(pdfPath);
+					lblPdfIsNot.setText("PDF is successfully uploaded");
+				
+					byte[] pdf = PDFConverter.getByteArrayFromFile(pdfPath);
+					Database.addPDF(1, pdf);
+				}		
+				else {
+					lblPdfIsNot.setText("Try Again! PDF did not upload!");
+				}
+			}
+		});
+		btnUploadPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 		JList listOfJournals = new JList();
 		listOfJournals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -163,6 +192,7 @@ public class SubmitArticle {
 				System.out.println(coAuthors);
 				System.out.println("Authors: " + coAuthors);
 				Database.registerAuthors(coAuthors);
+
 				// Why do we need this?
 				JOptionPane.showMessageDialog(null, "To access your Author/Reviewer roles please Log Out and Login In again to the system. Thank you!");
 				String title = txtfldTitle.getText();
