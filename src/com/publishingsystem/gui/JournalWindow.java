@@ -177,7 +177,7 @@ public class JournalWindow {
 			public void mouseClicked(MouseEvent e) {
 				if (roles == null) {
 				    // Let the user register as an academic/AUTHOR if they are not logged in
-				    new RegistrationWindow(Role.AUTHOR, (SubmitArticle)null);
+				    new RegistrationWindow(Role.AUTHOR);
 				    frmJournalWindow.dispose();	                
                 } else {
                     // Display the SubmitArticle window if the user is logged in

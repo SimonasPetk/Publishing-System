@@ -63,8 +63,8 @@ public class SubmitArticle {
 	 * Create the application.
 	 */
 	public SubmitArticle(Author a) {
-		initialize(a);
 		coAuthors = new ArrayList<Author>();
+        initialize(a);
 	}
 
 	public void addCoAuthor(Author coAuthor) {
@@ -148,12 +148,29 @@ public class SubmitArticle {
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         scrPaneAuthors.setViewportView(list);
 
+        String[] listOfAuthors = new String[coAuthors.size()];
+        for (int i=0; i<coAuthors.size(); i++) {
+            listOfAuthors[i] = coAuthors.get(i).getForename() + " " + coAuthors.get(i).getSurname();
+        }
+        
+        listOfJournals.setModel(new AbstractListModel() {
+            //String[] values = new String[] {"First Journal", "Second journal", "Third Journal", "", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal"};
+            String[] values = listOfAuthors;
+
+            public int getSize() {
+                return values.length;
+            }
+            public Object getElementAt(int index) {
+                return values[index];
+            }
+        });
+        
         SubmitArticle submitArticleGUI = this;
         JButton btnRegisterANew = new JButton("Register a New Co-Author");
         btnRegisterANew.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                new RegistrationWindow(Role.COAUTHOR, submitArticleGUI);
+                new RegistrationWindow(Role.COAUTHOR, submitArticleGUI, a);
             }
         });
         btnRegisterANew.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -173,7 +190,8 @@ public class SubmitArticle {
 			public void mouseClicked(MouseEvent e) {
 			    // Register all authors as authors of this article in the database
 				coAuthors.add(a);
-				System.out.println("Authors: " + coAuthors);
+				System.out.println("Authors: ");
+				for (Author auth : coAuthors) System.out.println("  " + auth);
 				Database.registerAuthors(coAuthors);
 
 				// Why do we need this?
