@@ -80,7 +80,7 @@ public class Database {
 		}
 	}
 	
-	public static void registerEditorAsChiefEditor(ArrayList<Editor> editor) {
+	/*public static void registerEditorAsChiefEditor(ArrayList<Editor> editor) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
 	        String[] listContents = new String[allJournals.size()];
@@ -90,22 +90,22 @@ public class Database {
 			registerEditors(editor);
 			for(Editor e : editor) {
 				System.out.println(e.getEditorOfJournals());
-				/*e.addEditorOfJournal(new EditorOfJournal(journal, e, false));
+				e.addEditorOfJournal(new EditorOfJournal(journal, e, false));
 				String query = "INSERT INTO EDITOROFJOURNAL values (?, ?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, e.getEditorId());
 					preparedStmt.setInt(2, journal.getISSN());
 					preparedStmt.setBoolean(3, false);
 					preparedStmt.setBoolean(4, false);
-					preparedStmt.execute();*/
+					preparedStmt.execute();
 				}catch (SQLException ex) {
 					ex.printStackTrace();
 				}
-			}*/
+			}
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-	}
+	}*/
 
 	public static void registerAuthors(ArrayList<Author> authors) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
