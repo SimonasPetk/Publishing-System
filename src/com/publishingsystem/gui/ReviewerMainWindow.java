@@ -1,4 +1,5 @@
 package com.publishingsystem.gui;
+import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.Font;
 
@@ -10,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
@@ -17,8 +19,15 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.DefaultTableModel;
 
+import com.publishingsystem.mainclasses.RetrieveDatabase;
+
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 
 public class ReviewerMainWindow {
@@ -83,6 +92,34 @@ public class ReviewerMainWindow {
 		lblArticlesReview.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JButton btnNewButton = new JButton("Download PDF");
+		btnNewButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				try {
+					// Make this into a thread or maybe you Progress monitors.
+					JOptionPane.showMessageDialog(null, "The File will open soon, Press OK", "Reviewer Window", JOptionPane.INFORMATION_MESSAGE);
+					OutputStream out = new FileOutputStream((System.getProperty("user.home") + "/Desktop/" + "ArticleToReview.pdf"));
+					out.write(RetrieveDatabase.getPDF(1)); //PDF ID
+					if(!Desktop.isDesktopSupported()){
+			            System.out.println("Desktop is not supported");
+			            JOptionPane.showMessageDialog(null, "Unable to open the pdf file", "Reviewer Window", 0);
+			            out.close();
+			            return;
+					} 
+					
+					File file = new File((System.getProperty("user.home") + "/Desktop/" + "ArticleToReview.pdf"));
+					Desktop desktop = Desktop.getDesktop();
+			        if(file.exists()) {
+			        	desktop.open(file);
+			        }
+					out.close();
+				}catch(FileNotFoundException fnf) {
+					
+				}catch(IOException io) {
+					
+				}
+			}
+		});
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JButton btnCheckResponses = new JButton("Check Response");
