@@ -15,6 +15,7 @@ import java.awt.Font;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 
+import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.Article;
 import com.publishingsystem.mainclasses.Author;
 import com.publishingsystem.mainclasses.Database;
@@ -79,7 +80,12 @@ public class SubmitArticle {
 	 */
 	public SubmitArticle(Author a) {
         coAuthors = new ArrayList<Author>();
-		initialize(a);
+		initialize(a, null);
+	}
+	
+	public SubmitArticle(Author a, AuthorMainWindow amw) {
+        coAuthors = new ArrayList<Author>();
+		initialize(a, amw);
 	}
 
 	public void addCoAuthor(Author coAuthor) {
@@ -93,7 +99,7 @@ public class SubmitArticle {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Author mainAuthor) {
+	private void initialize(Author mainAuthor, AuthorMainWindow amw) {
 		frmSubmitAnArticle = new JFrame();
 		frmSubmitAnArticle.setTitle("Submit an Article");
 		frmSubmitAnArticle.setBounds(100, 100, 700, 552);
@@ -234,10 +240,16 @@ public class SubmitArticle {
 					//ADDING TO THE DATABASE;
 					Database.registerAuthors(coAuthors);
 					Database.addSubmission(article, pdf);
-					
-					new AuthorMainWindow(mainAuthor);
+			
 					//This is for just adding co-authors
 					frmSubmitAnArticle.dispose();
+				}
+				if(amw == null) {
+					Academic[] roles = new Academic[3];
+					roles[1] = mainAuthor;
+					new AuthorMainWindow(roles);
+				}else {
+					amw.refreshArticles();
 				}
 			}
 		});
