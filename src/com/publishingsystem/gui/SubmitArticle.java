@@ -241,15 +241,15 @@ public class SubmitArticle {
 					Database.registerAuthors(coAuthors);
 					Database.addSubmission(article, pdf);
 			
+					if(amw == null) {
+						Academic[] roles = new Academic[3];
+						roles[1] = mainAuthor;
+						new AuthorMainWindow(roles);
+					}else {
+						amw.refreshArticles();
+					}
 					//This is for just adding co-authors
 					frmSubmitAnArticle.dispose();
-				}
-				if(amw == null) {
-					Academic[] roles = new Academic[3];
-					roles[1] = mainAuthor;
-					new AuthorMainWindow(roles);
-				}else {
-					amw.refreshArticles();
 				}
 			}
 		});
