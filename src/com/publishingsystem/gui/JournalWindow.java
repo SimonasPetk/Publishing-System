@@ -156,7 +156,7 @@ public class JournalWindow {
 		// Log in / Log out button
 		JButton btnLogInOut = new JButton();
 		if (roles == null) btnLogInOut.setText("Log In");
-		else btnLogInOut.setText("Logged in as " + roles[1].getForename() + " " + roles[1].getSurname() + ". Log Out");
+		else btnLogInOut.setText("Log Out");
 
 		btnLogInOut.addMouseListener(new MouseAdapter() {
 			@Override
@@ -175,15 +175,8 @@ public class JournalWindow {
 		btnSubmitArticle.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (roles == null) {
-				    // Let the user register as an academic/AUTHOR if they are not logged in
-				    new RegistrationWindow(Role.AUTHOR, (SubmitArticle)null);
-				    frmJournalWindow.dispose();	                
-                } else {
-                    // Display the SubmitArticle window if the user is logged in
-                    new SubmitArticle((Author)roles[1]);
-				    frmJournalWindow.dispose();
-				}
+			    new RegistrationWindow(Role.AUTHOR);
+			    frmJournalWindow.dispose();	                
 			}
 		});
 		menuBar.add(btnSubmitArticle);
@@ -198,5 +191,49 @@ public class JournalWindow {
 			}
 		});
 		menuBar.add(btnAddJournal);
+		
+		if(roles != null) {
+			JMenu mnChangeRole = new JMenu("Change My Role");
+			menuBar.add(mnChangeRole);
+			
+			if(roles[0] != null) {
+				JMenuItem mntmToEditor = new JMenuItem("Editor");
+				mntmToEditor.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mousePressed(MouseEvent e) {
+						new EditorMainWindow();
+						frmJournalWindow.dispose();
+					}
+				});
+				mnChangeRole.add(mntmToEditor);
+			}
+		
+			if(roles[1] != null) {
+				JMenuItem mntmToAuthor = new JMenuItem("Author");
+				mntmToAuthor.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mousePressed(MouseEvent e) {
+						
+						new AuthorMainWindow(roles);
+						frmJournalWindow.dispose();
+					}
+				});
+				mnChangeRole.add(mntmToAuthor);
+			}
+			
+			if(roles[2] != null) {
+				JMenuItem mntmToReviewer = new JMenuItem("Reviewer");
+				mntmToReviewer.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mousePressed(MouseEvent e) {
+						
+						new ReviewerMainWindow();
+						frmJournalWindow.dispose();
+					}
+				});
+				mnChangeRole.add(mntmToReviewer);
+			}
+			
+		}
 	}
 }

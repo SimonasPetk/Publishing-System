@@ -9,6 +9,8 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JScrollPane;
@@ -33,7 +35,9 @@ import com.publishingsystem.mainclasses.*;
 public class AuthorMainWindow {
 
 	private JFrame frmAuthorsDashboard;
+	private DefaultTableModel tblSubmittedModel;
 	private JTable tblSubmitted;
+	private Author author;
 
 	/**
 	 * Launch the application.
@@ -55,14 +59,30 @@ public class AuthorMainWindow {
 	/**
 	 * Create the application.
 	 */
-	public AuthorMainWindow(Author loggedInUser) {
-		initialize(loggedInUser);
+	public AuthorMainWindow(Academic[] roles) {
+		this.author = (Author)roles[1];
+		initialize(roles);
+	}
+	
+	public void refreshArticles() {
+		DefaultTableModel dm = (DefaultTableModel)tblSubmitted.getModel();
+		dm.setRowCount(0);
+		ArrayList<AuthorOfArticle> authorOfArticles = this.author.getAuthorOfArticles();
+	    for(int i = 0; i < authorOfArticles.size(); i++) {
+	    	Article article = authorOfArticles.get(i).getArticle();
+	    	String[] articles = new String[3];
+	    	articles[0] = String.valueOf(article.getArticleId());
+	    	articles[1] = article.getTitle();
+	    	articles[2] = article.getSummary();
+	    	dm.addRow(articles);
+	    }
+		
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Author loggedInUser) {
+	private void initialize(Academic[] roles) {
 		frmAuthorsDashboard = new JFrame();
 		frmAuthorsDashboard.setTitle("Author's Dashboard");
 		frmAuthorsDashboard.setBounds(100, 100, 900, 740);
@@ -75,12 +95,13 @@ public class AuthorMainWindow {
 		
 		JScrollPane scrSubmitted = new JScrollPane();
 		
+		AuthorMainWindow authorMainWindow = this;
 		JButton btnSubmitAnArticle = new JButton("Submit an Article");
 		btnSubmitAnArticle.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				
-				new SubmitArticle(loggedInUser);
+				new SubmitArticle(author, authorMainWindow);
 			}
 		});
 		btnSubmitAnArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -152,78 +173,39 @@ public class AuthorMainWindow {
 		editPaneReview.setEditable(false);
 		scrReview.setViewportView(editPaneReview);
 
-	    String articles[][] = {{"1", "Article One", "Alex"},
-	                           {"2", "Article Two", "Manas"},
-	                           {"3", "Article Three", "Ross"},
-	                           {"4", "Article Four", "Simonas"}};
-		String columns[] = {"ID", "Title", "Authors"};
-		tblSubmitted = new JTable(articles, columns);
-/*		tblSubmitted.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-			},
-			new String[] {
-				"New column", "New column", "New column", "New column", "New column", "New column", "New column"
-			}
-		));*/
+		ArrayList<AuthorOfArticle> authorOfArticles = author.getAuthorOfArticles();
+		tblSubmittedModel = new DefaultTableModel();
+		tblSubmittedModel.addColumn("ID");
+		tblSubmittedModel.addColumn("TITLE");
+		tblSubmittedModel.addColumn("SUMMARY");
+	   
+	    for(int i = 0; i < authorOfArticles.size(); i++) {
+	    	Article article = authorOfArticles.get(i).getArticle();
+	    	String[] articles = new String[3];
+	    	articles[0] = String.valueOf(article.getArticleId());
+	    	articles[1] = article.getTitle();
+	    	articles[2] = article.getSummary();
+	    	tblSubmittedModel.addRow(articles);
+	    }
+		tblSubmitted = new JTable(tblSubmittedModel);
 		
 		tblSubmitted.setEnabled(false);
 		scrSubmitted.setViewportView(tblSubmitted);
+		tblSubmitted.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+			    // Open new window displaying the articles in the selected article
+				int selectedArticle = (int)tblSubmitted.getValueAt(tblSubmitted.rowAtPoint(arg0.getPoint()), 2);	
+				System.out.println(selectedArticle);
+			} 
+		});
+		
 		frmAuthorsDashboard.getContentPane().setLayout(groupLayout);
 		
 		JMenuBar menuBar = new JMenuBar();
 		frmAuthorsDashboard.setJMenuBar(menuBar);
 		
-		JMenu name = new JMenu("Welcome back " + loggedInUser.getForename());
+		JMenu name = new JMenu("Welcome back " + author.getForename());
 		menuBar.add(name);
 		
 		JMenu menu = new JMenu("Menu");
@@ -249,57 +231,46 @@ public class AuthorMainWindow {
 		});
 		menu.add(mntmLogOut);
 		
+		
 		JMenu mnChangeRole = new JMenu("Change My Role");
 		menuBar.add(mnChangeRole);
 		
-		JMenuItem mntmChiefEditor = new JMenuItem("Chief Editor");
-		mntmChiefEditor.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				
-				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A CHIEF EDITOR IF NOT MAKE ERROR MESSAGE
-				
-				new ChiefMainWindow();
-				frmAuthorsDashboard.dispose();
-			}
-		});
-		mnChangeRole.add(mntmChiefEditor);
+		if(roles[0] != null) {
+			JMenuItem mntmToEditor = new JMenuItem("Editor");
+			mntmToEditor.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					
+					// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A EDITOR IF NOT MAKE ERROR MESSAGE
+					new EditorMainWindow();
+					frmAuthorsDashboard.dispose();
+				}
+			});
+			mnChangeRole.add(mntmToEditor);
+		}
 		
-		JMenuItem mntmToEditor = new JMenuItem("Editor");
-		mntmToEditor.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				
-				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A EDITOR IF NOT MAKE ERROR MESSAGE
-				new EditorMainWindow();
-				frmAuthorsDashboard.dispose();
-			}
-		});
-		mnChangeRole.add(mntmToEditor);
+		if(roles[2] != null) {
+			JMenuItem mntmToReviewer = new JMenuItem("Reviewer");
+			mntmToReviewer.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					
+					new ReviewerMainWindow();
+					frmAuthorsDashboard.dispose();
+				}
+			});
+			mnChangeRole.add(mntmToReviewer);
+		}
 		
 		JMenuItem mntmToReader = new JMenuItem("Reader");
 		mntmToReader.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				
-				// Allow this always
-				new JournalWindow();
+				new JournalWindow(roles);
 				frmAuthorsDashboard.dispose();
 			}
 		});
 		mnChangeRole.add(mntmToReader);
-		
-		JMenuItem mntmToReviewer = new JMenuItem("Reviewer");
-		mntmToReviewer.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				
-				// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A EDITOR IF NOT MAKE ERROR MESSAGE
-				new ReviewerMainWindow();
-				frmAuthorsDashboard.dispose();
-			}
-		});
-		mnChangeRole.add(mntmToReviewer);
 		
 	}
 }

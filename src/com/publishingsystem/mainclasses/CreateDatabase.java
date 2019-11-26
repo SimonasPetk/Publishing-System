@@ -258,7 +258,6 @@ public class CreateDatabase extends Database{
 		while (list.hasMoreElements())
 			System.out.println(list.nextElement());
 		System.out.println();
-
 		//dropTables();
 		//createTables();
         try (Connection con = DriverManager.getConnection(CONNECTION)) {
