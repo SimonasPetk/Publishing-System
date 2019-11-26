@@ -36,17 +36,16 @@ public class PDFConverter {
 	}
 
 	public static void main(String[] args) {
-		byte[] pdf = PDFConverter.getByteArrayFromFile("pathToPDFfile.pdf");
-		System.out.println(pdf.length);
-		Database.addPDF(1, pdf);
-		try {
-			OutputStream out = new FileOutputStream("pathToOutputLocation.pdf");
-			out.write(RetrieveDatabase.getPDF(1)); //PDF ID
-			out.close();
-		}catch(FileNotFoundException fnf) {
-			
-		}catch(IOException io) {
-			
-		}
+//		byte[] pdf = PDFConverter.getByteArrayFromFile("pathToPDFfile.pdf");
+//		System.out.println(pdf.length);
+//		try {
+//			OutputStream out = new FileOutputStream("pathToOutputLocation.pdf");
+//			out.write(RetrieveDatabase.getPDF(1)); //PDF ID
+//			out.close();
+//		}catch(FileNotFoundException fnf) {
+//			
+//		}catch(IOException io) {
+//			
+//		}
 	}
 }

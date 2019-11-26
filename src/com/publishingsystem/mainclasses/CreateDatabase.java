@@ -258,18 +258,18 @@ public class CreateDatabase extends Database{
 		while (list.hasMoreElements())
 			System.out.println(list.nextElement());
 		System.out.println();
-		//dropTables();
-		//createTables();
-        try (Connection con = DriverManager.getConnection(CONNECTION)) {
-			printAllRecords("JOURNALS");
-			printAllRecords("EDITORS");
-			printAllRecords("VOLUMES");
-			printAllRecords("EDITIONS");
-			printAllRecords("EDITOROFJOURNAL");
-			printAllRecords("ACADEMICS");
-		} catch (SQLException ex) {
-		    ex.printStackTrace();
-		}		
+		dropTables();
+		createTables();
+//        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+//			printAllRecords("JOURNALS");
+//			printAllRecords("EDITORS");
+//			printAllRecords("VOLUMES");
+//			printAllRecords("EDITIONS");
+//			printAllRecords("EDITOROFJOURNAL");
+//			printAllRecords("ACADEMICS");
+//		} catch (SQLException ex) {
+//		    ex.printStackTrace();
+//		}		
 //    try (Connection con = DriverManager.getConnection(CONNECTION)) {
 //          Statement statement = con.createStatement();
 //          statement.execute("USE "+DATABASE+";");

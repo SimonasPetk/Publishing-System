@@ -236,13 +236,30 @@ public class AuthorMainWindow {
 		menuBar.add(mnChangeRole);
 		
 		if(roles[0] != null) {
+			Editor chiefEditor = (Editor)roles[0];
+			boolean isChiefEditor = false;
+			for(EditorOfJournal eoj : chiefEditor.getEditorOfJournals()) {
+				if(eoj.isChiefEditor()) {
+					isChiefEditor = true;
+					break;
+				}
+			}
+			if(isChiefEditor) {
+				JMenuItem mntmToEditor = new JMenuItem("Chief Editor");
+				mntmToEditor.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mousePressed(MouseEvent e) {
+						new ChiefMainWindow(roles);
+						frmAuthorsDashboard.dispose();
+					}
+				});
+				mnChangeRole.add(mntmToEditor);
+			}
 			JMenuItem mntmToEditor = new JMenuItem("Editor");
 			mntmToEditor.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mousePressed(MouseEvent e) {
-					
-					// NEEEDS TO CHECK IF IT HAS A RIGHT TO BE A EDITOR IF NOT MAKE ERROR MESSAGE
-					new EditorMainWindow();
+					new EditorMainWindow(roles);
 					frmAuthorsDashboard.dispose();
 				}
 			});
@@ -255,7 +272,7 @@ public class AuthorMainWindow {
 				@Override
 				public void mousePressed(MouseEvent e) {
 					
-					new ReviewerMainWindow();
+					new ReviewerMainWindow(roles);
 					frmAuthorsDashboard.dispose();
 				}
 			});
