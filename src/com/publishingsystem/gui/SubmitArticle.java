@@ -138,8 +138,6 @@ public class SubmitArticle {
             }
         });
         btnRegisterANew.setFont(new Font("Tahoma", Font.PLAIN, 15));
-
-        
         
 		JButton btnUploadPdf = new JButton("Upload PDF");
 		JLabel lblPdfIsNot = new JLabel("PDF is not yet uploaded");
