@@ -265,7 +265,7 @@ public class CreateDatabase extends Database{
 		//dropTables();
 		//createTables();
         try (Connection con = DriverManager.getConnection(CONNECTION)) {
-			printAllRecords("ARTICLES");
+			printAllRecords("ACADEMICS");
 		} catch (SQLException ex) {
 		    ex.printStackTrace();
 		}		

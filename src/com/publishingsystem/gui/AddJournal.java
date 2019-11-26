@@ -80,8 +80,8 @@ public class AddJournal {
 		btnAddJournal.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-
-				
+				System.out.println(textField.getText());
+				System.out.println(textField_1.getText());
 				JOptionPane.showMessageDialog(null, "To access your Chief-Editor role please Log Out and Login In again to the system. Thank you!");
 				frmAddJournal.dispose();
 			}
