@@ -1,7 +1,6 @@
 package com.publishingsystem.mainclasses;
 import java.sql.*;
 import java.util.*;
-import java.sql.Date;
 
 public class Database {
 	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
@@ -183,9 +182,9 @@ public class Database {
 				preparedStmt.setString(3, article.getSummary());
 				preparedStmt.execute();		
 				
-				//ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ARTICLES");
-				//while(rs.next())
-				//	article.setArticleId(Integer.valueOf(rs.getString("last_id")));
+				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ARTICLES");
+				while(rs.next())
+					article.setArticleId(Integer.valueOf(rs.getString("last_id")));
 			} catch (SQLException ex) {
 				ex.printStackTrace();
 			}
@@ -197,9 +196,9 @@ public class Database {
 		    	preparedStmt.setString(2, SubmissionStatus.SUBMITTED.asString());
 		    	preparedStmt.execute();
 
-		    	//ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from SUBMISSIONS");
-		    	//while(rs.next())
-		    		//article.getSubmission().setSubmissionId(Integer.valueOf(rs.getString("last_id")));
+		    	ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from SUBMISSIONS");
+		    	while(rs.next())
+		    		article.getSubmission().setSubmissionId(Integer.valueOf(rs.getString("last_id")));
 		    } catch (SQLException ex) {
 		    	ex.printStackTrace();
 		    }
@@ -456,17 +455,34 @@ public class Database {
 			statement.close();
 
 			Submission s = pdf.getSubmission();
-			String query = "INSERT INTO PDF values (null, ?, ?, ?)";
+			String query = "INSERT INTO PDF values (null, ?, ?, null)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, s.getSubmissionId());
-				preparedStmt.setString(2, pdf.getPdfLink());
-				preparedStmt.setDate(3, pdf.getDate());
+				preparedStmt.setDate(2, pdf.getDate());
 	
 				preparedStmt.execute();
 				
 				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from PDF");
 				while(rs.next())
 					pdf.setPdfId(Integer.valueOf(rs.getString("last_id")));
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void addPDF(int pdfId, byte[] pdf) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query = "UPDATE PDF SET PDFTEXT = ? WHERE pdfID = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setBlob(1, PDFConverter.getPDFBlob(pdf));
+				preparedStmt.setInt(2, pdfId);
+				preparedStmt.execute();
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}

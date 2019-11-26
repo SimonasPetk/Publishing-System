@@ -1,5 +1,6 @@
 package com.publishingsystem.mainclasses;
 
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -265,7 +266,7 @@ public class RetrieveDatabase extends Database{
             			+ "WHERE Aoa.AUTHORID = A.AUTHORID "
             			+ "AND Aoa.ARTICLEID = Art.ARTICLEID "
             			+ "AND Art.ARTICLEID = S.ARTICLEID "
-            			+ "AND UNIVERSITY = ?)";
+            			+ "AND A.UNIVERSITY = ?)";
             ArrayList<Submission> submissions = new ArrayList<Submission>();
             try(PreparedStatement preparedStmt = con.prepareStatement(query)){
             	preparedStmt.setString(1, university);
@@ -279,6 +280,29 @@ public class RetrieveDatabase extends Database{
 				ex.printStackTrace();
 			}
             return submissions;
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static byte[] getPDF(int pdfId) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query = "SELECT PDFTEXT FROM PDF WHERE pdfID = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, pdfId);
+				ResultSet res = preparedStmt.executeQuery();
+				while(res.next()) {
+					Blob blob = res.getBlob("PDFTEXT");
+					int blobLength = (int) blob.length();  
+					return blob.getBytes(1, blobLength);
+				}
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
