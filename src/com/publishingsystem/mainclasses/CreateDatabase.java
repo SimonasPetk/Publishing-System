@@ -1,12 +1,9 @@
 package com.publishingsystem.mainclasses;
 
 import java.sql.*;
-import java.sql.Date;
 import java.util.*;
 
 public class CreateDatabase extends Database{
-	private static String[] roles = {"Author", "Reviewer", "Editor"};
-
 	public static String createTableAcademics() {
 		return "CREATE TABLE ACADEMICS ("
 				+ "academicID INT PRIMARY KEY AUTO_INCREMENT, "
@@ -44,8 +41,8 @@ public class CreateDatabase extends Database{
 		return "CREATE TABLE PDF ("
 				+ "pdfID INT PRIMARY KEY AUTO_INCREMENT, "
 				+ "submissionID INT REFERENCES SUBMISSION(submissionID),"
-				+ "pdfLink TEXT, "
-				+ "uploadDate DATE)";
+				+ "uploadDate DATE, "
+				+ "pdfText MEDIUMBLOB)";
 	}
 
 	public static String createTableEditors(){
@@ -131,9 +128,9 @@ public class CreateDatabase extends Database{
 	}
 
 	public static void printAllRecords(String tblName) {
-		try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f")) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
-			statement.execute("USE team022;");
+			statement.execute("USE "+DATABASE+";");
 			ResultSet rs = statement.executeQuery("SELECT * FROM " + tblName);
 			//printResultSet(rs);
 			ResultSetMetaData rsmd = rs.getMetaData();
