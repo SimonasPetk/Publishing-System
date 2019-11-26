@@ -138,39 +138,21 @@ public class RegistrationWindow {
 			    if (title == " " || forenames.isEmpty() || surname.isEmpty() || university.isEmpty() || email.isEmpty() || password.isEmpty()) {
                     validCredentials = false;
                     JOptionPane.showMessageDialog(null, "Please fill in all of the fields", "Registration Form", 0);
-                }
-			    if (validCredentials) {
-			        char[] characters = (forenames + surname + university).toCharArray();
-			        int i = 0;
-			        while (validCredentials && i < characters.length) {
-	                    if (!Character.isLetter(characters[i]) && !(characters[i] == ' ') && !(characters[i] == '-')) validCredentials = false;
-	                    i++;
-			        }
+                } else {
+                    char[] characters = (forenames + surname + university).toCharArray();
+                    int i = 0;
+                    while (validCredentials && i < characters.length) {
+                        if (!Character.isLetter(characters[i]) && !(characters[i] == ' ') && !(characters[i] == '-')) validCredentials = false;
+                        i++;
+                    }
                     if (!validCredentials) JOptionPane.showMessageDialog(null, "Names must only contain letters", "Registration Form", 0);
-			    }
+                }
 			    
-			    // Add academic's details to database if entered details are valid
-			    if (!Database.academicExists(email)) {
-                    JOptionPane.showMessageDialog(null, "Registration Successful", "Registration Form", 1);
-                    frmRegistrationForm.dispose();
-                    int academicID = RetrieveDatabase.getAcademicIdByEmail(email);
-			        switch(r) {
-			    		case AUTHOR:
-                            Author author = new Author(academicID, title, forenames, surname, email, university, pwdHash);
-			    			new SubmitArticle(author);
-			    			break;
-			    		case COAUTHOR:
-                            Author coAuthor = new Author(academicID, title, forenames, surname, email, university, pwdHash);
-			    			submitArticleGUI.addCoAuthor(coAuthor);
-			    		case CHIEFEDITOR:
-			    			Editor chiefEditor = new Editor(academicID, title, forenames, surname, email, university, pwdHash);
-			    			new AddJournal(chiefEditor);
-			    			break;
-			    		default:
-			    	}
-		        }else {
-		        	JOptionPane.showMessageDialog(null, "Email address already in use", "Registration Form", 0);
-		        }
+			    if (validCredentials) {
+			        JOptionPane.showMessageDialog(null, "Registration Successul", "Registration Form", 1);
+			        new SubmitArticle(new Author(-1, forenames, surname, email, university, password, pwdHash));
+			        frmRegistrationForm.dispose();
+			    }
 			}
 		});
 		btnRegister.setFont(new Font("Tahoma", Font.PLAIN, 15));

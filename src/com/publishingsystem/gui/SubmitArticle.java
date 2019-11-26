@@ -63,8 +63,8 @@ public class SubmitArticle {
 	 * Create the application.
 	 */
 	public SubmitArticle(Author a) {
-		coAuthors = new ArrayList<Author>();
-        initialize(a);
+        coAuthors = new ArrayList<Author>();
+		initialize(a);
 	}
 
 	public void addCoAuthor(Author coAuthor) {
@@ -121,24 +121,12 @@ public class SubmitArticle {
             listOfAuthors[i] = coAuthors.get(i).getForename() + " " + coAuthors.get(i).getSurname();
         }
 
-        listOfJournals.setModel(new AbstractListModel() {
-            //String[] values = new String[] {"First Journal", "Second journal", "Third Journal", "", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal"};
-            String[] values = listOfAuthors;
-
-            public int getSize() {
-                return values.length;
-            }
-            public Object getElementAt(int index) {
-                return values[index];
-            }
-        });
-
         SubmitArticle submitArticleGUI = this;
         JButton btnRegisterANew = new JButton("Register a New Co-Author");
         btnRegisterANew.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                new RegistrationWindow(Role.COAUTHOR, submitArticleGUI, a);
+                new RegistrationWindow(Role.COAUTHOR, submitArticleGUI);
             }
         });
         btnRegisterANew.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -147,10 +135,6 @@ public class SubmitArticle {
 		btnUploadPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 		JLabel lblPdfIsNot = new JLabel("PDF is not yet uploaded");
-
-		JList list = new JList();
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		scrPaneAuthors.setViewportView(list);
 
 		JList listOfJournals = new JList();
 		listOfJournals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -177,6 +161,7 @@ public class SubmitArticle {
 			public void mouseClicked(MouseEvent e) {
 				coAuthors.add(a);
 				System.out.println(coAuthors);
+				System.out.println("Authors: " + coAuthors);
 				Database.registerAuthors(coAuthors);
 
 				// Why do we need this?
@@ -199,16 +184,6 @@ public class SubmitArticle {
 		});
 		btnSubmit.setFont(new Font("Tahoma", Font.BOLD, 15));
 
-		SubmitArticle submitArticleGUI = this;
-		JButton btnRegisterANew = new JButton("Register a New Co-Author");
-		btnRegisterANew.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-				new RegistrationWindow(Role.COAUTHOR, submitArticleGUI);
-
-			}
-		});
 		btnRegisterANew.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(frmSubmitAnArticle.getContentPane());
 		groupLayout.setHorizontalGroup(
