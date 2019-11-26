@@ -145,9 +145,17 @@ public class RegistrationWindow {
                         if (!Character.isLetter(characters[i]) && !(characters[i] == ' ') && !(characters[i] == '-')) validCredentials = false;
                         i++;
                     }
-                    if (!validCredentials) JOptionPane.showMessageDialog(null, "Names must only contain letters", "Registration Form", 0);
+                    if (!validCredentials) {
+                        JOptionPane.showMessageDialog(null, "Names must only contain letters", "Registration Form", 0);
+                    } else {
+                        if (Database.academicExists(email)) {
+                            validCredentials = false;
+                            JOptionPane.showMessageDialog(null, "Email is already in use", "Registration Form", 0);
+                        }
+                    }
                 }
 			    
+			    // Display message, open SubmitArticle and close this form if the details are valid
 			    if (validCredentials) {
 			        JOptionPane.showMessageDialog(null, "Registration Successul", "Registration Form", 1);
 			        new SubmitArticle(new Author(-1, forenames, surname, email, university, password, pwdHash));
