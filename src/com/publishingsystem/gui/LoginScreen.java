@@ -92,6 +92,7 @@ public class LoginScreen {
                         // Open next window
                         Academic[] userRoles = RetrieveDatabase.getRoles(email);
                         new JournalWindow(userRoles);
+                        System.out.println(userRoles[0]);
                         frmLogInScreen.dispose();
                     } else JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
 			    } else JOptionPane.showMessageDialog(null, "Please fill in all fields", "Login", 0);

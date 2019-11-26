@@ -15,6 +15,7 @@ import com.publishingsystem.mainclasses.Database;
 import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
 import com.publishingsystem.mainclasses.Journal;
+import com.publishingsystem.mainclasses.RetrieveDatabase;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -98,6 +99,8 @@ public class AddJournal {
 				newJournal.addEditorToBoard(chief);
 				Database.addJournal(newJournal);
 				frmAddJournal.dispose();
+				new ChiefMainWindow();
+				System.out.println("Should be on that menu now boya");
 			}
 		});
 		btnAddJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));

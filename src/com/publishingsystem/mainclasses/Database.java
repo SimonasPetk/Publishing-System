@@ -1,6 +1,13 @@
 package com.publishingsystem.mainclasses;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.*;
 import java.util.*;
+
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 
 public class Database {
 	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
@@ -68,6 +75,33 @@ public class Database {
 				}
 
 			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void registerEditorAsChiefEditor(ArrayList<Editor> editor) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
+	        String[] listContents = new String[allJournals.size()];
+	        for (int i=0; i<allJournals.size(); i++) {
+	            listContents[i] = allJournals.get(i).getJournalName();
+	        }
+			registerEditors(editor);
+			for(Editor e : editor) {
+				System.out.println(e.getEditorOfJournals());
+				/*e.addEditorOfJournal(new EditorOfJournal(journal, e, false));
+				String query = "INSERT INTO EDITOROFJOURNAL values (?, ?, ?, ?)";
+				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+					preparedStmt.setInt(1, e.getEditorId());
+					preparedStmt.setInt(2, journal.getISSN());
+					preparedStmt.setBoolean(3, false);
+					preparedStmt.setBoolean(4, false);
+					preparedStmt.execute();*/
+				}catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}*/
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}

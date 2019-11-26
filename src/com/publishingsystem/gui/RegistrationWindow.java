@@ -171,6 +171,12 @@ public class RegistrationWindow {
 		    				Editor chiefEditor = new Editor(academicID, title, forenames, surname, email, university, pwdHash);
 		    				new AddJournal(chiefEditor);
 		    				break;
+		    			case EDITOR:
+		    				Editor editor = new Editor(academicID, title, forenames, surname, email, university, pwdHash);
+		    				ArrayList<Editor> editors = new ArrayList<Editor>();
+		    				editors.add(editor);
+		    				Database.registerEditorAsChiefEditor(editors);
+		    				System.out.println("Editor path followed");
 		    			default:
 			        }
 			        frmRegistrationForm.dispose();

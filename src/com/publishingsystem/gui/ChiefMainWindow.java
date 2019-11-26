@@ -10,6 +10,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import com.publishingsystem.mainclasses.Role;
+
 import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.Font;
@@ -193,7 +196,7 @@ public class ChiefMainWindow {
 		mntmAppointNewEditors.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				new RegistrationWindow();
+				new RegistrationWindow(Role.EDITOR);
 				
 			}
 		});
