@@ -567,7 +567,7 @@ public class Database {
 			}
 			Statement printStatements = con.createStatement();
 			printStatements.execute("USE "+DATABASE+";");
-			printStatements.execute("SELECT * FROM SUBMISSIONS;");
+			printStatements.executeQuery("SELECT * FROM ACADEMICS");
 			printStatements.close();
 			System.out.println("Done");
 		}catch (SQLException ex) {
