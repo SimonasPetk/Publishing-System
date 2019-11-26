@@ -53,21 +53,21 @@ public class RegistrationWindow {
 	 * Create the application.
 	 */
 	public RegistrationWindow(Role r) {
-		initialize(r, null, null, null);
+		initialize(r, null, null);
 	}
 	
-	public RegistrationWindow(Role r, SubmitArticle submitArticleGUI, Author loggedInAuthor) {
-		initialize(r, submitArticleGUI, null, loggedInAuthor);
+	public RegistrationWindow(Role r, SubmitArticle submitArticleGUI) {
+		initialize(r, submitArticleGUI, null);
 	}
 	
 	public RegistrationWindow(Role r, AddJournal addJournalGUI) {
-		initialize(r, null, addJournalGUI, null);
+		initialize(r, null, addJournalGUI);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Role r, SubmitArticle submitArticleGUI, AddJournal addJournalGUI, Author loggedInAuthor) {
+	private void initialize(Role r, SubmitArticle submitArticleGUI, AddJournal addJournalGUI) {
 		frmRegistrationForm = new JFrame();
 		frmRegistrationForm.setTitle("Registration Form");
 		frmRegistrationForm.setBounds(500, 100, 653, 559);
@@ -138,41 +138,29 @@ public class RegistrationWindow {
 			    if (title == " " || forenames.isEmpty() || surname.isEmpty() || university.isEmpty() || email.isEmpty() || password.isEmpty()) {
                     validCredentials = false;
                     JOptionPane.showMessageDialog(null, "Please fill in all of the fields", "Registration Form", 0);
+                } else {
+                    char[] characters = (forenames + surname + university).toCharArray();
+                    int i = 0;
+                    while (validCredentials && i < characters.length) {
+                        if (!Character.isLetter(characters[i]) && !(characters[i] == ' ') && !(characters[i] == '-')) validCredentials = false;
+                        i++;
+                    }
+                    if (!validCredentials) {
+                        JOptionPane.showMessageDialog(null, "Names must only contain letters", "Registration Form", 0);
+                    } else {
+                        if (Database.academicExists(email)) {
+                            validCredentials = false;
+                            JOptionPane.showMessageDialog(null, "Email is already in use", "Registration Form", 0);
+                        }
+                    }
                 }
-			    if (validCredentials) {
-			        char[] characters = (forenames + surname + university).toCharArray();
-			        int i = 0;
-			        while (validCredentials && i < characters.length) {
-	                    if (!Character.isLetter(characters[i]) && !(characters[i] == ' ') && !(characters[i] == '-')) validCredentials = false;
-	                    i++;
-			        }
-                    if (!validCredentials) JOptionPane.showMessageDialog(null, "Names must only contain letters", "Registration Form", 0);
-			    }
 			    
-			    // Add academic's details to database if entered details are valid
-			    if (!Database.academicExists(email)) {
-                    JOptionPane.showMessageDialog(null, "Registration Successful", "Registration Form", 1);
-                    // change to getRoles
-                    int academicID = RetrieveDatabase.getAcademicIdByEmail(email);
-			        switch(r) {
-			    		case AUTHOR:
-                            Author author = new Author(academicID, title, forenames, surname, email, university, pwdHash);
-			    			new SubmitArticle(author);
-			    			break;
-			    		case COAUTHOR:
-                            Author coAuthor = new Author(academicID, title, forenames, surname, email, university, pwdHash);
-			    			submitArticleGUI.addCoAuthor(coAuthor);
-			    			new SubmitArticle(loggedInAuthor);
-			    		case CHIEFEDITOR:
-			    			Editor chiefEditor = new Editor(academicID, title, forenames, surname, email, university, pwdHash);
-			    			new AddJournal(chiefEditor);
-			    			break;
-			    		default:
-			    	}
+			    // Display message, open SubmitArticle and close this form if the details are valid
+			    if (validCredentials) {
+			        JOptionPane.showMessageDialog(null, "Registration Successul", "Registration Form", 1);
+			        new SubmitArticle(new Author(-1, forenames, surname, email, university, password, pwdHash));
 			        frmRegistrationForm.dispose();
-		        }else {
-		        	JOptionPane.showMessageDialog(null, "Email address already in use", "Registration Form", 0);
-		        }
+			    }
 			}
 		});
 		btnRegister.setFont(new Font("Tahoma", Font.PLAIN, 15));
