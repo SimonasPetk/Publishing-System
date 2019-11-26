@@ -11,12 +11,17 @@ import java.awt.Font;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 
+import com.publishingsystem.mainclasses.Database;
 import com.publishingsystem.mainclasses.Editor;
+import com.publishingsystem.mainclasses.EditorOfJournal;
+import com.publishingsystem.mainclasses.Journal;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Date;
+import java.util.ArrayList;
 
 public class AddJournal {
 
@@ -80,9 +85,18 @@ public class AddJournal {
 		btnAddJournal.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				System.out.println(textField.getText());
-				System.out.println(textField_1.getText());
-				JOptionPane.showMessageDialog(null, "To access your Chief-Editor role please Log Out and Login In again to the system. Thank you!");
+				String journalName = textField.getText();
+				String JournalISSN = textField_1.getText();
+				Date now = new Date(System.currentTimeMillis());
+				ArrayList<Editor> editors = new ArrayList<Editor>();
+				editors.add(chiefEditor);
+				Database.registerEditors(editors);
+				Journal newJournal = new Journal(Integer.parseInt(JournalISSN), journalName, now);
+				EditorOfJournal chief = new EditorOfJournal(newJournal, chiefEditor, true);
+				//ArrayList<EditorOfJournal> editorOfNewJournal = new ArrayList<EditorOfJournal>();
+				//editorOfNewJournal.add(chief);
+				newJournal.addEditorToBoard(chief);
+				Database.addJournal(newJournal);
 				frmAddJournal.dispose();
 			}
 		});

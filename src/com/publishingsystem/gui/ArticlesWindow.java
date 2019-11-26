@@ -39,7 +39,7 @@ public class ArticlesWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ArticlesWindow window = new ArticlesWindow(12345);
+					ArticlesWindow window = new ArticlesWindow(58051210);
 					window.frmAvailableJournalArticles.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
