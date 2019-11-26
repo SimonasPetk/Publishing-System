@@ -117,7 +117,7 @@ public class JournalWindow {
 			public void mouseClicked(MouseEvent arg0) {
 			    // Open new window displaying the articles in the selected article
 				int selectedJournal = (int)tblJournal.getValueAt(tblJournal.rowAtPoint(arg0.getPoint()), 2);				
-				new ArticlesWindow(selectedJournal);
+				new ArticlesWindow(selectedJournal, roles);
 				frmJournalWindow.dispose();
 			} 
 		});
