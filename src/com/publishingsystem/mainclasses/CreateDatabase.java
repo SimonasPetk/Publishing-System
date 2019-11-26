@@ -261,7 +261,11 @@ public class CreateDatabase extends Database{
 
 		//dropTables();
 		//createTables();
-
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			printAllRecords("ACADEMICS");
+		} catch (SQLException ex) {
+		    ex.printStackTrace();
+		}		
 //    try (Connection con = DriverManager.getConnection(CONNECTION)) {
 //          Statement statement = con.createStatement();
 //          statement.execute("USE "+DATABASE+";");
@@ -277,7 +281,5 @@ public class CreateDatabase extends Database{
 //		} catch (SQLException ex) {
 //		    ex.printStackTrace();
 //		}
-//
-        printAllRecords("ARTICLES");
     }
 }
