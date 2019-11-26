@@ -8,6 +8,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.AbstractListModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -19,6 +20,7 @@ import com.publishingsystem.mainclasses.Author;
 import com.publishingsystem.mainclasses.Database;
 import com.publishingsystem.mainclasses.Hash;
 import com.publishingsystem.mainclasses.Journal;
+import com.publishingsystem.mainclasses.PDF;
 import com.publishingsystem.mainclasses.PDFConverter;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.Role;
@@ -39,6 +41,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.ListSelectionModel;
 
@@ -49,6 +53,9 @@ public class SubmitArticle {
 	private String selectedJournalName;
 	private ArrayList<Author> coAuthors;
 	private String pdfPath;
+	private JScrollPane scrPaneAuthors;
+	private DefaultListModel<String> coAuthorsModel;
+    private JList<String> listOfAuthors;
 
 	/**
 	 * Launch the application.
@@ -77,12 +84,16 @@ public class SubmitArticle {
 
 	public void addCoAuthor(Author coAuthor) {
 		this.coAuthors.add(coAuthor);
+		this.coAuthorsModel.clear();
+	    for (Author author : coAuthors){
+        	coAuthorsModel.addElement(author.getForename()+" "+author.getSurname());
+        }
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Author a) {
+	private void initialize(Author mainAuthor) {
 		frmSubmitAnArticle = new JFrame();
 		frmSubmitAnArticle.setTitle("Submit an Article");
 		frmSubmitAnArticle.setBounds(100, 100, 700, 552);
@@ -104,12 +115,13 @@ public class SubmitArticle {
 		txtfldTitle = new JTextField();
 		txtfldTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		txtfldTitle.setColumns(10);
-
-		JLabel lblAbstract = new JLabel("Abstract:");
-		lblAbstract.setFont(new Font("Tahoma", Font.PLAIN, 15));
-
+		
 		JScrollPane scrPaneAbstract = new JScrollPane();
 		scrPaneAbstract.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		JLabel lblAbstract = new JLabel("Abstract:");
+		lblAbstract.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		JEditorPane editPaneAbstract = new JEditorPane();
+		scrPaneAbstract.setViewportView(editPaneAbstract);
 
         // Authors of article
         JLabel lblAuthors = new JLabel("Authors:");
@@ -120,9 +132,10 @@ public class SubmitArticle {
         JScrollPane scrPaneAuthors = new JScrollPane();
         scrPaneAuthors.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        JList list = new JList();
-        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        scrPaneAuthors.setViewportView(list);
+        coAuthorsModel = new DefaultListModel<>();
+        listOfAuthors = new JList<>(coAuthorsModel);
+        listOfAuthors.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        scrPaneAuthors.setViewportView(listOfAuthors);
 
         String[] listOfAuthors = new String[coAuthors.size()];
         for (int i=0; i<coAuthors.size(); i++) {
@@ -138,6 +151,8 @@ public class SubmitArticle {
             }
         });
         btnRegisterANew.setFont(new Font("Tahoma", Font.PLAIN, 15));
+
+        
         
 		JButton btnUploadPdf = new JButton("Upload PDF");
 		JLabel lblPdfIsNot = new JLabel("PDF is not yet uploaded");
@@ -152,9 +167,6 @@ public class SubmitArticle {
 					pdfPath = fd.getFiles()[0].getAbsolutePath();
 					System.out.println(pdfPath);
 					lblPdfIsNot.setText("PDF is successfully uploaded");
-				
-					byte[] pdf = PDFConverter.getByteArrayFromFile(pdfPath);
-					Database.addPDF(1, pdf);
 				}		
 				else {
 					lblPdfIsNot.setText("Try Again! PDF did not upload!");
@@ -179,34 +191,54 @@ public class SubmitArticle {
 		ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
         String[] listContents = new String[allJournals.size()];
         for (int i=0; i<allJournals.size(); i++) {
-            listContents[i] = allJournals.get(i).getJournalName();// + " (ISSN " + allJournals.get(i).getISSN() + ")";
+            listContents[i] = allJournals.get(i).getJournalName();
         }
 
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				coAuthors.add(a);
-				System.out.println(coAuthors);
-				System.out.println("Authors: " + coAuthors);
-				Database.registerAuthors(coAuthors);
-
-				// Why do we need this?
-				JOptionPane.showMessageDialog(null, "To access your Author/Reviewer roles please Log Out and Login In again to the system. Thank you!");
+//				JOptionPane.showMessageDialog(null, "To access your Author/Reviewer roles please Log Out and Login In again to the system. Thank you!");
 				String title = txtfldTitle.getText();
-				String summary = null;
+				String summary = editPaneAbstract.getText();
+				System.out.println(summary);
 				Journal journal = null;
 				for (Journal item: allJournals) {
-					if (item.getJournalName() == selectedJournalName) {
+					if (item.getJournalName().equals(selectedJournalName)) {
 						journal = item;
 					}
 				}
-				//System.out.println(journal.toString());
-				Database.addSubmission(new Article(10, title, summary, journal));
-
-				//Don't see a reason to open the addjournal window here JournalWindow(a.getAcademicId());
-				//This is for just adding co-authors
-				frmSubmitAnArticle.dispose();
+				if(title.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Please give a title", "Error in submission", 0);
+				}
+				if(summary.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Please give a summary", "Error in submission", 0);
+				}
+				if(journal == null) {
+					JOptionPane.showMessageDialog(null, "Please select a journal", "Error in submission", 0);
+				}
+				if(pdfPath == null) {
+					JOptionPane.showMessageDialog(null, "Please upload a pdf of your article", "Error in submission", 0);
+				}
+				
+				if(title != null && summary != null && journal != null && pdfPath != null){
+					byte[] pdf = PDFConverter.getByteArrayFromFile(pdfPath);
+					Article article = new Article(-1, title, summary, journal);
+					mainAuthor.registerCoAuthors(article, coAuthors);
+					Calendar calendar = Calendar.getInstance();
+					mainAuthor.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), article.getSubmission()));
+	
+					coAuthors.add(mainAuthor);
+					
+					
+					//ADDING TO THE DATABASE;
+					Database.registerAuthors(coAuthors);
+					Database.addSubmission(article, pdf);
+					
+					new AuthorMainWindow(mainAuthor);
+					//This is for just adding co-authors
+					frmSubmitAnArticle.dispose();
+				}
 			}
 		});
 		btnSubmit.setFont(new Font("Tahoma", Font.BOLD, 15));
@@ -279,9 +311,6 @@ public class SubmitArticle {
 					.addComponent(btnSubmit)
 					.addGap(13))
 		);
-
-		JEditorPane editPaneAbstract = new JEditorPane();
-		scrPaneAbstract.setViewportView(editPaneAbstract);
 
 		listOfJournals.setModel(new AbstractListModel() {
 			//String[] values = new String[] {"First Journal", "Second journal", "Third Journal", "", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal"};

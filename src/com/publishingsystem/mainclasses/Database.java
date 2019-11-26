@@ -3,12 +3,12 @@ import java.sql.*;
 import java.util.*;
 
 public class Database {
-	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	protected static final String DATABASE = "team022";
+//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+//	protected static final String DATABASE = "team022";
 
 	//localhost
-//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-//	protected static final String DATABASE = "publishing_system";
+	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -169,7 +169,7 @@ public class Database {
 		}
 	}
 
-	public static void addSubmission(Article article) {
+	public static void addSubmission(Article article, byte[] pdfBytes) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
@@ -218,25 +218,23 @@ public class Database {
 		    		ex.printStackTrace();
 		    	}
 		    }
-		    //This breaks because we have not got adding pdf's yet
-		    //When we have it can be uncommented
-		    //System.out.println("This is just before line for creating the pdf");
-		    //System.out.println(article.getSubmission());
-		    //ArrayList<PDF> pdfs = article.getSubmission().getVersions();
-		    //PDF pdf = pdfs.get(pdfs.size()-1);
-		    //query = "INSERT INTO PDF values (null, ?, ?, ?)";
-		    //try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-		    	//preparedStmt.setInt(1, article.getSubmission().getSubmissionId());
-		    	//preparedStmt.setString(2, pdf.getPdfLink());
-		    	//preparedStmt.setDate(3, pdf.getDate());
+	
+		    ArrayList<PDF> pdfs = article.getSubmission().getVersions();
+		    PDF pdf = pdfs.get(pdfs.size()-1);
+		    query = "INSERT INTO PDF values (null, ?, ?, ?)";
+		    try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+		    	preparedStmt.setInt(1, article.getSubmission().getSubmissionId());
+		    	preparedStmt.setDate(2, pdf.getDate());
+		    	preparedStmt.setBlob(3, PDFConverter.getPDFBlob(pdfBytes));
+		    	
 
-		    	//preparedStmt.execute();
-		    	//ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from PDF");
-		    	//while(rs.next())
-		    		//pdf.setPdfId(Integer.valueOf(rs.getString("last_id")));
-		    //}catch (SQLException ex) {
-		    	//ex.printStackTrace();
-		    //}
+		    	preparedStmt.execute();
+		    	ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from PDF");
+		    	while(rs.next())
+		    		pdf.setPdfId(Integer.valueOf(rs.getString("last_id")));
+		    }catch (SQLException ex) {
+		    	ex.printStackTrace();
+		    }
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -448,41 +446,23 @@ public class Database {
 		}
 	}
 	
-	public static void addRevisedSubmission(PDF pdf) {
+	public static void addRevisedSubmission(PDF pdf, byte[] pdfBytes) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 
 			Submission s = pdf.getSubmission();
-			String query = "INSERT INTO PDF values (null, ?, ?, null)";
+			String query = "INSERT INTO PDF values (null, ?, ?, ?)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, s.getSubmissionId());
 				preparedStmt.setDate(2, pdf.getDate());
-	
+				preparedStmt.setBlob(3, PDFConverter.getPDFBlob(pdfBytes));
 				preparedStmt.execute();
 				
 				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from PDF");
 				while(rs.next())
 					pdf.setPdfId(Integer.valueOf(rs.getString("last_id")));
-			}catch (SQLException ex) {
-				ex.printStackTrace();
-			}
-		}catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-	}
-	
-	public static void addPDF(int pdfId, byte[] pdf) {
-		try (Connection con = DriverManager.getConnection(CONNECTION)){
-			Statement statement = con.createStatement();
-			statement.execute("USE "+DATABASE+";");
-			statement.close();
-			String query = "UPDATE PDF SET PDFTEXT = ? WHERE pdfID = ?";
-			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setBlob(1, PDFConverter.getPDFBlob(pdf));
-				preparedStmt.setInt(2, pdfId);
-				preparedStmt.execute();
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}

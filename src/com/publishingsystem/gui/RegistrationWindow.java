@@ -158,7 +158,21 @@ public class RegistrationWindow {
 			    // Display message, open SubmitArticle and close this form if the details are valid
 			    if (validCredentials) {
 			        JOptionPane.showMessageDialog(null, "Registration Successul", "Registration Form", 1);
-			        new SubmitArticle(new Author(-1, forenames, surname, email, university, password, pwdHash));
+			        switch(r) {
+			    		case AUTHOR:
+                            Author author = new Author(-1, title, forenames, surname, email, university, pwdHash);
+			    			new SubmitArticle(author);
+			    			break;
+			    		case COAUTHOR:
+                            Author coAuthor = new Author(-1, title, forenames, surname, email, university, pwdHash);
+			    			submitArticleGUI.addCoAuthor(coAuthor);
+			    			break;
+			    		case CHIEFEDITOR:
+			    			Editor chiefEditor = new Editor(-1, title, forenames, surname, email, university, pwdHash);
+			    			new AddJournal(chiefEditor);
+			    			break;
+			    		default:
+			    	}
 			        frmRegistrationForm.dispose();
 			    }
 			}

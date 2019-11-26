@@ -117,7 +117,7 @@ public class JournalWindow {
 			public void mouseClicked(MouseEvent arg0) {
 			    // Open new window displaying the articles in the selected article
 				int selectedJournal = (int)tblJournal.getValueAt(tblJournal.rowAtPoint(arg0.getPoint()), 2);				
-				new ArticlesWindow(selectedJournal, roles);
+				new ArticlesWindow(selectedJournal);
 				frmJournalWindow.dispose();
 			} 
 		});
@@ -177,7 +177,7 @@ public class JournalWindow {
 			public void mouseClicked(MouseEvent e) {
 				if (roles == null) {
 				    // Let the user register as an academic/AUTHOR if they are not logged in
-				    new RegistrationWindow(Role.AUTHOR, (SubmitArticle)null);
+				    new RegistrationWindow(Role.AUTHOR);
 				    frmJournalWindow.dispose();	                
                 } else {
                     // Display the SubmitArticle window if the user is logged in
