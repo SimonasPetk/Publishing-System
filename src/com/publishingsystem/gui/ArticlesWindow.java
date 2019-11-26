@@ -10,7 +10,6 @@ import javax.swing.AbstractListModel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 
@@ -40,7 +39,7 @@ public class ArticlesWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ArticlesWindow window = new ArticlesWindow(12345, null);
+					ArticlesWindow window = new ArticlesWindow(12345);
 					window.frmAvailableJournalArticles.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -48,19 +47,18 @@ public class ArticlesWindow {
 			}
 		});
 	}
-	
+
 	/**
 	 * Create the application.
 	 */
-	public ArticlesWindow(int journalID, Academic[] roles) {
-		
-		initialize(journalID, roles);
+	public ArticlesWindow(int journalID) {
+		initialize(journalID);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(int journalID, Academic[] roles) {
+	private void initialize(int journalID) {
 	    Journal selJournal = RetrieveDatabase.getJournal(journalID);
 	    
 		frmAvailableJournalArticles = new JFrame();
@@ -219,7 +217,7 @@ public class ArticlesWindow {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				
-				new JournalWindow(roles);
+				new JournalWindow();
 				frmAvailableJournalArticles.dispose();
 			}
 		});
