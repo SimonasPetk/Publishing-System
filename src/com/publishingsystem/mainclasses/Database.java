@@ -270,21 +270,32 @@ public class Database {
 		}
     }
 
-	public static void addReviewers(ArrayList<Reviewer> reviewers) {
+	public static void registerReviewer(Reviewer r, ArrayList<Submission> submissionsToReview) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			for(Reviewer r : reviewers) {
-				String query = "INSERT INTO REVIEWERS values (null, ?, ?)";
-				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setInt(1, r.getAuthorOfArticle().getAuthor().getAuthorId());
-					preparedStmt.setInt(2, r.getAuthorOfArticle().getArticle().getArticleId());
-					preparedStmt.execute();
+			String query = "INSERT INTO REVIEWERS values (null, ?, ?)";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, r.getAuthorOfArticle().getAuthor().getAuthorId());
+				preparedStmt.setInt(2, r.getAuthorOfArticle().getArticle().getArticleId());
+				preparedStmt.execute();
 
-					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
-					while(rs.next())
-						r.setReviewerId(Integer.valueOf(rs.getString("last_id")));
+				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
+				while(rs.next())
+					r.setReviewerId(Integer.valueOf(rs.getString("last_id")));
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			
+			for(Submission s : submissionsToReview) {
+				query = "INSERT INTO REVIEWS values (?, ?, ?, null, null, null)";
+				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+					preparedStmt.setInt(1, r.getReviewerId());
+					preparedStmt.setInt(2, s.getSubmissionId());
+					preparedStmt.setInt(3, r.getAuthorOfArticle().getArticle().getArticleId());
+	
+					preparedStmt.execute();
 				}catch (SQLException ex) {
 					ex.printStackTrace();
 				}
@@ -302,13 +313,13 @@ public class Database {
 			Reviewer reviewer = review.getReviewer();
 			Submission submission = review.getSubmission();
 			
-			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, ?, null)";
+			String query = "UPDATE REVIEWS SET SUMMARY = ?, TYPINGERRORS = ? WHERE REVIEWERID = ? AND SUBMISSIONID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, reviewer.getReviewerId());
-				preparedStmt.setInt(2, submission.getSubmissionId());
-				preparedStmt.setInt(3, review.getArticle().getArticleId());
-				preparedStmt.setString(4, review.getSummary());
-				preparedStmt.setString(5, review.getTypingErrors());
+				preparedStmt.setString(1, review.getSummary());
+				preparedStmt.setString(2, review.getTypingErrors());
+				preparedStmt.setInt(3, reviewer.getReviewerId());
+				preparedStmt.setInt(4, submission.getSubmissionId());
+				
 
 				preparedStmt.execute();
 			}catch (SQLException ex) {
