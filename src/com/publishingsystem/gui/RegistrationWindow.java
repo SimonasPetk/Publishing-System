@@ -153,8 +153,18 @@ public class RegistrationWindow {
                         JOptionPane.showMessageDialog(null, "Names must only contain letters", "Registration Form", 0);
                     } else {
                         if (Database.academicExists(email)) {
-                            validCredentials = false;
-                            JOptionPane.showMessageDialog(null, "Email is already in use", "Registration Form", 0);
+                            if (r != Role.COAUTHOR) {
+                                // Email taken so cannot be used
+                                validCredentials = false;
+                                JOptionPane.showMessageDialog(null, "Email is already in use", "Registration Form", 0);
+                            } else {
+                                // Co-author already registered, add the registered account
+                                Academic[] roles = RetrieveDatabase.getRoles(email);
+                                submitArticleGUI.addCoAuthor((Author)roles[1]);
+                                validCredentials = false;
+                                JOptionPane.showMessageDialog(null, "Email is already in use. They will be added as a co-author.");
+                                frmRegistrationForm.dispose();
+                            }
                         }
                     }
                 }

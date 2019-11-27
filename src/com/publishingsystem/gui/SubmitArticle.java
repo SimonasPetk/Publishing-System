@@ -114,7 +114,7 @@ public class SubmitArticle {
 		this.coAuthors.add(coAuthor);
 		this.coAuthorsModel.clear();
 	    for (Author author : coAuthors){
-        	coAuthorsModel.addElement(author.getForename()+" "+author.getSurname());
+        	coAuthorsModel.addElement(author.getForename()+" "+author.getSurname()+" ("+author.getEmailId()+")");
         }
 	}
 
@@ -180,8 +180,7 @@ public class SubmitArticle {
         });
         btnRegisterANew.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-        
-        
+        // PDF
 		JButton btnUploadPdf = new JButton("Upload PDF");
 		JLabel lblPdfIsNot = new JLabel("PDF is not yet uploaded");
 		btnUploadPdf.addMouseListener(new MouseAdapter() {
@@ -222,6 +221,7 @@ public class SubmitArticle {
             listContents[i] = allJournals.get(i).getJournalName();
         }
 
+        // Submit Button
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.addMouseListener(new MouseAdapter() {
 			@Override
