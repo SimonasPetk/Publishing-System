@@ -96,14 +96,13 @@ public class SubmitArticle {
 					break;
 				}
 			}
-			a = new Author(aca.getAcademicId(), 
-								aca.getTitle(), 
+			a = new Author(-1, aca.getTitle(), 
 								aca.getForename(), 
 								aca.getSurname(), 
 								aca.getEmailId(), 
 								aca.getUniversity(), null);
+			a.setAcademicId(aca.getAcademicId());
 			roles[1] = a;
-	        coAuthors = new ArrayList<Author>();
 		}else {
 			a = (Author)roles[1];
 		}
