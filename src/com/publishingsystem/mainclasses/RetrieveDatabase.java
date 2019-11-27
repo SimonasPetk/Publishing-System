@@ -309,6 +309,36 @@ public class RetrieveDatabase extends Database{
 		return null;
 	}
 	
+	public static ArrayList<Submission> getSubmissionsToJournal(int issn){
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            String query = "SELECT S.SUBMISSIONID, S.STATUS, A.ARTICLEID, A.TITLE, A.SUMMARY, "
+            		+ "J.ISSN, J.NAME, J.DATEOFPUBLICATION "
+            		+ "FROM SUBMISSIONS S, ARTICLES A, JOURNALS J "
+            		+ "WHERE S.ARTICLEID = A.ARTICLEID "
+            		+ "AND A.ISSN = J.ISSN "
+            		+ "AND J.ISSN = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, issn);
+				ResultSet res = preparedStmt.executeQuery();
+				ArrayList<Submission> submissions = new ArrayList<Submission>();
+				while(res.next()) {
+					Journal j = new Journal(res.getInt("ISSN"), res.getString("NAME"), res.getDate("dateOfPublication"));
+					Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), j);
+					Submission submission = new Submission(res.getInt("SUBMISSIONID"), article, SubmissionStatus.valueOf(res.getString("STATUS")), null);
+					submissions.add(submission);
+				}
+				return submissions;
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
+	
     public static Journal getJournal(int issn) {
         Journal result = null;
         try (Connection con = DriverManager.getConnection(CONNECTION)) {
@@ -385,38 +415,39 @@ public class RetrieveDatabase extends Database{
     }
     
 	public static void main(String[] args) {
-		Academic[] roles1 = RetrieveDatabase.getRoles("j.doe@uniofdoe.ac.uk");
-		Editor e = (Editor)roles1[0];
-		Author a = (Author)roles1[1];
-		Reviewer r = (Reviewer)roles1[2];
-		if(e != null) {
-			System.out.println(e);
-			for(EditorOfJournal eoj : e.getEditorOfJournals()){
-				System.out.println(eoj.getEditor().getEditorId() +" "+ eoj.getJournal().getISSN()+" ChiefEditor: "+eoj.isChiefEditor());
-			};
-		}
-		if(a != null) {
-			System.out.println("Author: "+a);
-			System.out.println("Number of reviews done by team: "+RetrieveDatabase.getNumberOfReviewsDone(a.getAuthorOfArticles().get(1).getArticle()));
-			for(Submission s : RetrieveDatabase.getSubmissions(a.getUniversity())){
-				System.out.println(s);
-			}
-//				for(AuthorOfArticle aoa : a.getAuthorOfArticles()){
-//					System.out.println(aoa.getAuthor().getAuthorId()+" "+aoa.getArticle().getArticleId()+" MainAuthor: "+aoa.isMainAuthor());
-//					Article article = aoa.getArticle();
-//					Submission s = article.getSubmission();
-//					System.out.println(s.getStatus());
-//					System.out.println();
-//					if(s != null)
-//						for(Review r : s.getReviews())
-//							System.out.println(r);
-//				};
-		}
-		if(r != null) {
-//				System.out.println("Reviewer "+r);
-//				for(Review review : r.getReviews()) {
-//					System.out.println(review);
-//				}
-		}
+		System.out.println(RetrieveDatabase.getSubmissionsToJournal(73454733).size());
+//		Academic[] roles1 = RetrieveDatabase.getRoles("j.doe@uniofdoe.ac.uk");
+//		Editor e = (Editor)roles1[0];
+//		Author a = (Author)roles1[1];
+//		Reviewer r = (Reviewer)roles1[2];
+//		if(e != null) {
+//			System.out.println(e);
+//			for(EditorOfJournal eoj : e.getEditorOfJournals()){
+//				System.out.println(eoj.getEditor().getEditorId() +" "+ eoj.getJournal().getISSN()+" ChiefEditor: "+eoj.isChiefEditor());
+//			};
+//		}
+//		if(a != null) {
+//			System.out.println("Author: "+a);
+//			System.out.println("Number of reviews done by team: "+RetrieveDatabase.getNumberOfReviewsDone(a.getAuthorOfArticles().get(1).getArticle()));
+//			for(Submission s : RetrieveDatabase.getSubmissions(a.getUniversity())){
+//				System.out.println(s);
+//			}
+////				for(AuthorOfArticle aoa : a.getAuthorOfArticles()){
+////					System.out.println(aoa.getAuthor().getAuthorId()+" "+aoa.getArticle().getArticleId()+" MainAuthor: "+aoa.isMainAuthor());
+////					Article article = aoa.getArticle();
+////					Submission s = article.getSubmission();
+////					System.out.println(s.getStatus());
+////					System.out.println();
+////					if(s != null)
+////						for(Review r : s.getReviews())
+////							System.out.println(r);
+////				};
+//		}
+//		if(r != null) {
+////				System.out.println("Reviewer "+r);
+////				for(Review review : r.getReviews()) {
+////					System.out.println(review);
+////				}
+//		}
 	}
 }
