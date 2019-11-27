@@ -53,21 +53,25 @@ public class RegistrationWindow {
 	 * Create the application.
 	 */
 	public RegistrationWindow(Role r) {
-		initialize(r, null, null);
+		initialize(r, null, null,null);
 	}
 	
 	public RegistrationWindow(Role r, SubmitArticle submitArticleGUI) {
-		initialize(r, submitArticleGUI, null);
+		initialize(r, submitArticleGUI, null,null);
 	}
 	
 	public RegistrationWindow(Role r, AddJournal addJournalGUI) {
-		initialize(r, null, addJournalGUI);
+		initialize(r, null, addJournalGUI,null);
+	}
+	
+	public RegistrationWindow(Role r, addEditorsAsChiefEditor e) {
+		initialize(r,null,null,e);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Role r, SubmitArticle submitArticleGUI, AddJournal addJournalGUI) {
+	private void initialize(Role r, SubmitArticle submitArticleGUI, AddJournal addJournalGUI, addEditorsAsChiefEditor addition ) {
 		frmRegistrationForm = new JFrame();
 		frmRegistrationForm.setTitle("Registration Form");
 		frmRegistrationForm.setBounds(500, 100, 653, 559);
@@ -175,7 +179,8 @@ public class RegistrationWindow {
 		    				Editor editor = new Editor(academicID, title, forenames, surname, email, university, pwdHash);
 		    				ArrayList<Editor> editors = new ArrayList<Editor>();
 		    				editors.add(editor);
-		    				Database.registerEditorAsChiefEditor(editors);
+		    				addition.setEditor(editor);
+		    				addition.addEditorAsChiefEditor();
 		    				System.out.println("Editor path followed");
 		    			default:
 			        }

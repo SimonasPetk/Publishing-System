@@ -12,10 +12,11 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import com.publishingsystem.mainclasses.Role;
+import com.publishingsystem.mainclasses.addEditorsAsChiefEditor;
 import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
-
+import com.publishingsystem.mainclasses.Journal;
 
 import javax.swing.JLabel;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -24,6 +25,8 @@ import javax.swing.JButton;
 import javax.swing.ListSelectionModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import java.util.ArrayList;
 
 public class ChiefMainWindow {
 
@@ -202,8 +205,13 @@ public class ChiefMainWindow {
 		mntmAppointNewEditors.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				new RegistrationWindow(Role.EDITOR);
-				
+				System.out.println(editor.getEditorOfJournals());
+				ArrayList<EditorOfJournal> editorOfJournals = editor.getEditorOfJournals();
+				System.out.println(editorOfJournals.toString());
+				EditorOfJournal oneEditor = editorOfJournals.get(0);
+				Journal currentJournal = oneEditor.getJournal();
+				addEditorsAsChiefEditor add = new addEditorsAsChiefEditor(currentJournal);
+				new RegistrationWindow (Role.EDITOR, add);
 			}
 		});
 		mnMenu.add(mntmAppointNewEditors);

@@ -16,6 +16,8 @@ import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
 import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
+import com.publishingsystem.mainclasses.Role;
+import com.publishingsystem.mainclasses.Academic;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -99,7 +101,9 @@ public class AddJournal {
 				newJournal.addEditorToBoard(chief);
 				Database.addJournal(newJournal);
 				frmAddJournal.dispose();
-				new ChiefMainWindow();
+	            Academic[] roles = new Academic[3];
+	            roles[0] = chiefEditor;
+				new ChiefMainWindow(roles);
 				System.out.println("Should be on that menu now boya");
 			}
 		});
