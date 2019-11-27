@@ -47,7 +47,10 @@ public class AuthorMainWindow {
 			public void run() {
 				try {
 				    System.out.println("Hello");
-					AuthorMainWindow window = new AuthorMainWindow(null);
+				    //Academic[] testAcademic = {null, new Author(6, "Mr", "Alex", "Hall", "ahall8@sheffield.ac.uk", "Sheffield", new Hash("password"))};
+				    //Academic[] testAcademic = {null, new Author(7, "Dr", "Kirill", "Bogdanov", "kb@gm.com", "Sheffield", new Hash("password"))};
+				    Academic[] testAcademic = null;
+					AuthorMainWindow window = new AuthorMainWindow(testAcademic);
 					window.frmAuthorsDashboard.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -68,36 +71,74 @@ public class AuthorMainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Academic[] roles) {
+	    // Configure frame=e
 		frmAuthorsDashboard = new JFrame();
 		frmAuthorsDashboard.setTitle("Author's Dashboard");
 		frmAuthorsDashboard.setBounds(100, 100, 900, 740);
 		frmAuthorsDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAuthorsDashboard.setVisible(true);
 		
-		JLabel lblArticleList = new JLabel("List of articles:");
+		
+		// Window title
+		JLabel lblArticleList = new JLabel("Your articles:");
 		lblArticleList.setToolTipText("");
 		lblArticleList.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
+		
+		// Your articles panel
 		JScrollPane scrSubmitted = new JScrollPane();
+
+        ArrayList<AuthorOfArticle> authorOfArticles = author.getAuthorOfArticles();
+        tblSubmittedModel = new DefaultTableModel();
+        tblSubmittedModel.addColumn("Article ID");
+        tblSubmittedModel.addColumn("Title");
+        tblSubmittedModel.addColumn("Abstract");
+       
+        for(int i = 0; i < authorOfArticles.size(); i++) {
+            Article article = authorOfArticles.get(i).getArticle();
+            String[] articles = new String[3];
+            articles[0] = String.valueOf(article.getArticleId());
+            articles[1] = article.getTitle();
+            articles[2] = article.getSummary();
+            tblSubmittedModel.addRow(articles);
+        }
+        tblSubmitted = new JTable(tblSubmittedModel);
+        
+        tblSubmitted.setEnabled(false);
+        scrSubmitted.setViewportView(tblSubmitted);
+        tblSubmitted.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent arg0) {
+                // Open new window displaying the articles in the selected article
+                int selectedArticle = Integer.parseInt(((String)tblSubmitted.getValueAt(tblSubmitted.rowAtPoint(arg0.getPoint()), 0)));
+                System.out.println(selectedArticle);
+            } 
+        });
+
+		
+		// Review panel
+		JLabel lblArticlesReview = new JLabel("Article's Review");
+        lblArticlesReview.setToolTipText("");
+        lblArticlesReview.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JScrollPane scrReview = new JScrollPane();
 		scrReview.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scrReview.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        JEditorPane editPaneReview = new JEditorPane();
+        editPaneReview.setEditable(false);
+        scrReview.setViewportView(editPaneReview);
 		
 		JButton btnRespondToReviews = new JButton("Respond to Reviews");
 		btnRespondToReviews.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				
-				new CriticismResponse();
+				//new CriticismResponse();
 			}
 		});
 		btnRespondToReviews.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JLabel lblArticlesReview = new JLabel("Article's Review");
-		lblArticlesReview.setToolTipText("");
-		lblArticlesReview.setFont(new Font("Tahoma", Font.PLAIN, 20));
-        
+		// Configure layout
 		GroupLayout groupLayout = new GroupLayout(frmAuthorsDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -117,7 +158,7 @@ public class AuthorMainWindow {
 										.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE)
 										.addComponent(scrReview)))))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
+							.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED, 610, Short.MAX_VALUE)))
 					.addContainerGap())
 		);
@@ -140,40 +181,9 @@ public class AuthorMainWindow {
 							.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
-		
-		JEditorPane editPaneReview = new JEditorPane();
-		editPaneReview.setEditable(false);
-		scrReview.setViewportView(editPaneReview);
-
-		ArrayList<AuthorOfArticle> authorOfArticles = author.getAuthorOfArticles();
-		tblSubmittedModel = new DefaultTableModel();
-		tblSubmittedModel.addColumn("ID");
-		tblSubmittedModel.addColumn("TITLE");
-		tblSubmittedModel.addColumn("SUMMARY");
-	   
-	    for(int i = 0; i < authorOfArticles.size(); i++) {
-	    	Article article = authorOfArticles.get(i).getArticle();
-	    	String[] articles = new String[3];
-	    	articles[0] = String.valueOf(article.getArticleId());
-	    	articles[1] = article.getTitle();
-	    	articles[2] = article.getSummary();
-	    	tblSubmittedModel.addRow(articles);
-	    }
-		tblSubmitted = new JTable(tblSubmittedModel);
-		
-		tblSubmitted.setEnabled(false);
-		scrSubmitted.setViewportView(tblSubmitted);
-		tblSubmitted.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-			    // Open new window displaying the articles in the selected article
-				int selectedArticle = (int)tblSubmitted.getValueAt(tblSubmitted.rowAtPoint(arg0.getPoint()), 2);	
-				System.out.println(selectedArticle);
-			} 
-		});
-		
 		frmAuthorsDashboard.getContentPane().setLayout(groupLayout);
 		
+		// Menu bar
 		JMenuBar menuBar = new JMenuBar();
 		frmAuthorsDashboard.setJMenuBar(menuBar);
 		
@@ -196,13 +206,11 @@ public class AuthorMainWindow {
 		mntmLogOut.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				new LoginScreen();
+			    new JournalWindow(null);
 				frmAuthorsDashboard.dispose();
-				// System.exit(0); 
 			}
 		});
 		menu.add(mntmLogOut);
-		
 		
 		JMenu mnChangeRole = new JMenu("Change My Role");
 		menuBar.add(mnChangeRole);
@@ -260,6 +268,5 @@ public class AuthorMainWindow {
 			}
 		});
 		mnChangeRole.add(mntmToReader);
-		
 	}
 }

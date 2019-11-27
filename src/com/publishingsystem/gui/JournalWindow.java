@@ -238,7 +238,6 @@ public class JournalWindow {
 				mntmToAuthor.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mousePressed(MouseEvent e) {
-						
 						new AuthorMainWindow(roles);
 						frmJournalWindow.dispose();
 					}
