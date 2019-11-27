@@ -64,14 +64,14 @@ public class RegistrationWindow {
 		initialize(r, null, addJournalGUI,null);
 	}
 	
-	public RegistrationWindow(Role r, addEditorsAsChiefEditor e) {
+	public RegistrationWindow(Role r, EditorOfJournal e) {
 		initialize(r,null,null,e);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Role r, SubmitArticle submitArticleGUI, AddJournal addJournalGUI, addEditorsAsChiefEditor addition ) {
+	private void initialize(Role r, SubmitArticle submitArticleGUI, AddJournal addJournalGUI, EditorOfJournal addition ) {
 		frmRegistrationForm = new JFrame();
 		frmRegistrationForm.setTitle("Registration Form");
 		frmRegistrationForm.setBounds(500, 100, 653, 559);

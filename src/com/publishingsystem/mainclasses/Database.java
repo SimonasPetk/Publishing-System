@@ -82,6 +82,9 @@ public class Database {
 	
 	public static void updateEditorOfJournal(ArrayList<Editor> editor, Journal j) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
 			for(Editor e : editor) {
 				e.addEditorOfJournal(new EditorOfJournal(j, e, false));
 				String query = "INSERT INTO EDITOROFJOURNAL values (?, ?, ?, ?)";

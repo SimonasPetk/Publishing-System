@@ -14,6 +14,12 @@ public class EditorOfJournal {
 		this.chiefEditor = chiefEditor;
 	}
 	
+	//constructor for chief editors adding new editors
+	public EditorOfJournal(Journal j) {
+		this.journal = j;
+		this.chiefEditor = false;
+	}
+	
 	public void temporaryRetire() {
 		this.tempRetired = true;
 	}
@@ -30,7 +36,21 @@ public class EditorOfJournal {
 		return editor;
 	}
 
+	public void setEditor(Editor e) {
+		editor = e;
+	}
+	
 	public boolean isChiefEditor() {
 		return chiefEditor;
+	}
+	
+	public void addEditorAsChiefEditor() {
+		System.out.println(journal);
+		System.out.println(editor);
+		System.out.println("Hello this is both the editor and the journal");
+		ArrayList<Editor> editors = new ArrayList<Editor>();
+		editors.add(editor);
+		Database.registerEditors(editors);
+		Database.updateEditorOfJournal(editors, journal);
 	}
 }

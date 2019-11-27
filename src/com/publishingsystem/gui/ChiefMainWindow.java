@@ -12,7 +12,6 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import com.publishingsystem.mainclasses.Role;
-import com.publishingsystem.mainclasses.addEditorsAsChiefEditor;
 import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
@@ -210,7 +209,7 @@ public class ChiefMainWindow {
 				System.out.println(editorOfJournals.toString());
 				EditorOfJournal oneEditor = editorOfJournals.get(0);
 				Journal currentJournal = oneEditor.getJournal();
-				addEditorsAsChiefEditor add = new addEditorsAsChiefEditor(currentJournal);
+				EditorOfJournal add = new EditorOfJournal(currentJournal);
 				new RegistrationWindow (Role.EDITOR, add);
 			}
 		});
