@@ -46,10 +46,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.ListSelectionModel;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 
-public class SubmitArticle {
+public class SubmitArticle2 {
 
 	private JFrame frmSubmitAnArticle;
 	private JTextField txtfldTitle;
@@ -58,8 +56,8 @@ public class SubmitArticle {
 	private ArrayList<Integer> numReviewsOfCoAuthors;
 	private String pdfPath;
 	private JScrollPane scrPaneAuthors;
-	private DefaultTableModel coAuthorsModel;
-	private JTable tblAuthor;
+	private DefaultListModel<String> coAuthorsModel;
+    private JList<String> listOfAuthors;
 
 	/**
 	 * Launch the application.
@@ -68,7 +66,7 @@ public class SubmitArticle {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SubmitArticle window = new SubmitArticle(new Author(1, "Dr", "kb", "kb", "Sheffield", "kb@gm.com", new Hash("9d5be6810a8de8673cf2a5b83f2030393028b71127dd034beb9bd03f3a946302")), 0);
+					SubmitArticle2 window = new SubmitArticle2(new Author(1, "Dr", "kb", "kb", "Sheffield", "kb@gm.com", new Hash("9d5be6810a8de8673cf2a5b83f2030393028b71127dd034beb9bd03f3a946302")), 0);
 					//SubmitArticle window = new SubmitArticle(null);
 					window.frmSubmitAnArticle.setVisible(true);
 				} catch (Exception e) {
@@ -81,7 +79,7 @@ public class SubmitArticle {
 	/**
 	 * Create the application.
 	 */
-	public SubmitArticle(Author a, int numReviewsOfMainAuthor) {
+	public SubmitArticle2(Author a, int numReviewsOfMainAuthor) {
         coAuthors = new ArrayList<Author>();
         numReviewsOfCoAuthors = new ArrayList<Integer>();
         Academic[] newRoles = new Academic[3];
@@ -89,7 +87,7 @@ public class SubmitArticle {
 		initialize(a, newRoles, numReviewsOfMainAuthor);
 	}
 	
-	public SubmitArticle(Academic[] roles, int numReviewsOfMainAuthor) {
+	public SubmitArticle2(Academic[] roles, int numReviewsOfMainAuthor) {
 		coAuthors = new ArrayList<Author>();
 		numReviewsOfCoAuthors = new ArrayList<Integer>();
 		Author a = null;
@@ -116,9 +114,11 @@ public class SubmitArticle {
 
 	public void addCoAuthor(Author coAuthor, int numReview) {
 		this.coAuthors.add(coAuthor);
+		this.numReviewsOfCoAuthors.add(numReview);
+		this.coAuthorsModel.clear();
 	    for (Author author : coAuthors){
-        	this.coAuthorsModel.addRow(new Object[] {author.getForename()+" "+author.getSurname()+" ("+author.getEmailId()+")", "How many reviews"}); 
-	    }
+        	coAuthorsModel.addElement(author.getForename()+" "+author.getSurname()+" ("+author.getEmailId()+")");
+        }
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class SubmitArticle {
 	private void initialize(Author mainAuthor, Academic[] roles, int numReviewsOfMainAuthor) {
 		frmSubmitAnArticle = new JFrame();
 		frmSubmitAnArticle.setTitle("Submit an Article");
-		frmSubmitAnArticle.setBounds(100, 100, 750, 650);
+		frmSubmitAnArticle.setBounds(100, 100, 700, 552);
 		frmSubmitAnArticle.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmSubmitAnArticle.setVisible(true);
 		selectedJournalName = null;
@@ -162,36 +162,18 @@ public class SubmitArticle {
 
         JScrollPane scrPaneAuthors = new JScrollPane();
         scrPaneAuthors.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-      
-        tblAuthor = new JTable();
-        tblAuthor.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tblAuthor.setRowSelectionAllowed(false);
-		tblAuthor.setModel(new DefaultTableModel(
-			new Object[][] {
-				{mainAuthor.getForename()+" "+mainAuthor.getSurname()+" ("+mainAuthor.getEmailId()+")", "How many reviews"},
-			},
-			new String[] {
-				"Name", "Number of Reviews"
-			}
-		) {
-			boolean[] columnEditables = new boolean[] {
-				false, true
-			};
-			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
-			}
-		});
-		tblAuthor.getColumnModel().getColumn(0).setResizable(false);
-		tblAuthor.getColumnModel().getColumn(1).setResizable(false);
-		scrPaneAuthors.setViewportView(tblAuthor);
-        coAuthorsModel = (DefaultTableModel) tblAuthor.getModel();
 
-        /*String[] listOfAuthors = new String[coAuthors.size()];
+        coAuthorsModel = new DefaultListModel<>();
+        listOfAuthors = new JList<>(coAuthorsModel);
+        listOfAuthors.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        scrPaneAuthors.setViewportView(listOfAuthors);
+
+        String[] listOfAuthors = new String[coAuthors.size()];
         for (int i=0; i<coAuthors.size(); i++) {
             listOfAuthors[i] = coAuthors.get(i).getForename() + " " + coAuthors.get(i).getSurname();
-        }*/
+        }
 
-        SubmitArticle submitArticleGUI = this;
+        SubmitArticle2 submitArticleGUI = this;
         JButton btnRegisterANew = new JButton("Register a New Co-Author");
         btnRegisterANew.addMouseListener(new MouseAdapter() {
             @Override
@@ -271,9 +253,6 @@ public class SubmitArticle {
 				}
 				
 				if(title != null && summary != null && journal != null && pdfPath != null){
-					
-					// numReviewsOfCoAuthor list of integer check if it is an integer, 
-					
 					byte[] pdf = PDFConverter.getByteArrayFromFile(pdfPath);
 					Article article = new Article(-1, title, summary, journal);
 					mainAuthor.registerCoAuthors(article, coAuthors, numReviewsOfCoAuthors);
@@ -314,11 +293,11 @@ public class SubmitArticle {
 						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
 						.addComponent(txtfldTitle, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
 						.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
-						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-							.addComponent(scrPaneAuthors, GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
-							.addGap(18)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(scrPaneAuthors, GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
+							.addGap(50)
 							.addComponent(btnRegisterANew)
-							.addGap(20))
+							.addGap(35))
 						.addComponent(scrPaneAbstract, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE))
 					.addGap(80))
 				.addGroup(groupLayout.createSequentialGroup()
@@ -334,7 +313,7 @@ public class SubmitArticle {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblChooseAJournal)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblTitle)
 					.addPreferredGap(ComponentPlacement.RELATED)
@@ -342,15 +321,15 @@ public class SubmitArticle {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblAbstract)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrPaneAbstract, GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
+					.addComponent(scrPaneAbstract, GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblAuthors)
 					.addGap(2)
 					.addComponent(lblNewLabel_2)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(10)
-							.addComponent(scrPaneAuthors, GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
+							.addComponent(scrPaneAuthors, GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 								.addComponent(btnUploadPdf)
@@ -359,11 +338,11 @@ public class SubmitArticle {
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(30)
 							.addComponent(btnRegisterANew)
-							.addPreferredGap(ComponentPlacement.RELATED)))
+							.addGap(10)))
 					.addComponent(btnSubmit)
 					.addGap(13))
 		);
-		
+
 		listOfJournals.setModel(new AbstractListModel() {
 			//String[] values = new String[] {"First Journal", "Second journal", "Third Journal", "", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal"};
             String[] values = listContents;
