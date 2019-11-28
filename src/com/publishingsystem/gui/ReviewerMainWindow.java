@@ -20,11 +20,16 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.DefaultTableModel;
 
 import com.publishingsystem.mainclasses.Academic;
+import com.publishingsystem.mainclasses.AuthorOfArticle;
+import com.publishingsystem.mainclasses.Database;
 import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.Reviewer;
+import com.publishingsystem.mainclasses.ReviewerOfSubmission;
+import com.publishingsystem.mainclasses.Submission;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -32,6 +37,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+
 import javax.swing.ListSelectionModel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
@@ -42,6 +49,7 @@ public class ReviewerMainWindow {
 	private JFrame frmReviewDashboard;
 	private JTable tblChooseToReview;
 	private JTable tblToReview;
+	private ArrayList<ReviewerOfSubmission> submissionsChosenToReview;
 	private int numReviewsToBeDone;
 
 	/**
@@ -65,7 +73,22 @@ public class ReviewerMainWindow {
 	 * Create the application.
 	 */
 	public ReviewerMainWindow(Academic[] roles) {
+		submissionsChosenToReview = new ArrayList<ReviewerOfSubmission>();
 		initialize(roles);
+	}
+	
+	public void refreshChooseToReviewTable(DefaultTableModel str_model1) {
+		str_model1.setRowCount(0);
+		str_model1.addColumn("Article ID");
+		str_model1.addColumn("Title");
+		for(ReviewerOfSubmission ros : submissionsChosenToReview) {
+			Submission s = ros.getSubmission();
+			Object[] submissionString = new Object[4];
+			submissionString[0] = s.getArticle().getArticleId();
+			submissionString[1] = s.getArticle().getTitle();
+			submissionString[2] = s.getArticle().getSummary();
+			str_model1.addRow(submissionString);
+		}
 	}
 
 	/**
@@ -73,6 +96,7 @@ public class ReviewerMainWindow {
 	 */
 	private void initialize(Academic[] roles) {
 		Reviewer reviewer = (Reviewer)roles[2];
+		submissionsChosenToReview = reviewer.getReviewerOfSubmissions();
 		frmReviewDashboard = new JFrame();
 		frmReviewDashboard.setBounds(100, 100, 900, 740);
 		frmReviewDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -154,23 +178,25 @@ public class ReviewerMainWindow {
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblArticlesYouHave)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-								.addComponent(panel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(scrChosenToReview, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 551, Short.MAX_VALUE))
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(panel, GroupLayout.DEFAULT_SIZE, 543, Short.MAX_VALUE)
+								.addComponent(scrChosenToReview, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 543, Short.MAX_VALUE))
 							.addGap(16)
 							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 								.addGroup(groupLayout.createSequentialGroup()
 									.addComponent(btnCheckResponses)
-									.addPreferredGap(ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+									.addGap(18)
 									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
 										.addComponent(btnRespondToReviews, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 										.addComponent(btnNewButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-								.addComponent(scrReview)
-								.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE))))
+								.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGap(18)
+									.addComponent(scrReview)))))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
+			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(45)
 					.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
@@ -187,9 +213,9 @@ public class ReviewerMainWindow {
 					.addContainerGap()
 					.addComponent(lblArticlesYouHave)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrChosenToReview, GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
-					.addGap(18)
-					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 237, GroupLayout.PREFERRED_SIZE)
+					.addComponent(scrChosenToReview, GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+					.addGap(29)
+					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 436, GroupLayout.PREFERRED_SIZE)
 					.addGap(31))
 		);
 		panel.setLayout(new BorderLayout(0, 0));
@@ -198,59 +224,99 @@ public class ReviewerMainWindow {
 		panel.add(scrSubmitted, BorderLayout.CENTER);
 		scrSubmitted.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		if(numReviewsToBeDone > 0) {
-			JLabel lblArticleListToChoose = new JLabel("Choose "+numReviewsToBeDone+" Articles to Review:");
-			panel.add(lblArticleListToChoose, BorderLayout.NORTH);
-			lblArticleListToChoose.setToolTipText("");
-			lblArticleListToChoose.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		JLabel lblArticleListToChoose = new JLabel("Number of articles to review remaining : "+numReviewsToBeDone);
+		panel.add(lblArticleListToChoose, BorderLayout.NORTH);
+		lblArticleListToChoose.setToolTipText("");
+		lblArticleListToChoose.setFont(new Font("Tahoma", Font.PLAIN, 20));
 
+		DefaultTableModel str_model1 = new DefaultTableModel();
 		
-			tblChooseToReview = new JTable();
-			tblChooseToReview.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			tblChooseToReview.setModel(new DefaultTableModel(
-				new Object[][] {
-					{null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null},
-					{null, null, null, null, null, null, null},
-				},
-				new String[] {
-					"New column", "New column", "New column", "New column", "New column", "New column", "New column"
-				}
-			));
-			scrSubmitted.setViewportView(tblChooseToReview);
+		refreshChooseToReviewTable(str_model1);
+		
+		tblChooseToReview = new JTable(str_model1);
+		tblChooseToReview.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		scrChosenToReview.setViewportView(tblChooseToReview);
 			
-			tblToReview = new JTable();
-			tblToReview.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			tblToReview.setModel(new DefaultTableModel(
-				new Object[][] {
-					{null, null, null, null, null, null},
-					{null, null, null, null, null, null},
-					{null, null, null, null, null, null},
-					{null, null, null, null, null, null},
-					{null, null, null, null, null, null},
-					{null, null, null, null, null, null},
-					{null, null, null, null, null, null},
-				},
-				new String[] {
-					"New column", "New column", "New column", "New column", "New column", "New column"
-				}
-			) {
+		if(numReviewsToBeDone > 0) {
+			JPanel panel_1 = new JPanel();
+			panel.add(panel_1, BorderLayout.SOUTH);
+			
+			
+			ArrayList<Submission> submissionsToReview = RetrieveDatabase.getSubmissions(reviewer);
+			DefaultTableModel str_model = new DefaultTableModel();
+			str_model.addColumn("Article ID");
+			str_model.addColumn("Title");
+			str_model.addColumn("Select");
+			for(Submission s : submissionsToReview) {
+    			Object[] submissionString = new Object[4];
+    			submissionString[0] = s.getArticle().getArticleId();
+    			submissionString[1] = s.getArticle().getTitle();
+    			submissionString[2] = false;
+    			str_model.addRow(submissionString);
+    		}
+			
+
+			tblToReview = new JTable(str_model) {
+				private static final long serialVersionUID = 1L;
+				
 				boolean[] columnEditables = new boolean[] {
-					false, false, false, false, false, false
+					false, false, true
 				};
+				
+				@Override
 				public boolean isCellEditable(int row, int column) {
 					return columnEditables[column];
 				}
-			});
+				
+	            @Override
+	            public Class<?> getColumnClass(int column) {
+	                switch (column) {
+	                    case 0:
+	                        return Integer.class;
+	                    case 1:
+	                        return String.class;
+	                    default:
+	                        return Boolean.class;
+	                }
+	            }
+			};
 			tblToReview.getColumnModel().getColumn(0).setResizable(false);
 			tblToReview.getColumnModel().getColumn(1).setResizable(false);
 			tblToReview.getColumnModel().getColumn(2).setResizable(false);
-			tblToReview.getColumnModel().getColumn(3).setResizable(false);
-			tblToReview.getColumnModel().getColumn(4).setResizable(false);
-			tblToReview.getColumnModel().getColumn(5).setResizable(false);
-			scrChosenToReview.setViewportView(tblToReview);
+
+			JButton btnSelectArticles = new JButton("Select Articles");
+			btnSelectArticles.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+						if(submissionsToReview.size() < numReviewsToBeDone) {
+							JOptionPane.showMessageDialog(null, "Kindly wait till the required number of articles are added to the system", "Error in selecting submission", 0);
+						}
+						else {
+							ArrayList<Submission> selectedSubmissions = new ArrayList<Submission>();
+							for(int row = 0; row < tblToReview.getRowCount(); row++) {
+								if(tblToReview.getValueAt(row, 2).toString() == "true") {
+									selectedSubmissions.add(submissionsToReview.get(row));
+									System.out.println(submissionsToReview.get(row).getArticle().getArticleId());
+								}
+							}
+							if(selectedSubmissions.size() == 0) {
+								JOptionPane.showMessageDialog(null, "Please select "+numReviewsToBeDone+" submissions to review", "Error in selecting submission", 0);
+							}else if(selectedSubmissions.size() == numReviewsToBeDone) {
+								for(Submission s : selectedSubmissions) {
+									submissionsChosenToReview.add(new ReviewerOfSubmission(reviewer, s));
+								}
+								refreshChooseToReviewTable((DefaultTableModel)tblChooseToReview.getModel());
+								Database.selectSubmissionsToReview(reviewer, selectedSubmissions);
+								panel.setVisible(false);
+							}else {
+								JOptionPane.showMessageDialog(null, "Too many submissions selected.\n Select at most "+numReviewsToBeDone+" submissions", "Error in reviewing submission", 0);
+							}
+						}
+				}
+			});
+			panel_1.add(btnSelectArticles);
+			
+			scrSubmitted.setViewportView(tblToReview);
 		}else {
 			panel.setVisible(false);
 		}
