@@ -40,7 +40,7 @@ import java.awt.FlowLayout;
 public class CriticismResponse {
 
 	private JFrame frmRespondToCriticism;
-	private ArrayList<JTextArea> textAreaAnswers;
+	private ArrayList<JEditorPane> textAreaAnswers;
 	private ArrayList<Criticism> criticisms;
 
 	/**
@@ -63,7 +63,7 @@ public class CriticismResponse {
 	 * Create the application.
 	 */
 	public CriticismResponse(Review review) {
-		textAreaAnswers= new ArrayList<JTextArea>();
+		textAreaAnswers= new ArrayList<JEditorPane>();
 		criticisms = review.getCriticisms();
 		initialize(review);
 	}
@@ -74,7 +74,7 @@ public class CriticismResponse {
 	private void initialize(Review review) {
 		frmRespondToCriticism = new JFrame();
 		frmRespondToCriticism.setTitle("Respond to Criticism");
-		frmRespondToCriticism.setBounds(100, 100, 500, 600);
+		frmRespondToCriticism.setBounds(100, 100, 534, 604);
 		frmRespondToCriticism.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmRespondToCriticism.setVisible(true);
 		
@@ -90,7 +90,7 @@ public class CriticismResponse {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				boolean allAnswered = true;
-				for(JTextArea jta : textAreaAnswers) {
+				for(JEditorPane jta : textAreaAnswers) {
 					System.out.println(jta.getText());
 					if(jta.getText().isEmpty())
 						allAnswered = false;
@@ -218,7 +218,7 @@ public class CriticismResponse {
 			lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
 			panel_1.add(lblNewLabel);
 			
-			JTextArea textArea = new JTextArea();
+			JEditorPane textArea = new JEditorPane();
 			textArea.setLayout(null);
 			textAreaAnswers.add(textArea);
 			GridBagConstraints gbc_textField_1 = new GridBagConstraints();
@@ -227,8 +227,6 @@ public class CriticismResponse {
 			gbc_textField_1.gridx = 0;
 			gbc_textField_1.gridy = i+1;
 			panel.add(textArea, gbc_textField_1);
-			textArea.setColumns(10);
-			textArea.setRows(5);
 			i++;
 			qCount++;
 		}	
