@@ -49,7 +49,8 @@ public class JournalWindow {
 
 	private JFrame frmJournalWindow;
 	private JTable tblJournal;
-
+    private ArrayList<Journal> allJournals;
+    
 	/**
 	 * Launch the application.
 	 */
@@ -70,6 +71,7 @@ public class JournalWindow {
 	 * Create the application.
 	 */
 	public JournalWindow(Academic[] roles) {
+	    this.allJournals = RetrieveDatabase.getJournals();
 		initialize(roles);
 	}
 
@@ -127,7 +129,6 @@ public class JournalWindow {
 		tblJournal.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
 		Object[][] tableContents = new Object[allJournals.size()][3];
 		for (int i=0; i<allJournals.size(); i++) {
 		    Journal currentJournal = allJournals.get(i);
@@ -178,12 +179,17 @@ public class JournalWindow {
 		btnSubmitArticle.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(roles == null) {
-				    new RegistrationWindow(Role.AUTHOR);
-				}else {
-					new SubmitArticle(roles, 0);
-				}
-				frmJournalWindow.dispose();	
+			    if (allJournals.size() == 0) {
+			        // If there are no journals, an article cannot be submitted
+			        JOptionPane.showMessageDialog(null, "No journals on the system.", "Error", 0);
+			    } else {
+      				if(roles == null) {
+    				    new RegistrationWindow(Role.AUTHOR);
+    				}else {
+    					new SubmitArticle(roles, 0);
+    				}
+    				frmJournalWindow.dispose();
+			    }
 			}
 		});
 		menuBar.add(btnSubmitArticle);
@@ -270,14 +276,12 @@ public class JournalWindow {
 				mntmToReviewer.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mousePressed(MouseEvent e) {
-						
 						new ReviewerMainWindow(roles);
 						frmJournalWindow.dispose();
 					}
 				});
 				mnChangeRole.add(mntmToReviewer);
-			}
-			
+			}	
 		}
 	}
 }

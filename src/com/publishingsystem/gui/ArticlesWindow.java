@@ -25,6 +25,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JMenu;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JEditorPane;
 
@@ -91,6 +93,26 @@ public class ArticlesWindow {
 				}
 			}
 		});
+		
+		/*
+		 * Template for getting contents of table
+		 * Taken from JournalWindow.java
+
+        ArrayList<Journal> allJournals= RetrieveDatabase.getJournals();
+        Object[][] tableContents = new Object[allJournals.size()][3];
+        for (int i=0; i<allJournals.size(); i++) {
+            Journal currentJournal = allJournals.get(i);
+            tableContents[i][0] = currentJournal.getJournalName();
+            tableContents[i][1] = currentJournal.getDateOfPublication().toString();
+            tableContents[i][2] = currentJournal.getISSN();
+        }
+        tblJournal.setModel(new DefaultTableModel(
+            tableContents,
+            new String[] {
+                "Title", "Date of Publication", "ISSN"
+            }
+            */		
+		
 		tblArticles.setModel(new DefaultTableModel(
 			new Object[][] {
 				{"Article Name", "Article smth", "Volume", "Number", "Page range"},

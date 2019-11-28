@@ -21,8 +21,12 @@ import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableModel;
 
 import com.publishingsystem.mainclasses.Academic;
+import com.publishingsystem.mainclasses.AuthorOfArticle;
 import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
+import com.publishingsystem.mainclasses.Journal;
+import com.publishingsystem.mainclasses.RetrieveDatabase;
+import com.publishingsystem.mainclasses.Submission;
 
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -32,6 +36,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 public class EditorMainWindow {
 
@@ -46,7 +51,8 @@ public class EditorMainWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					EditorMainWindow window = new EditorMainWindow(null);
+				    Academic[] roles = {null, null, null};
+					EditorMainWindow window = new EditorMainWindow(roles);
 					window.frmDashboard.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -155,61 +161,34 @@ public class EditorMainWindow {
 				}
 			}
 		});
+		
+		ArrayList<Submission> allSubmissions = new ArrayList<Submission>();
+    	for (EditorOfJournal jour : ((Editor)roles[0]).getEditorOfJournals()) {
+    	    // For every journal the editor is an editor of, get all in progress submissions for them
+    	    ArrayList<Submission> thisJournalsSubmissions = RetrieveDatabase.getSubmissionsToJournal(jour.getJournal().getISSN());
+    	    allSubmissions.addAll(thisJournalsSubmissions);
+    	}
+		
+	    Object[][] tableContents = new Object[allSubmissions.size()][4];
+        for (int i=0; i<allSubmissions.size(); i++ ) {
+            Submission currentSubmission = allSubmissions.get(i);
+            tableContents[i][0] = currentSubmission.getArticle().getTitle();
+
+            ArrayList<AuthorOfArticle> authorsOfArticle = currentSubmission.getArticle().getAuthorsOfArticle();
+            String authors = "";
+            for (AuthorOfArticle aoa : authorsOfArticle) {
+                authors = authors + aoa.getAuthor().getForename() + " " + aoa.getAuthor().getSurname() + "\n";
+            }
+            tableContents[i][1] = authors;
+
+            tableContents[i][2] = currentSubmission.getArticle().getJournal().getJournalName();
+            tableContents[i][3] = currentSubmission.getStatus();
+        }
+        
 		tblEditor.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-			},
+			tableContents,
 			new String[] {
-				"Articles", "Authors", "Date", "Journal", "Status"
+				"Articles", "Authors", "Journal", "Status"
 			}
 		));
 		scrollPane.setViewportView(tblEditor);
