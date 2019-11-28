@@ -31,12 +31,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import javax.swing.ListSelectionModel;
 
 
 public class ReviewerMainWindow {
 
 	private JFrame frmReviewDashboard;
-	private JTable tblReview;
+	private JTable tblChooseToReview;
+	private JTable tblToReview;
 
 	/**
 	 * Launch the application.
@@ -71,11 +73,12 @@ public class ReviewerMainWindow {
 		frmReviewDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmReviewDashboard.setVisible(true);
 		
-		JLabel lblArticleList = new JLabel("Article's List:");
-		lblArticleList.setToolTipText("");
-		lblArticleList.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		JLabel lblArticleListToChoose = new JLabel("Choose Articles to Review:");
+		lblArticleListToChoose.setToolTipText("");
+		lblArticleListToChoose.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JScrollPane scrSubmitted = new JScrollPane();
+		scrSubmitted.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		JScrollPane scrReview = new JScrollPane();
 		scrReview.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -134,6 +137,12 @@ public class ReviewerMainWindow {
 			}
 		});
 		btnCheckResponses.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JLabel lblArticlesYouHave = new JLabel("Articles You Have Chosen to Review:");
+		lblArticlesYouHave.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JScrollPane scrChosenToReview = new JScrollPane();
+		scrChosenToReview.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         
 		GroupLayout groupLayout = new GroupLayout(frmReviewDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -141,11 +150,12 @@ public class ReviewerMainWindow {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrSubmitted, GroupLayout.PREFERRED_SIZE, 551, GroupLayout.PREFERRED_SIZE)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrSubmitted, GroupLayout.PREFERRED_SIZE, 551, GroupLayout.PREFERRED_SIZE)
+							.addComponent(scrChosenToReview, GroupLayout.PREFERRED_SIZE, 551, GroupLayout.PREFERRED_SIZE)
 							.addGap(16)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+								.addGroup(groupLayout.createSequentialGroup()
 									.addComponent(btnCheckResponses)
 									.addPreferredGap(ComponentPlacement.RELATED, 33, Short.MAX_VALUE)
 									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
@@ -153,84 +163,76 @@ public class ReviewerMainWindow {
 										.addComponent(btnNewButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
 								.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 297, Short.MAX_VALUE)
 								.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE)))
-						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE))
+						.addComponent(lblArticleListToChoose, GroupLayout.PREFERRED_SIZE, 257, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblArticlesYouHave))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(45)
+					.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 					.addGap(10)
-					.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+					.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 231, Short.MAX_VALUE)
 					.addGap(10)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 624, Short.MAX_VALUE)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-							.addGap(10)
-							.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
-							.addGap(10)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnNewButton)
-								.addComponent(btnCheckResponses))
-							.addGap(10)
-							.addComponent(btnRespondToReviews)
-							.addGap(284)))
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnNewButton)
+						.addComponent(btnCheckResponses))
+					.addGap(10)
+					.addComponent(btnRespondToReviews)
+					.addGap(295))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblArticlesYouHave)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrChosenToReview, GroupLayout.DEFAULT_SIZE, 348, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(lblArticleListToChoose, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrSubmitted, GroupLayout.PREFERRED_SIZE, 237, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
 		);
+		
+		tblToReview = new JTable();
+		tblToReview.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tblToReview.setModel(new DefaultTableModel(
+			new Object[][] {
+				{null, null, null, null, null, null},
+				{null, null, null, null, null, null},
+				{null, null, null, null, null, null},
+				{null, null, null, null, null, null},
+				{null, null, null, null, null, null},
+				{null, null, null, null, null, null},
+				{null, null, null, null, null, null},
+			},
+			new String[] {
+				"New column", "New column", "New column", "New column", "New column", "New column"
+			}
+		) {
+			boolean[] columnEditables = new boolean[] {
+				false, false, false, false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		});
+		tblToReview.getColumnModel().getColumn(0).setResizable(false);
+		tblToReview.getColumnModel().getColumn(1).setResizable(false);
+		tblToReview.getColumnModel().getColumn(2).setResizable(false);
+		tblToReview.getColumnModel().getColumn(3).setResizable(false);
+		tblToReview.getColumnModel().getColumn(4).setResizable(false);
+		tblToReview.getColumnModel().getColumn(5).setResizable(false);
+		scrChosenToReview.setViewportView(tblToReview);
 		
 		JEditorPane editPaneReview = new JEditorPane();
 		editPaneReview.setText("If empty leave text \"No Review yet\"");
 		editPaneReview.setEditable(false);
 		scrReview.setViewportView(editPaneReview);
 		
-		tblReview = new JTable();
-		tblReview.setModel(new DefaultTableModel(
+		tblChooseToReview = new JTable();
+		tblChooseToReview.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tblChooseToReview.setModel(new DefaultTableModel(
 			new Object[][] {
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
-				{null, null, null, null, null, null, null},
 				{null, null, null, null, null, null, null},
 				{null, null, null, null, null, null, null},
 				{null, null, null, null, null, null, null},
@@ -241,8 +243,7 @@ public class ReviewerMainWindow {
 				"New column", "New column", "New column", "New column", "New column", "New column", "New column"
 			}
 		));
-		tblReview.setEnabled(false);
-		scrSubmitted.setViewportView(tblReview);
+		scrSubmitted.setViewportView(tblChooseToReview);
 		frmReviewDashboard.getContentPane().setLayout(groupLayout);
 		
 		
