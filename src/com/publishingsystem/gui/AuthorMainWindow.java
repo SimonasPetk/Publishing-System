@@ -84,7 +84,7 @@ public class AuthorMainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Academic[] roles) {
-	    // Configure frame=e
+	    // Configure frame
 		frmAuthorsDashboard = new JFrame();
 		frmAuthorsDashboard.setTitle("Author's Dashboard");
 		frmAuthorsDashboard.setBounds(100, 100, 900, 740);

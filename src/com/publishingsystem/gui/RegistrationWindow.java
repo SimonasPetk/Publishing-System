@@ -183,7 +183,8 @@ public class RegistrationWindow {
 		    				submitArticleGUI.addCoAuthor(coAuthor);
 		    			case CHIEFEDITOR:
 		    				Editor chiefEditor = new Editor(academicID, title, forenames, surname, email, university, pwdHash);
-		    				new AddJournal(chiefEditor);
+                            Academic[] roles = {chiefEditor, null, null}; // New on the system, their only role will be chiefEditor
+		    				new AddJournal(roles);
 		    				break;
 		    			case EDITOR:
 		    				Editor editor = new Editor(academicID, title, forenames, surname, email, university, pwdHash);

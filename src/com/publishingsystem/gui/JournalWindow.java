@@ -22,6 +22,7 @@ import com.publishingsystem.mainclasses.Author;
 import com.publishingsystem.mainclasses.Database;
 import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
+import com.publishingsystem.mainclasses.Hash;
 import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.Role;
@@ -192,8 +193,27 @@ public class JournalWindow {
 		btnAddJournal.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				new RegistrationWindow(Role.CHIEFEDITOR);
-				frmJournalWindow.dispose();
+			    if (roles == null) {
+			        // New academic, needs to register
+	                new RegistrationWindow(Role.CHIEFEDITOR);
+			    } else {
+			        if (roles[0] == null) {
+			            // Existing academic (may be just an author and reviewer), need to be registered as an editor
+    		            roles[0] = new Editor(roles[1].getAcademicId(),
+	    	                                  roles[1].getTitle(),
+		                                      roles[1].getForename(),
+		                                      roles[1].getSurname(),
+		                                      roles[1].getEmailId(),
+		                                      roles[1].getUniversity(),
+		                                      roles[1].getHash());		            
+                        new AddJournal(roles);
+			        } else {
+			            // Existing academic and editor of another article
+			            // Need to be registered on the new journal
+	                    new AddJournal(roles);
+			        }
+			    }
+			    frmJournalWindow.dispose();
 			}
 		});
 		menuBar.add(btnAddJournal);

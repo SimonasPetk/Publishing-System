@@ -51,14 +51,14 @@ public class AddJournal {
 	/**
 	 * Create the application.
 	 */
-	public AddJournal(Editor chiefEditor) {
-		initialize(chiefEditor);
+	public AddJournal(Academic[] roles) {
+		initialize(roles);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Editor chiefEditor) {
+	private void initialize(Academic[] roles) {
 		frmAddJournal = new JFrame();
 		frmAddJournal.setTitle("Add Journal");
 		frmAddJournal.setBounds(100, 100, 591, 283);
@@ -88,21 +88,31 @@ public class AddJournal {
 		btnAddJournal.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
+			    // Create new journal object
 				String journalName = textField.getText();
 				String JournalISSN = textField_1.getText();
 				Date now = new Date(System.currentTimeMillis());
-				ArrayList<Editor> editors = new ArrayList<Editor>();
-				editors.add(chiefEditor);
-				Database.registerEditors(editors);
 				Journal newJournal = new Journal(Integer.parseInt(JournalISSN), journalName, now);
-				EditorOfJournal chief = new EditorOfJournal(newJournal, chiefEditor, true);
+				
+				// Register the chief editor as a chief editor
+				ArrayList<Editor> editors = new ArrayList<Editor>();
+                editors.add((Editor)roles[0]);
+                Database.registerEditors(editors);
+				
+                // Add the editor to the journal as the chief editor
+				EditorOfJournal chief = new EditorOfJournal(newJournal, (Editor)roles[0], true);
 				//ArrayList<EditorOfJournal> editorOfNewJournal = new ArrayList<EditorOfJournal>();
 				//editorOfNewJournal.add(chief);
 				newJournal.addEditorToBoard(chief);
+
+				// Record that the editor is an editor of the new journal
+				((Editor)roles[0]).addEditorOfJournal(chief);
+				
+				// Add the journal to the database
 				Database.addJournal(newJournal);
+				
+				// Open ChiefMainWindow
 				frmAddJournal.dispose();
-	            Academic[] roles = new Academic[3];
-	            roles[0] = chiefEditor;
 				new ChiefMainWindow(roles);
 				System.out.println("Should be on that menu now boya");
 			}
