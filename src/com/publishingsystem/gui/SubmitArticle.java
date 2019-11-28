@@ -53,6 +53,7 @@ public class SubmitArticle {
 	private JTextField txtfldTitle;
 	private String selectedJournalName;
 	private ArrayList<Author> coAuthors;
+	private ArrayList<Integer> numReviewsOfCoAuthors;
 	private String pdfPath;
 	private JScrollPane scrPaneAuthors;
 	private DefaultListModel<String> coAuthorsModel;
@@ -65,7 +66,7 @@ public class SubmitArticle {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SubmitArticle window = new SubmitArticle(new Author(1, "Dr", "kb", "kb", "Sheffield", "kb@gm.com", new Hash("9d5be6810a8de8673cf2a5b83f2030393028b71127dd034beb9bd03f3a946302")));
+					SubmitArticle window = new SubmitArticle(new Author(1, "Dr", "kb", "kb", "Sheffield", "kb@gm.com", new Hash("9d5be6810a8de8673cf2a5b83f2030393028b71127dd034beb9bd03f3a946302")), 0);
 					//SubmitArticle window = new SubmitArticle(null);
 					window.frmSubmitAnArticle.setVisible(true);
 				} catch (Exception e) {
@@ -78,15 +79,17 @@ public class SubmitArticle {
 	/**
 	 * Create the application.
 	 */
-	public SubmitArticle(Author a) {
+	public SubmitArticle(Author a, int numReviewsOfMainAuthor) {
         coAuthors = new ArrayList<Author>();
+        numReviewsOfCoAuthors = new ArrayList<Integer>();
         Academic[] newRoles = new Academic[3];
 		newRoles[1] = a;
-		initialize(a, newRoles);
+		initialize(a, newRoles, numReviewsOfMainAuthor);
 	}
 	
-	public SubmitArticle(Academic[] roles) {
+	public SubmitArticle(Academic[] roles, int numReviewsOfMainAuthor) {
 		coAuthors = new ArrayList<Author>();
+		numReviewsOfCoAuthors = new ArrayList<Integer>();
 		Author a = null;
 		if(roles[1] == null) {
 			Academic aca = null;
@@ -106,11 +109,12 @@ public class SubmitArticle {
 		}else {
 			a = (Author)roles[1];
 		}
-		initialize(a, roles);
+		initialize(a, roles, numReviewsOfMainAuthor);
 	}
 
-	public void addCoAuthor(Author coAuthor) {
+	public void addCoAuthor(Author coAuthor, int numReview) {
 		this.coAuthors.add(coAuthor);
+		this.numReviewsOfCoAuthors.add(numReview);
 		this.coAuthorsModel.clear();
 	    for (Author author : coAuthors){
         	coAuthorsModel.addElement(author.getForename()+" "+author.getSurname()+" ("+author.getEmailId()+")");
@@ -120,7 +124,7 @@ public class SubmitArticle {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Author mainAuthor, Academic[] roles) {
+	private void initialize(Author mainAuthor, Academic[] roles, int numReviewsOfMainAuthor) {
 		frmSubmitAnArticle = new JFrame();
 		frmSubmitAnArticle.setTitle("Submit an Article");
 		frmSubmitAnArticle.setBounds(100, 100, 700, 552);
@@ -251,12 +255,11 @@ public class SubmitArticle {
 				if(title != null && summary != null && journal != null && pdfPath != null){
 					byte[] pdf = PDFConverter.getByteArrayFromFile(pdfPath);
 					Article article = new Article(-1, title, summary, journal);
-					mainAuthor.registerCoAuthors(article, coAuthors);
+					mainAuthor.registerCoAuthors(article, coAuthors, numReviewsOfCoAuthors);
 					Calendar calendar = Calendar.getInstance();
-					mainAuthor.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), article.getSubmission()));
+					mainAuthor.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), article.getSubmission()), numReviewsOfMainAuthor);
 	
 					coAuthors.add(mainAuthor);
-					
 					
 					//ADDING TO THE DATABASE;
 					Database.registerAuthors(coAuthors);

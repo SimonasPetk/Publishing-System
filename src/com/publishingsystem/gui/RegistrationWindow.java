@@ -160,7 +160,7 @@ public class RegistrationWindow {
                             } else {
                                 // Co-author already registered, add the registered account
                                 Academic[] roles = RetrieveDatabase.getRoles(email);
-                                submitArticleGUI.addCoAuthor((Author)roles[1]);
+                                submitArticleGUI.addCoAuthor((Author)roles[1], 0);
                                 validCredentials = false;
                                 JOptionPane.showMessageDialog(null, "Email is already in use. They will be added as a co-author.");
                                 frmRegistrationForm.dispose();
@@ -176,11 +176,11 @@ public class RegistrationWindow {
 			        switch(r) {
 		    			case AUTHOR:
 		    				Author author = new Author(academicID, title, forenames, surname, email, university, pwdHash);
-		    				new SubmitArticle(author);
+		    				new SubmitArticle(author, 0);
 		    				break;
 		    			case COAUTHOR:
 		    				Author coAuthor = new Author(academicID, title, forenames, surname, email, university, pwdHash);
-		    				submitArticleGUI.addCoAuthor(coAuthor);
+		    				submitArticleGUI.addCoAuthor(coAuthor, 0);
 		    			case CHIEFEDITOR:
 		    				Editor chiefEditor = new Editor(academicID, title, forenames, surname, email, university, pwdHash);
                             Academic[] roles = {chiefEditor, null, null}; // New on the system, their only role will be chiefEditor

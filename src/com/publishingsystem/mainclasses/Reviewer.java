@@ -1,27 +1,33 @@
 package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
-public class Reviewer extends Academic{
+public class Reviewer extends Author{
 	private ArrayList<Review> reviews;
+	private ArrayList<ReviewerOfSubmission> reviewerOfSubmissions;
 	private int reviewerId;
-	private AuthorOfArticle authorOfArticle;
 	
-	public Reviewer(int reviewerId, String title ,String forename, String surname, String emailId, String university, Hash hash) {
-		super(title, forename, surname, emailId, university, hash);
+	public Reviewer(int authorId, int reviewerId, String title ,String forename, String surname, String emailId, String university, Hash hash) {
+		super(authorId, title, forename, surname, emailId, university, hash);
 		this.reviews = new ArrayList<Review>();
 		this.reviewerId = reviewerId;
 	}
 	
 	//---POSSIBLY DELETE LATER---
-	public Reviewer(AuthorOfArticle a) {
-		super(a.getAuthor().getTitle(), a.getAuthor().getForename(), a.getAuthor().getSurname(), a.getAuthor().getEmailId(), a.getAuthor().getUniversity(), a.getAuthor().getHash());
-		setAcademicId(a.getAuthor().getAcademicId());
-		this.authorOfArticle = a;
+	public Reviewer(Author a) {
+		super(a.getAuthorId(), a.getTitle(), a.getForename(), a.getSurname(), a.getEmailId(), a.getUniversity(), a.getHash());
+		setAcademicId(a.getAcademicId());
 		this.reviews = new ArrayList<Review>();
+		this.reviewerOfSubmissions = new ArrayList<ReviewerOfSubmission>();
 	}
 	
-	public AuthorOfArticle getAuthorOfArticle() {
-		return authorOfArticle;
+	public void addSubmissionsToReview(ArrayList<Submission> submissionsToReview) {
+		for(Submission s : submissionsToReview) {
+			this.reviewerOfSubmissions.add(new ReviewerOfSubmission(this, s));
+		}
+	}
+	
+	public ArrayList<ReviewerOfSubmission> getReviewerOfSubmissions() {
+		return reviewerOfSubmissions;
 	}
 
 	public void setReviewerId(int id) {

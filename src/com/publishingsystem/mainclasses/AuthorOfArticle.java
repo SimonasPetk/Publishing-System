@@ -4,11 +4,17 @@ public class AuthorOfArticle {
 	private Article article;
 	private Author author;
 	private boolean mainAuthor;
+	private int numReviews;
 	
-	public AuthorOfArticle(Article article, Author author, boolean mainAuthor) {
+	public AuthorOfArticle(Article article, Author author,boolean mainAuthor, int numReviews) {
 		this.article = article;
 		this.author = author;
 		this.mainAuthor = mainAuthor;
+		this.numReviews = numReviews;
+	}
+
+	public int getNumReviews() {
+		return numReviews;
 	}
 
 	public Article getArticle() {

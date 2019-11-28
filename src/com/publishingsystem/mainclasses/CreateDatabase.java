@@ -97,21 +97,27 @@ public class CreateDatabase extends Database{
 				+ "authorID INT REFERENCES AUTHORS(authorID),"
 				+ "articleID INT REFERENCES ARTICLES(articleID), "
 				+ "mainAuthor BOOLEAN, "
+				+ "numReviews INT, "
 				+ "PRIMARY KEY (authorID, articleID))";
 	}
 
 	public static String createTableReviewers() {
 		return "CREATE TABLE REVIEWERS ("
 				+ "reviewerID INT PRIMARY KEY AUTO_INCREMENT, "
-				+ "authorID INT REFERENCES AUTHOROFARTICLE(authorID), "
-				+ "articleID INT REFERENCES AUTHOROFARTICLE(articleID))";
+				+ "authorID INT REFERENCES AUTHORS(authorID))";
+	}
+	
+	public static String createTableReviewerOfSubmission() {
+		return "CREATE TABLE REVIEWEROFSUBMISSION ("
+				+ "reviewerID INT REFERENCES REVIEWERS(reviewerID), "
+				+ "submissionID INT REFERENCES SUBMISSIONS(submissionID), "
+				+ "PRIMARY KEY (reviewerID, submissionID))";
 	}
 
 	public static String createTableReviews() {
 		return "CREATE TABLE REVIEWS ("
-				+ "reviewerID INT REFERENCES REVIEWERS(academicID),"
-				+ "submissionID INT REFERENCES SUBMISSIONS(submissionID),"
-				+ "articleID INT REFERENCES REVIEWER(articleID), "
+				+ "reviewerID INT REFERENCES REVIEWEROFSUBMISSION(academicID),"
+				+ "submissionID INT REFERENCES REVIEWEROFSUBMISSION(submissionID),"
 				+ "summary TEXT,"
 				+ "typingErrors TEXT,"
 				+ "verdict TEXT,"
@@ -236,6 +242,10 @@ public class CreateDatabase extends Database{
 			res = statement.executeQuery("SHOW TABLES LIKE 'REVIEWERS';");
 			if(!res.next())
 				statement.execute(createTableReviewers());
+			
+			res = statement.executeQuery("SHOW TABLES LIKE 'REVIEWEROFSUBMISSION';");
+			if(!res.next())
+				statement.execute(createTableReviewerOfSubmission());
 
 			res = statement.executeQuery("SHOW TABLES LIKE 'REVIEWS';");
 			if(!res.next())
@@ -255,19 +265,21 @@ public class CreateDatabase extends Database{
 		System.out.println(System.getProperty("jdbc.drivers"));
 		System.out.println("\nDrivers loaded by DriverManager:");
 		Enumeration<Driver> list = DriverManager.getDrivers();
-		while (list.hasMoreElements())
-			System.out.println(list.nextElement());
-		System.out.println();
-        try (Connection con = DriverManager.getConnection(CONNECTION)) {
-		    printAllRecords("JOURNALS");
-			printAllRecords("EDITORS");
-			printAllRecords("VOLUMES");
-			printAllRecords("EDITIONS");
-			printAllRecords("EDITOROFJOURNAL");
-			printAllRecords("ACADEMICS");
-		} catch (SQLException ex) {
-		    ex.printStackTrace();
-		}		
+		dropTables();
+		createTables();
+//		while (list.hasMoreElements())
+//			System.out.println(list.nextElement());
+//		System.out.println();
+//        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+//		    printAllRecords("JOURNALS");
+//			printAllRecords("EDITORS");
+//			printAllRecords("VOLUMES");
+//			printAllRecords("EDITIONS");
+//			printAllRecords("EDITOROFJOURNAL");
+//			printAllRecords("ACADEMICS");
+//		} catch (SQLException ex) {
+//		    ex.printStackTrace();
+//		}		
 //    try (Connection con = DriverManager.getConnection(CONNECTION)) {
 //          Statement statement = con.createStatement();
 //          statement.execute("USE "+DATABASE+";");

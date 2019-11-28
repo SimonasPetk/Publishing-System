@@ -10,12 +10,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
 public class Database {
-	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	protected static final String DATABASE = "team022";
+//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+//	protected static final String DATABASE = "team022";
 
 	//localhost
-//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-//	protected static final String DATABASE = "publishing_system";
+	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -235,7 +235,7 @@ public class Database {
 
 		    // Register each author as an author of the article
 		    for(AuthorOfArticle a : article.getAuthorsOfArticle()) {
-		    	query = "INSERT INTO AUTHOROFARTICLE values (?, ?, ?)";
+		    	query = "INSERT INTO AUTHOROFARTICLE values (?, ?, ?, ?)";
 		    	try(PreparedStatement preparedStmt = con.prepareStatement(query)) {
 		    		preparedStmt.setInt(1, a.getAuthor().getAuthorId());
 		    		preparedStmt.setInt(2, article.getArticleId());
@@ -243,6 +243,7 @@ public class Database {
 		    			preparedStmt.setBoolean(3, true);
 		    		else
 		    			preparedStmt.setBoolean(3, false);
+		    		preparedStmt.setInt(4, a.getNumReviews());
 		    		preparedStmt.execute();
 		    	} catch (SQLException ex) {
 		    		ex.printStackTrace();
@@ -270,15 +271,14 @@ public class Database {
 		}
     }
 
-	public static void registerReviewer(Reviewer r, ArrayList<Submission> submissionsToReview) {
+	public static void registerReviewer(Reviewer r) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			String query = "INSERT INTO REVIEWERS values (null, ?, ?)";
+			String query = "INSERT INTO REVIEWERS values (null, ?)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, r.getAuthorOfArticle().getAuthor().getAuthorId());
-				preparedStmt.setInt(2, r.getAuthorOfArticle().getArticle().getArticleId());
+				preparedStmt.setInt(1, r.getAuthorId());
 				preparedStmt.execute();
 
 				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
@@ -288,18 +288,22 @@ public class Database {
 				ex.printStackTrace();
 			}
 			
-			for(Submission s : submissionsToReview) {
-				query = "INSERT INTO REVIEWS values (?, ?, ?, null, null, null)";
+			for(ReviewerOfSubmission ros : r.getReviewerOfSubmissions()) {
+				Submission s = ros.getSubmission();
+				query = "INSERT INTO REVIEWEROFSUBMISSION values (?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, r.getReviewerId());
 					preparedStmt.setInt(2, s.getSubmissionId());
-					preparedStmt.setInt(3, r.getAuthorOfArticle().getArticle().getArticleId());
-	
 					preparedStmt.execute();
+	
+					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
+					while(rs.next())
+						r.setReviewerId(Integer.valueOf(rs.getString("last_id")));
 				}catch (SQLException ex) {
 					ex.printStackTrace();
 				}
 			}
+			
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -313,13 +317,12 @@ public class Database {
 			Reviewer reviewer = review.getReviewer();
 			Submission submission = review.getSubmission();
 			
-			String query = "UPDATE REVIEWS SET SUMMARY = ?, TYPINGERRORS = ? WHERE REVIEWERID = ? AND SUBMISSIONID = ?";
+			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, null)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setString(1, review.getSummary());
-				preparedStmt.setString(2, review.getTypingErrors());
-				preparedStmt.setInt(3, reviewer.getReviewerId());
-				preparedStmt.setInt(4, submission.getSubmissionId());
-				
+				preparedStmt.setInt(1, reviewer.getReviewerId());
+				preparedStmt.setInt(2, submission.getSubmissionId());
+				preparedStmt.setString(3, review.getSummary());
+				preparedStmt.setString(4, review.getTypingErrors());
 
 				preparedStmt.execute();
 			}catch (SQLException ex) {

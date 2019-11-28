@@ -26,58 +26,61 @@ public class TestRun {
 		Database.addJournal(j);
 		Database.addJournal(j1);
 		
-//		Author a1 = new Author(-1, "Mr", "J.", "Doe", "j.doe@uniofdoe.ac.uk", "Uni of doe", new Hash("doe"));
-//		Author a2 = new Author(-1, "Mr", "H.", "Humphry", "h.humphry@uniofhumphry.ac.uk", "Uni of humphry", new Hash("humphry"));
+		Author a1 = new Author(-1, "Mr", "J.", "Doe", "j.doe@uniofdoe.ac.uk", "Uni of doe", new Hash("doe"));
+		Author a2 = new Author(-1, "Mr", "H.", "Humphry", "h.humphry@uniofhumphry.ac.uk", "Uni of humphry", new Hash("humphry"));
 //		
-//		ArrayList<Author> authors = new ArrayList<Author>();
-//		authors.add(a2);
-//		authors.add(a1);
-//		Article article = new Article(-1, "How doe works", "Article about how doe works", j);
-//		a1.registerCoAuthors(article, authors);
+		ArrayList<Author> authors = new ArrayList<Author>();
+		authors.add(a2);
+		authors.add(a1);
+		Article article = new Article(-1, "How doe works", "Article about how doe works", j);
+		a1.registerCoAuthors(article, authors, new int [] {2,1});
 //		
-//		a1.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), null));
-//		System.out.println(a1.getAuthorOfArticles().size());
+		a1.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), null), 1);
+		System.out.println(a1.getAuthorOfArticles().size());
 //		
 //		//Adding to DB
-//		Database.registerAuthors(authors);
-////		Database.addSubmission(article, null);
+		Database.registerAuthors(authors);
+		Database.addSubmission(article, new byte[] {});
 ////		
-//////		System.out.println(a1.getSubmissionStatus(s));
-////		
-//////		Author a3 = new Author(-1, "Mr", "P.", "Prince", "p.prince@uniofprince.ac.uk", "Uni of prince", new Hash("prince"));
-//		Author a4 = new Author(-1, "Mr", "K.", "King", "k.king@uniofking.ac.uk", "Uni of king", new Hash("king"));
-//		Author a5 = new Author(-1, "Mr", "Q.", "Queen", "q.queen@uniofqueen.ac.uk", "Uni of queen", new Hash("humphry"));
+
+		
+//		Author a3 = new Author(-1, "Mr", "P.", "Prince", "p.prince@uniofprince.ac.uk", "Uni of prince", new Hash("prince"));
+		Author a4 = new Author(-1, "Mr", "K.", "King", "k.king@uniofking.ac.uk", "Uni of king", new Hash("king"));
+		Author a5 = new Author(-1, "Mr", "Q.", "Queen", "q.queen@uniofqueen.ac.uk", "Uni of queen", new Hash("humphry"));
+		
+		ArrayList<Author> authorsReviewers = new ArrayList<Author>();
+		authorsReviewers.add(a1);
+		authorsReviewers.add(a5);
+		authorsReviewers.add(a4);
 //		
-//		ArrayList<Author> authorsReviewers = new ArrayList<Author>();
-//		authorsReviewers.add(a1);
-//		authorsReviewers.add(a5);
-//		authorsReviewers.add(a4);
+		Article tempS = new Article(-1, "Temp article", "Article about temp", j);
+	
+		a4.registerCoAuthors(tempS, authorsReviewers, new int[] {1,1,1});
+		a4.submit(tempS, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), null), 1);
+		
+		Database.registerAuthors(authorsReviewers);
+		Database.addSubmission(tempS, new byte[] {});
+
+		ArrayList<Reviewer> reviewers = new ArrayList<Reviewer>();
+		reviewers.add(new Reviewer(a1));
+		reviewers.add(new Reviewer(a4));
+		reviewers.add(new Reviewer(a5));
+		
 ////		
-//		Article tempS = new Article(-1, "Temp article", "Article about temp", j);
-//	
-//		a4.registerCoAuthors(tempS, authorsReviewers);
-//		a4.submit(tempS, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), null));
-//		
-//		Database.registerAuthors(authorsReviewers);
-////		Database.addSubmission(tempS, null);
-//
-//		ArrayList<Reviewer> reviewers = new ArrayList<Reviewer>();
-//		reviewers.add(new Reviewer(a1.getAuthorOfArticles().get(0)));
-//		reviewers.add(new Reviewer(a4.getAuthorOfArticles().get(0)));
-//		reviewers.add(new Reviewer(a5.getAuthorOfArticles().get(0)));
-//		
-//		Database.addReviewers(reviewers);
-////		
-//		//Reviewer and reviews
-//		for(Reviewer r : reviewers) {
-//			ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
-//			criticisms.add(new Criticism("Perhaps explain origin of doe"));
-//			
-//			Review review = new Review(r, article.getSubmission(), "Good", "None", criticisms, r.getAuthorOfArticle().getArticle());
-//			r.addReview(article.getSubmission(), review);
-//			Database.addReview(review);
-//
-//		}
+		//Reviewer and reviews
+		for(Reviewer r : reviewers) {
+			ArrayList<Submission> submissions = new ArrayList<Submission>();
+			submissions.add(article.getSubmission());
+			r.addSubmissionsToReview(submissions);
+			Database.registerReviewer(r);
+			ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
+			criticisms.add(new Criticism("Perhaps explain origin of doe"));
+			
+			Review review = new Review(r, article.getSubmission(), "Good", "None", criticisms);
+			r.addReview(article.getSubmission(), review);
+			Database.addReview(review);
+
+		}
 ////		
 ////
 ////		System.out.println(a1.getSubmissionStatus(s));

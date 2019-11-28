@@ -32,11 +32,15 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 public class ReviewArticle {
 
 	private JFrame frmReviewArticle;
-	private JTable tblTypoErrors;
+	private int criticisms = 1;
+	private int counter = 0;
 
 	/**
 	 * Launch the application.
@@ -72,10 +76,6 @@ public class ReviewArticle {
 		frmReviewArticle.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmReviewArticle.setVisible(true);
 		
-		
-		JScrollPane scrPaneTypoErrors = new JScrollPane();
-		scrPaneTypoErrors.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		
 		JLabel lblArticleReviews = new JLabel("Please Submit Your Review");
 		lblArticleReviews.setHorizontalAlignment(SwingConstants.CENTER);
 		lblArticleReviews.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -86,9 +86,6 @@ public class ReviewArticle {
 		
 		JLabel lblReview = new JLabel("Summary of the Review");
 		lblReview.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
-		JScrollPane scrPaneCriticisms = new JScrollPane();
-		scrPaneCriticisms.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
 		JButton btnSubmitReview = new JButton("Submit a Review");
 		btnSubmitReview.addMouseListener(new MouseAdapter() {
@@ -111,105 +108,144 @@ public class ReviewArticle {
 		
 		JComboBox comboBox = new JComboBox();
 		comboBox.setModel(new DefaultComboBoxModel(new String[] {"", "Strong Accept", "Weak Accept", "Weak Reject", "Strong Reject"}));
+		
+		JTextArea textArea_1 = new JTextArea();
+		
+		JScrollPane scrollPane = new JScrollPane();
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		
+		JPanel panel = new JPanel();
+		scrollPane_1.setViewportView(panel);
+		GridBagLayout gbl_panel = new GridBagLayout();
+		gbl_panel.columnWidths = new int[]{0, 0};
+		gbl_panel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
+		gbl_panel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{1.0, 1.0, 0.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
+		panel.setLayout(gbl_panel);
+		
+		JButton btnAddCriticism = new JButton("Add Criticism");
+		btnAddCriticism.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				System.out.println("PRESSED");
+				counter++;
+				JLabel lblNewLbl = new JLabel("Criticism "+criticisms);
+				GridBagConstraints gbc_lblNewLbl = new GridBagConstraints();
+				gbc_lblNewLbl.anchor = GridBagConstraints.WEST;
+				gbc_lblNewLbl.insets = new Insets(0, 0, 5, 0);
+				gbc_lblNewLbl.gridx = 0;
+				gbc_lblNewLbl.gridy = counter;
+				panel.add(lblNewLbl, gbc_lblNewLbl);
+				counter++;
+				JTextArea textArea = new JTextArea();
+				textArea.setRows(2);
+				GridBagConstraints gbc_textArea = new GridBagConstraints();
+				gbc_textArea.insets = new Insets(0, 0, 5, 0);
+				gbc_textArea.fill = GridBagConstraints.BOTH;
+				gbc_textArea.gridx = 0;
+				gbc_textArea.gridy = counter;
+				panel.add(textArea, gbc_textArea);
+
+				frmReviewArticle.pack();
+				frmReviewArticle.repaint();
+				criticisms++;
+			}
+		});
 		GroupLayout groupLayout = new GroupLayout(frmReviewArticle.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblReview)
-					.addContainerGap(327, Short.MAX_VALUE))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(scrPaneTypoErrors, GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE)
-					.addContainerGap())
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblTypoErrors, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(311, Short.MAX_VALUE))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblCriticisms)
-					.addContainerGap(381, Short.MAX_VALUE))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(136)
-					.addComponent(btnSubmitReview, GroupLayout.PREFERRED_SIZE, 194, Short.MAX_VALUE)
-					.addGap(164))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(scrPaneReview1)
-					.addContainerGap())
-				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(140)
-					.addComponent(lblArticleReviews, GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
+					.addComponent(lblArticleReviews, GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
 					.addGap(140))
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(scrPaneCriticisms, GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE)
-					.addContainerGap())
+					.addComponent(textArea_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(16)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 454, GroupLayout.PREFERRED_SIZE)
+								.addComponent(scrPaneReview1, GroupLayout.PREFERRED_SIZE, 454, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblCriticisms)
+								.addComponent(lblTypoErrors, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblReview)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(18)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 452, Short.MAX_VALUE)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(lblNewLabel)
+									.addGap(73)
+									.addComponent(btnAddCriticism)))))
+					.addGap(33))
 				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblNewLabel)
-					.addContainerGap())
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(comboBox, 0, 474, Short.MAX_VALUE)
-					.addContainerGap())
+					.addGap(17)
+					.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, 253, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(240, Short.MAX_VALUE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(133)
+					.addComponent(btnSubmitReview, GroupLayout.PREFERRED_SIZE, 216, Short.MAX_VALUE)
+					.addGap(161))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
 					.addComponent(lblArticleReviews, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addGap(10)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblReview)
-					.addGap(5)
-					.addComponent(scrPaneReview1, GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
-					.addGap(10)
+					.addGap(9)
+					.addComponent(scrPaneReview1, GroupLayout.PREFERRED_SIZE, 168, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblTypoErrors, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
-					.addGap(5)
-					.addComponent(scrPaneTypoErrors, GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
-					.addGap(10)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 61, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblCriticisms)
-					.addGap(5)
-					.addComponent(scrPaneCriticisms, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(10)
-					.addComponent(lblNewLabel)
-					.addGap(5)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(textArea_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 83, GroupLayout.PREFERRED_SIZE))
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(38)
+							.addComponent(lblNewLabel))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnAddCriticism)))
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(10)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnSubmitReview)
-					.addGap(10))
+					.addGap(22))
 		);
 		
-		tblTypoErrors = new JTable();
-		tblTypoErrors.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		tblTypoErrors.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null},
-				{null},
-				{null},
-				{null},
-				{null},
-				{null},
-				{null},
-				{null},
-				{null},
-				{null},
-				{null},
-				{null},
-				{null},
-				{null},
-				{null},
-				{null},
-				{null},
-				{null},
-			},
-			new String[] {
-				""
-			}
-		));
-		scrPaneTypoErrors.setViewportView(tblTypoErrors);
-		scrPaneTypoErrors.setColumnHeader(null);
+		JTextArea textArea_2 = new JTextArea();
+		scrollPane.setViewportView(textArea_2);
+
+		
+		JLabel lblCriticism_1 = new JLabel("Criticism "+criticisms);
+		GridBagConstraints gbc_lblCriticism_1 = new GridBagConstraints();
+		gbc_lblCriticism_1.anchor = GridBagConstraints.WEST;
+		gbc_lblCriticism_1.insets = new Insets(0, 0, 5, 0);
+		gbc_lblCriticism_1.gridx = 0;
+		gbc_lblCriticism_1.gridy = counter;
+		panel.add(lblCriticism_1, gbc_lblCriticism_1);
+		counter++;
+		criticisms++;
+		JTextArea textArea = new JTextArea();
+		textArea.setRows(2);
+		GridBagConstraints gbc_textArea = new GridBagConstraints();
+		gbc_textArea.insets = new Insets(0, 0, 5, 0);
+		gbc_textArea.fill = GridBagConstraints.BOTH;
+		gbc_textArea.gridx = 0;
+		gbc_textArea.gridy = counter;
+		panel.add(textArea, gbc_textArea);
+		
+		JEditorPane dtrpnReview1 = new JEditorPane();
+		scrPaneReview1.setViewportView(dtrpnReview1);
 		
 		
 		
@@ -217,50 +253,6 @@ public class ReviewArticle {
 		DefaultListModel listModel = new DefaultListModel();
 		
 		listModel.addElement("Click here to add a new criticism / Click on a existant critism to update it");
-
-		JList listOfCriticisms = new JList(listModel);
-		listOfCriticisms.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		listOfCriticisms.setValueIsAdjusting(true);
-
-		listOfCriticisms.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				
-				 String criticism = null;
-				 int index = listOfCriticisms.getSelectedIndex();
-				 String s = (String) listOfCriticisms.getSelectedValue();
-				 
-				 
-				 // returns all elements of the JList, we start from 1, because 0 is a dummy text 
-				 for(int i = 1; i < listOfCriticisms.getModel().getSize(); i++){
-			            System.out.println(listOfCriticisms.getModel().getElementAt(i));
-			     }
-				 
-				 System.out.println("Index Selected: " + index);
-			     System.out.println("Value Selected: " + s);
-		         
-			     // popUp window to add new criticsm
-		         if (index == 0) {
-		        	 criticism = popUp("Add your new Criticism below");
-		         } else {
-		        	 criticism = popUp(s);
-		         }
-		         
-		         
-		         // if it is not the first index and not a null remove the criticsm
-		         if (index != 0 && criticism != null) {
-		        	 listModel.remove(index);
-		         }
-		         
-		         
-		         // add new criticsm to the list;
-		         listModel.addElement(criticism); 
-		    }
-		});
-		scrPaneCriticisms.setViewportView(listOfCriticisms);
-		
-		JEditorPane dtrpnReview1 = new JEditorPane();
-		scrPaneReview1.setViewportView(dtrpnReview1);
 		frmReviewArticle.getContentPane().setLayout(groupLayout);
 	}
 	

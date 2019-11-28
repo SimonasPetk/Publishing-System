@@ -2,8 +2,8 @@ package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Author extends Academic{
-	private ArrayList<AuthorOfArticle> authorOfArticles;
-	private int authorId;
+	protected ArrayList<AuthorOfArticle> authorOfArticles;
+	protected int authorId;
 	
 	public Author(int authorId, String title ,String forename, String surname, String emailId, String university, Hash hash) {
 		super(title, forename, surname, emailId, university, hash);
@@ -36,8 +36,8 @@ public class Author extends Academic{
 	}
 	
 	//Main Author
-	public void submit(Article article, PDF pdf) {
-		AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, this, true);
+	public void submit(Article article, PDF pdf, int numReviews) {
+		AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, this, true, numReviews);
 		Submission submission = new Submission(-1, article, SubmissionStatus.SUBMITTED, pdf);
 		pdf.setSubmission(submission);
 		authorOfArticle.getArticle().submit(submission);
@@ -56,10 +56,11 @@ public class Author extends Academic{
 		}
 	}
 	
-	public void registerCoAuthors(Article article, ArrayList<Author> coauthors) {
-		for(Author author : coauthors) {
+	public void registerCoAuthors(Article article, ArrayList<Author> coauthors, ArrayList<Integer> numReviews) {
+		for(int i = 0; i < coauthors.size(); i++) {
+			Author author = coauthors.get(i);
 			if(!author.emailId.equals(this.emailId)) {
-				AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, author, false);
+				AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, author, false, numReviews.get(i));
 				author.addAuthorOfArticle(authorOfArticle);
 				article.addAuthorOfArticle(authorOfArticle);
 			}
