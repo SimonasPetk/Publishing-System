@@ -2,16 +2,14 @@ package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Review {
-	private Reviewer reviewer;
-	private Submission submission;
+	private ReviewerOfSubmission reviewerOfSubmission;
 	private String summary;
 	private String typingErrors;
 	private ArrayList<Criticism> criticisms;
 	private Verdict verdict;
 	
-	public Review(Reviewer reviewer, Submission submission, String summary, String typingErrors, ArrayList<Criticism> criticisms) {
-		this.reviewer = reviewer;
-		this.submission = submission;
+	public Review(ReviewerOfSubmission ros, String summary, String typingErrors, ArrayList<Criticism> criticisms) {
+		this.reviewerOfSubmission = ros;
 		this.summary = summary;
 		this.typingErrors = typingErrors;
 		this.criticisms = new ArrayList<Criticism>();
@@ -22,12 +20,8 @@ public class Review {
 		this.verdict = v;
 	}
 
-	public Reviewer getReviewer() {
-		return reviewer;
-	}
-
-	public Submission getSubmission() {
-		return submission;
+	public ReviewerOfSubmission getReviewerOfSubmission() {
+		return reviewerOfSubmission;
 	}
 
 	public String getSummary() {

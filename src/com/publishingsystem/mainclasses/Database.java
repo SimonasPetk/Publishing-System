@@ -42,36 +42,50 @@ public class Database {
 				}catch (SQLException ex) {
 					ex.printStackTrace();
 				}
-				if(academicExists)
-					continue;
-				query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
-				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setString(1, e.getTitle());
-					preparedStmt.setString(2, e.getForename());
-					preparedStmt.setString(3, e.getSurname());
-					preparedStmt.setString(4, e.getUniversity());
-					preparedStmt.setString(5, e.getEmailId());
-					preparedStmt.setString(6, e.getHash().getHash());
-					preparedStmt.setString(7, e.getHash().getSalt());
-
-					preparedStmt.execute();
-
-					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ACADEMICS");
-					while(rs.next())
-						e.setAcademicId(Integer.valueOf(rs.getString("last_id")));
+				
+				if(!academicExists) {
+					query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
+					try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+						preparedStmt.setString(1, e.getTitle());
+						preparedStmt.setString(2, e.getForename());
+						preparedStmt.setString(3, e.getSurname());
+						preparedStmt.setString(4, e.getUniversity());
+						preparedStmt.setString(5, e.getEmailId());
+						preparedStmt.setString(6, e.getHash().getHash());
+						preparedStmt.setString(7, e.getHash().getSalt());
+	
+						preparedStmt.execute();
+	
+						ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ACADEMICS");
+						while(rs.next())
+							e.setAcademicId(Integer.valueOf(rs.getString("last_id")));
+					}
 				}
 
-				//Add editor to editor table
-				query = "INSERT INTO EDITORS values (null, ?)";
+				boolean editorExists = false;
+				query = "SELECT 1 FROM EDITORS WHERE ACADEMICID = ?";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, e.getAcademicId());
-					preparedStmt.execute();
-
-					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from EDITORS");
-					while(rs.next())
-						e.setEditorId(Integer.valueOf(rs.getString("last_id")));
+					ResultSet res = preparedStmt.executeQuery();
+					if (res.next())
+						editorExists = true;
 				}catch (SQLException ex) {
 					ex.printStackTrace();
+				}
+				
+				if(!editorExists) {
+					//Add editor to editor table
+					query = "INSERT INTO EDITORS values (null, ?)";
+					try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+						preparedStmt.setInt(1, e.getAcademicId());
+						preparedStmt.execute();
+	
+						ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from EDITORS");
+						while(rs.next())
+							e.setEditorId(Integer.valueOf(rs.getString("last_id")));
+					}catch (SQLException ex) {
+						ex.printStackTrace();
+					}
 				}
 
 			}
@@ -119,41 +133,52 @@ public class Database {
 				}catch (SQLException ex) {
 					ex.printStackTrace();
 				}
-				if(academicExists)
-					continue;
+				if(!academicExists) {
+					query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
+					try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+						preparedStmt.setString(1, a.getTitle());
+						preparedStmt.setString(2, a.getForename());
+						preparedStmt.setString(3, a.getSurname());
+						preparedStmt.setString(4, a.getUniversity());
+						preparedStmt.setString(5, a.getEmailId());
+						preparedStmt.setString(6, a.getHash().getHash());
+						preparedStmt.setString(7, a.getHash().getSalt());
+	
+						preparedStmt.execute();
+						ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ACADEMICS");
+						while(rs.next())
+							a.setAcademicId(Integer.valueOf(rs.getString("last_id")));
+	
+					}catch (SQLException ex) {
+						ex.printStackTrace();
+					}
+				}
 
-				query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
+				boolean authorExists = false;
+				query = "SELECT 1 FROM AUTHORS WHERE academicID = ?";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setString(1, a.getTitle());
-					preparedStmt.setString(2, a.getForename());
-					preparedStmt.setString(3, a.getSurname());
-					preparedStmt.setString(4, a.getUniversity());
-					preparedStmt.setString(5, a.getEmailId());
-					preparedStmt.setString(6, a.getHash().getHash());
-					preparedStmt.setString(7, a.getHash().getSalt());
-
-					preparedStmt.execute();
-					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ACADEMICS");
-					while(rs.next())
-						a.setAcademicId(Integer.valueOf(rs.getString("last_id")));
-
+					preparedStmt.setInt(1, a.getAcademicId());
+					ResultSet res = preparedStmt.executeQuery();
+					if (res.next())
+						authorExists = true;
 				}catch (SQLException ex) {
 					ex.printStackTrace();
 				}
-
-				query = "INSERT INTO AUTHORS values (null, ?, ?, ?, ?)";
-				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setInt(1, a.getAcademicId());
-					preparedStmt.setString(2, a.getForename()+a.getSurname());
-					preparedStmt.setString(3, a.getUniversity());
-					preparedStmt.setString(4, a.getEmailId());
-					preparedStmt.execute();
-
-					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from AUTHORS");
-					while(rs.next())
-						a.setAuthorId((Integer.valueOf(rs.getString("last_id"))));
-				}catch (SQLException ex) {
-					ex.printStackTrace();
+				if(!authorExists) {
+					query = "INSERT INTO AUTHORS values (null, ?, ?, ?, ?)";
+					try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+						preparedStmt.setInt(1, a.getAcademicId());
+						preparedStmt.setString(2, a.getForename()+a.getSurname());
+						preparedStmt.setString(3, a.getUniversity());
+						preparedStmt.setString(4, a.getEmailId());
+						preparedStmt.execute();
+	
+						ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from AUTHORS");
+						while(rs.next())
+							a.setAuthorId((Integer.valueOf(rs.getString("last_id"))));
+					}catch (SQLException ex) {
+						ex.printStackTrace();
+					}
 				}
 
 			}
@@ -276,26 +301,24 @@ public class Database {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			String query = "INSERT INTO REVIEWERS values (null, ?)";
+			
+			boolean reviewerExists = false;
+			String query = "SELECT 1 FROM EDITORS WHERE ACADEMICID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, r.getAuthorId());
-				preparedStmt.execute();
-
-				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
-				while(rs.next())
-					r.setReviewerId(Integer.valueOf(rs.getString("last_id")));
+				preparedStmt.setInt(1, r.getAcademicId());
+				ResultSet res = preparedStmt.executeQuery();
+				if (res.next())
+					reviewerExists = true;
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
-
-			for(ReviewerOfSubmission ros : r.getReviewerOfSubmissions()) {
-				Submission s = ros.getSubmission();
-				query = "INSERT INTO REVIEWEROFSUBMISSION values (?, ?)";
+			
+			if(!reviewerExists) {
+				query = "INSERT INTO REVIEWERS values (null, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setInt(1, r.getReviewerId());
-					preparedStmt.setInt(2, s.getSubmissionId());
+					preparedStmt.setInt(1, r.getAuthorId());
 					preparedStmt.execute();
-
+	
 					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
 					while(rs.next())
 						r.setReviewerId(Integer.valueOf(rs.getString("last_id")));
@@ -308,14 +331,39 @@ public class Database {
 			ex.printStackTrace();
 		}
 	}
+	
+	public static void selectSubmissionsToReview(Reviewer r, ArrayList<Submission> submissions) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			for(Submission s : submissions) {
+				String query = "INSERT INTO REVIEWEROFSUBMISSION values (?, ?)";
+				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+					preparedStmt.setInt(1, r.getReviewerId());
+					preparedStmt.setInt(2, s.getSubmissionId());
+					preparedStmt.execute();
+
+					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
+					while(rs.next())
+						r.setReviewerId(Integer.valueOf(rs.getString("last_id")));
+				}catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+			
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
 
 	public static void addReview(Review review) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			Reviewer reviewer = review.getReviewer();
-			Submission submission = review.getSubmission();
+			Reviewer reviewer = review.getReviewerOfSubmission().getReviewer();
+			Submission submission = review.getReviewerOfSubmission().getSubmission();
 
 			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, null)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
@@ -380,8 +428,8 @@ public class Database {
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 
-			Reviewer reviewer = r.getReviewer();
-			Submission submission = r.getSubmission();
+			Reviewer reviewer = r.getReviewerOfSubmission().getReviewer();
+			Submission submission = r.getReviewerOfSubmission().getSubmission();
 
 			String query = "UPDATE REVIEWS SET verdict = ? WHERE reviewerID = ? and submissionID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
@@ -444,7 +492,7 @@ public class Database {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			Submission submission = r.getSubmission();
+			Submission submission = r.getReviewerOfSubmission().getSubmission();
 
 			boolean allCriticismsAnswered = false;
 			String query = "SELECT COUNT(*) AS ANSWERSLEFT FROM CRITICISMS WHERE submissionID = ? AND answer = null";

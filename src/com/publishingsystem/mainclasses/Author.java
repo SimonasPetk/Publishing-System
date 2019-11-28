@@ -23,10 +23,6 @@ public class Author extends Academic{
 		return submission.getStatus();
 	}
 	
-	public ArrayList<Review> getReviews(Submission submission) {
-		return submission.getReviews();
-	}
-	
 	public void addAuthorOfArticle(AuthorOfArticle a) {
 		this.authorOfArticles.add(a);
 	}

@@ -33,7 +33,10 @@ public class TestRun {
 		authors.add(a2);
 		authors.add(a1);
 		Article article = new Article(-1, "How doe works", "Article about how doe works", j);
-		a1.registerCoAuthors(article, authors, new int [] {2,1});
+		ArrayList<Integer> numReview1 = new ArrayList<Integer>();
+		numReview1.add(1);
+		numReview1.add(2);
+		a1.registerCoAuthors(article, authors, numReview1);
 //		
 		a1.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), null), 1);
 		System.out.println(a1.getAuthorOfArticles().size());
@@ -55,7 +58,11 @@ public class TestRun {
 //		
 		Article tempS = new Article(-1, "Temp article", "Article about temp", j);
 	
-		a4.registerCoAuthors(tempS, authorsReviewers, new int[] {1,1,1});
+		ArrayList<Integer> numReview = new ArrayList<Integer>();
+		numReview.add(1);
+		numReview.add(2);
+		numReview.add(0);
+		a4.registerCoAuthors(tempS, authorsReviewers, numReview);
 		a4.submit(tempS, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), null), 1);
 		
 		Database.registerAuthors(authorsReviewers);
@@ -76,8 +83,9 @@ public class TestRun {
 			ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
 			criticisms.add(new Criticism("Perhaps explain origin of doe"));
 			
-			Review review = new Review(r, article.getSubmission(), "Good", "None", criticisms);
-			r.addReview(article.getSubmission(), review);
+			ReviewerOfSubmission ros = new ReviewerOfSubmission(r, article.getSubmission());
+			Review review = new Review(ros, "Good", "None", criticisms);
+			ros.addReview(review);
 			Database.addReview(review);
 
 		}

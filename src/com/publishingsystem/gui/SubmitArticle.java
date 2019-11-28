@@ -55,7 +55,6 @@ public class SubmitArticle {
 	private JTextField txtfldTitle;
 	private String selectedJournalName;
 	private ArrayList<Author> coAuthors;
-	private ArrayList<Integer> numReviewsOfCoAuthors;
 	private String pdfPath;
 	private JScrollPane scrPaneAuthors;
 	private DefaultTableModel coAuthorsModel;
@@ -68,7 +67,7 @@ public class SubmitArticle {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SubmitArticle window = new SubmitArticle(new Author(1, "Dr", "kb", "kb", "Sheffield", "kb@gm.com", new Hash("9d5be6810a8de8673cf2a5b83f2030393028b71127dd034beb9bd03f3a946302")), 0);
+					SubmitArticle window = new SubmitArticle(new Author(1, "Dr", "kb", "kb", "Sheffield", "kb@gm.com", new Hash("9d5be6810a8de8673cf2a5b83f2030393028b71127dd034beb9bd03f3a946302")));
 					//SubmitArticle window = new SubmitArticle(null);
 					window.frmSubmitAnArticle.setVisible(true);
 				} catch (Exception e) {
@@ -81,17 +80,15 @@ public class SubmitArticle {
 	/**
 	 * Create the application.
 	 */
-	public SubmitArticle(Author a, int numReviewsOfMainAuthor) {
+	public SubmitArticle(Author a) {
         coAuthors = new ArrayList<Author>();
-        numReviewsOfCoAuthors = new ArrayList<Integer>();
         Academic[] newRoles = new Academic[3];
 		newRoles[1] = a;
-		initialize(a, newRoles, numReviewsOfMainAuthor);
+		initialize(a, newRoles);
 	}
 	
-	public SubmitArticle(Academic[] roles, int numReviewsOfMainAuthor) {
+	public SubmitArticle(Academic[] roles) {
 		coAuthors = new ArrayList<Author>();
-		numReviewsOfCoAuthors = new ArrayList<Integer>();
 		Author a = null;
 		if(roles[1] == null) {
 			Academic aca = null;
@@ -111,20 +108,20 @@ public class SubmitArticle {
 		}else {
 			a = (Author)roles[1];
 		}
-		initialize(a, roles, numReviewsOfMainAuthor);
+		initialize(a, roles);
 	}
 
 	public void addCoAuthor(Author coAuthor, int numReview) {
 		this.coAuthors.add(coAuthor);
 	    for (Author author : coAuthors){
-        	this.coAuthorsModel.addRow(new Object[] {author.getForename()+" "+author.getSurname()+" ("+author.getEmailId()+")", "How many reviews"}); 
+        	this.coAuthorsModel.addRow(new Object[] {author.getForename()+" "+author.getSurname()+" ("+author.getEmailId()+")", "ENTER NO. OF REVIEWS"}); 
 	    }
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Author mainAuthor, Academic[] roles, int numReviewsOfMainAuthor) {
+	private void initialize(Author mainAuthor, Academic[] roles) {
 		frmSubmitAnArticle = new JFrame();
 		frmSubmitAnArticle.setTitle("Submit an Article");
 		frmSubmitAnArticle.setBounds(100, 100, 750, 650);
@@ -247,7 +244,10 @@ public class SubmitArticle {
 		btnSubmit.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				if (tblAuthor.isEditing())
+				    tblAuthor.getCellEditor().stopCellEditing();
 //				JOptionPane.showMessageDialog(null, "To access your Author/Reviewer roles please Log Out and Login In again to the system. Thank you!");
+				
 				String title = txtfldTitle.getText();
 				String summary = editPaneAbstract.getText();
 				System.out.println(summary);
@@ -256,6 +256,23 @@ public class SubmitArticle {
 					if (item.getJournalName().equals(selectedJournalName)) {
 						journal = item;
 					}
+				}
+				boolean numberOfReviewsOkay = true;
+				ArrayList<Integer> numberOfReviews = new ArrayList<Integer>();
+				for(int row = 0; row < tblAuthor.getRowCount(); row++) {
+					try {
+						int num = Integer.valueOf(String.valueOf(tblAuthor.getValueAt(row, 1)));
+						if(num > 3 || num < 0)
+							numberOfReviewsOkay = false;
+						else
+							numberOfReviews.add(num);
+					}catch(NumberFormatException nfe) {
+						
+					}
+				}
+				int totalNumberOfReviews = 0;
+				for(int n : numberOfReviews) {
+					totalNumberOfReviews+=n;
 				}
 				if(title.isEmpty()) {
 					JOptionPane.showMessageDialog(null, "Please give a title", "Error in submission", 0);
@@ -269,16 +286,21 @@ public class SubmitArticle {
 				if(pdfPath == null) {
 					JOptionPane.showMessageDialog(null, "Please upload a pdf of your article", "Error in submission", 0);
 				}
-				
-				if(title != null && summary != null && journal != null && pdfPath != null){
+				if(!numberOfReviewsOkay) {
+					JOptionPane.showMessageDialog(null, "Please enter a number between 0 and 3 for each Author", "Error in submission", 0);
+				}
+				if(totalNumberOfReviews!=3) {
+					JOptionPane.showMessageDialog(null, "The total number of reviews the author team has to do is 3", "Error in submission", 0);
+				}
+				if(title != null && summary != null && journal != null && pdfPath != null && numberOfReviewsOkay && totalNumberOfReviews == 3){
 					
 					// numReviewsOfCoAuthor list of integer check if it is an integer, 
 					
 					byte[] pdf = PDFConverter.getByteArrayFromFile(pdfPath);
 					Article article = new Article(-1, title, summary, journal);
-					mainAuthor.registerCoAuthors(article, coAuthors, numReviewsOfCoAuthors);
+					mainAuthor.registerCoAuthors(article, coAuthors, numberOfReviews);
 					Calendar calendar = Calendar.getInstance();
-					mainAuthor.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), article.getSubmission()), numReviewsOfMainAuthor);
+					mainAuthor.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), article.getSubmission()), numberOfReviews.get(0));
 	
 					coAuthors.add(mainAuthor);
 					

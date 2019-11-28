@@ -50,7 +50,7 @@ public class CriticismResponse {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					CriticismResponse window = new CriticismResponse(new Review(null, null, "Good", "No errors", new ArrayList<Criticism>()));
+					CriticismResponse window = new CriticismResponse(new Review(null,  "Good", "No errors", new ArrayList<Criticism>()));
 					window.frmRespondToCriticism.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

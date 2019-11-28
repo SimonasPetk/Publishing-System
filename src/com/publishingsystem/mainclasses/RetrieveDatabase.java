@@ -152,8 +152,10 @@ public class RetrieveDatabase extends Database{
 										while(crticismRes.next()) {
 											criticisms.add(new Criticism(crticismRes.getString("CRITICISM"), crticismRes.getString("ANSWER")));
 										}
-										Review review = new Review(null, s, reviewRes.getString("SUMMARY"), reviewRes.getString("TYPINGERRORS"), criticisms);
-										s.addReview(review);
+										ReviewerOfSubmission ros = new ReviewerOfSubmission(null, s);
+										Review review = new Review(ros, reviewRes.getString("SUMMARY"), reviewRes.getString("TYPINGERRORS"), criticisms);
+										ros.addReview(review);
+										s.addReviewerOfSubmission(ros);
 									}catch (SQLException ex) {
 										ex.printStackTrace();
 									}
@@ -213,8 +215,10 @@ public class RetrieveDatabase extends Database{
 						while(crticismRes.next()) {
 							criticisms.add(new Criticism(crticismRes.getString("CRITICISM"), crticismRes.getString("ANSWER")));
 						}
-						Review review = new Review(reviewer, submission, res.getString("SUMMARY"), res.getString("TYPINGERRORS"), criticisms);
-						reviewer.addReview(submission, review);
+						ReviewerOfSubmission ros = new ReviewerOfSubmission(reviewer, submission);
+						Review review = new Review(new ReviewerOfSubmission(reviewer, submission), res.getString("SUMMARY"), res.getString("TYPINGERRORS"), criticisms);
+						ros.addReview(review);
+						reviewer.addReviewerOfSubmission(ros);
 					}catch (SQLException ex) {
 						ex.printStackTrace();
 					}
@@ -232,27 +236,21 @@ public class RetrieveDatabase extends Database{
 
 	}
 
-	public static int getNumberOfReviewsDone(Article article) {
+	public static int getNumberOfReviewsToBeDone(int reviewerId) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 			int numReviewsDone = 0;
-			String query = "SELECT Art.ARTICLEID, A.AUTHORID, R.REVIEWERID, Count(*) AS REVIEWS "
-					+ "FROM ARTICLES Art, AUTHOROFARTICLE Aoa, AUTHORS A, REVIEWERS R, REVIEWS Rev "
-					+ "WHERE Aoa.AUTHORID = A.AUTHORID "
-					+ "AND Aoa.ARTICLEID = Art.ARTICLEID "
-					+ "AND R.AUTHORID = Aoa.AUTHORID "
-					+ "AND R.REVIEWERID = Rev.REVIEWERID "
-					+ "AND Aoa.ARTICLEID = R.ARTICLEID "
-					+ "AND Rev.ARTICLEID = R.ARTICLEID "
-					+ "AND Art.ARTICLEID = ? "
-					+ "GROUP BY A.AUTHORID, R.REVIEWERID";
+			String query = "SELECT SUM(NUMREVIEWS) AS TOTALREVIEWS FROM REVIEWERS R, AUTHORS A, AUTHOROFARTICLE Aoa "
+					+ "WHERE R.AUTHORID = A.AUTHORID "
+					+ "AND A.AUTHORID = Aoa.AUTHORID "
+					+ "AND REVIEWERID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, article.getArticleId());
+				preparedStmt.setInt(1,reviewerId);
 				ResultSet res = preparedStmt.executeQuery();
-				while(res.next()) {
-					numReviewsDone++;
+				if(res.next()) {
+					return res.getInt("TOTALREVIEWS");
 				}
 			}catch (SQLException ex) {
 				ex.printStackTrace();
@@ -447,14 +445,14 @@ public class RetrieveDatabase extends Database{
 				System.out.println(s.getStatus());
 				System.out.println();
 				if(s != null)
-					for(Review review : s.getReviews())
-						System.out.println(review);
+					for(ReviewerOfSubmission ros : s.getReviewersOfSubmission())
+						System.out.println(ros.getReview());
 			};
 		}
 		if(r != null) {
 			System.out.println("Reviewer "+r);
-			for(Review review : r.getReviews()) {
-				System.out.println(review);
+			for(ReviewerOfSubmission ros : r.getReviewerOfSubmissions()) {
+				System.out.println(ros.getReview());
 			}
 		}
 	}

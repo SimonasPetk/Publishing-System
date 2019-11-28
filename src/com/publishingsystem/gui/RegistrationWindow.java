@@ -176,7 +176,7 @@ public class RegistrationWindow {
 			        switch(r) {
 		    			case AUTHOR:
 		    				Author author = new Author(academicID, title, forenames, surname, email, university, pwdHash);
-		    				new SubmitArticle(author, 0);
+		    				new SubmitArticle(author);
 		    				break;
 		    			case COAUTHOR:
 		    				Author coAuthor = new Author(academicID, title, forenames, surname, email, university, pwdHash);

@@ -2,7 +2,7 @@ package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Submission{
-	private ArrayList<Review> reviews;
+	private ArrayList<ReviewerOfSubmission> reviewersOfSubmission;
 	private Decision decision;
 	private SubmissionStatus status;
 	private int submissionId;
@@ -13,11 +13,19 @@ public class Submission{
 		this.submissionId = submissionId;
 		this.article = a;
 		this.status = status;
-		this.reviews = new ArrayList<Review>();
+		this.reviewersOfSubmission = new ArrayList<ReviewerOfSubmission>();
 		this.versions = new ArrayList<PDF>();
 		this.versions.add(pdf);
 	}
 	
+	public ArrayList<ReviewerOfSubmission> getReviewersOfSubmission() {
+		return reviewersOfSubmission;
+	}
+	
+	public void addReviewerOfSubmission(ReviewerOfSubmission ros) {
+		this.reviewersOfSubmission.add(ros);
+	}
+
 	public ArrayList<PDF> getVersions() {
 		return versions;
 	}
@@ -49,14 +57,6 @@ public class Submission{
 	public void setDecision(Decision d) {
 		this.decision = d;
 		this.status = SubmissionStatus.COMPLETED;
-	}
-	
-	public ArrayList<Review> getReviews() {
-		return this.reviews;
-	}
-
-	public void addReview(Review r) {
-		this.reviews.add(r);
 	}
 	
 	public String toString() {
