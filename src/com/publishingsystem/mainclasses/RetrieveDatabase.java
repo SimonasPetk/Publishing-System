@@ -251,15 +251,15 @@ public class RetrieveDatabase extends Database{
 				ex.printStackTrace();
 			}
 			
-			query = "SELECT COUNT(*) AS REVIEWSDONE FROM REVIEWERS R, REVIEWS Rev "
-					+ "WHERE R.REVIEWERID = Rev.REVIEWERID "
+			query = "SELECT COUNT(*) AS REVIEWSSELECTED FROM REVIEWERS R, REVIEWEROFSUBMISSION Ros "
+					+ "WHERE R.REVIEWERID = Ros.REVIEWERID "
 					+ "AND R.REVIEWERID = ? "
 					+ "GROUP BY R.REVIEWERID";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1,reviewerId);
 				ResultSet res = preparedStmt.executeQuery();
 				if(res.next()) {
-					numReviewsDone = res.getInt("REVIEWSDONE");
+					numReviewsDone = res.getInt("REVIEWSSELECTED");
 				}
 			}catch (SQLException ex) {
 				ex.printStackTrace();
@@ -271,7 +271,7 @@ public class RetrieveDatabase extends Database{
 		return 0;
 	}
 
-	public static ArrayList<Submission> getSubmissions(String university){
+	public static ArrayList<Submission> getSubmissions(Reviewer r){
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
@@ -281,15 +281,20 @@ public class RetrieveDatabase extends Database{
 					+ "WHERE S.ARTICLEID = Art.ARTICLEID "
 					+ "AND Art.ISSN = J.ISSN "
 					+ "AND SUBMISSIONID NOT IN "
-					+ "(SELECT S.SUBMISSIONID "
-					+ "FROM AUTHORS A, AUTHOROFARTICLE Aoa, ARTICLES Art, SUBMISSIONS S "
+					//Don't get submissions where you have clash
+					+ "(SELECT S.SUBMISSIONID FROM AUTHORS A, AUTHOROFARTICLE Aoa, ARTICLES Art, SUBMISSIONS S "
 					+ "WHERE Aoa.AUTHORID = A.AUTHORID "
 					+ "AND Aoa.ARTICLEID = Art.ARTICLEID "
 					+ "AND Art.ARTICLEID = S.ARTICLEID "
-					+ "AND A.UNIVERSITY = ?)";
+					+ "AND A.UNIVERSITY = ?) "
+					//Don't get submissions which the reviewer has already decided to review
+					+ "AND SUBMISSIONID NOT IN "
+					+ "(SELECT SUBMISSIONID FROM REVIEWEROFSUBMISSION "
+					+ "WHERE REVIEWERID = ?)";
 			ArrayList<Submission> submissions = new ArrayList<Submission>();
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setString(1, university);
+				preparedStmt.setString(1, r.getUniversity());
+				preparedStmt.setInt(2, r.getReviewerId());
 				ResultSet res = preparedStmt.executeQuery();
 				while(res.next()) {
 					Journal journal = new Journal(res.getInt("ISSN"), res.getString("name"), res.getDate("dateOfPublication"));

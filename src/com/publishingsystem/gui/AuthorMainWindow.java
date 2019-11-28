@@ -49,7 +49,6 @@ public class AuthorMainWindow {
 	private DefaultTableModel tblSubmittedModel;
 	private JTable tblSubmitted;
 	private Author author;
-	private JTable reviewSubmissionsTable;
 	private int selectedAuthorOfArticle;
 
 	/**
@@ -143,8 +142,6 @@ public class AuthorMainWindow {
 		});
 		btnRespondToReviews.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JPanel panel = new JPanel();
-		
 		JButton btnNewButton = new JButton("New button");
 		
 		// Configure layout
@@ -168,9 +165,7 @@ public class AuthorMainWindow {
 										.addComponent(btnRespondToReviews)))
 								.addGroup(groupLayout.createSequentialGroup()
 									.addGap(18)
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addComponent(btnNewButton)
-										.addComponent(panel, GroupLayout.PREFERRED_SIZE, 393, GroupLayout.PREFERRED_SIZE)))))
+									.addComponent(btnNewButton))))
 						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
@@ -188,137 +183,11 @@ public class AuthorMainWindow {
 							.addComponent(scrReview, GroupLayout.PREFERRED_SIZE, 194, GroupLayout.PREFERRED_SIZE)
 							.addGap(11)
 							.addComponent(btnRespondToReviews)
-							.addGap(15)
-							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 352, GroupLayout.PREFERRED_SIZE)
-							.addGap(92)))
+							.addGap(459)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnNewButton))
 		);
-		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{377, 0};
-		gbl_panel.rowHeights = new int[]{16, 0, 0, 0, 0, 0, 0};
-		gbl_panel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{0.0, 0.0, 1.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
-		panel.setLayout(gbl_panel);
-		
-		
-		JLabel lblNumberOfReviews = new JLabel();
-		lblNumberOfReviews.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		GridBagConstraints gbc_lblNumberOfReviews = new GridBagConstraints();
-		gbc_lblNumberOfReviews.insets = new Insets(0, 0, 5, 0);
-		gbc_lblNumberOfReviews.anchor = GridBagConstraints.NORTHWEST;
-		gbc_lblNumberOfReviews.gridx = 0;
-		gbc_lblNumberOfReviews.gridy = 0;
-		panel.add(lblNumberOfReviews, gbc_lblNumberOfReviews);
-		JLabel lblNumberOfReviews_1 = new JLabel();
-		lblNumberOfReviews_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblNumberOfReviews_1.setHorizontalAlignment(SwingConstants.LEFT);
-		GridBagConstraints gbc_lblNumberOfReviews_1 = new GridBagConstraints();
-		gbc_lblNumberOfReviews_1.insets = new Insets(0, 0, 5, 0);
-		gbc_lblNumberOfReviews_1.anchor = GridBagConstraints.WEST;
-		gbc_lblNumberOfReviews_1.gridx = 0;
-		gbc_lblNumberOfReviews_1.gridy = 1;
-		panel.add(lblNumberOfReviews_1, gbc_lblNumberOfReviews_1);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-		gbc_scrollPane.gridheight = 3;
-		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
-		gbc_scrollPane.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane.gridx = 0;
-		gbc_scrollPane.gridy = 2;
-		panel.add(scrollPane, gbc_scrollPane);
-		
-		ArrayList<Submission> submissions = RetrieveDatabase.getSubmissions(author.getUniversity());
-		DefaultTableModel model = new DefaultTableModel();
-		model.addColumn("Article ID");
-		model.addColumn("Title");
-		model.addColumn("Summary");
-		model.addColumn("Select");
-		
-		
-        tblSubmitted.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent arg0) {
-                // Open new window displaying the articles in the selected article
-                selectedAuthorOfArticle = Integer.parseInt(((String)tblSubmitted.getValueAt(tblSubmitted.rowAtPoint(arg0.getPoint()), 0)))-1;
-            	
-        		int	numReviewsDone = RetrieveDatabase.getNumberOfReviewsDone(authorOfArticles.get(selectedAuthorOfArticle).getArticle());
-        		
-                lblNumberOfReviews.setText("    Number Of Reviews Done By Team: " + numReviewsDone);
-                lblNumberOfReviews_1.setText("    Number Of Reviews Left: "+(3-numReviewsDone));
-                System.out.println(selectedAuthorOfArticle);
-                model.setRowCount(0);
-                for(Submission s : submissions) {
-        			Object[] submissionString = new Object[4];
-        			submissionString[0] = s.getArticle().getArticleId();
-        			submissionString[1] = s.getArticle().getTitle();
-        			submissionString[2] = s.getArticle().getSummary();
-        			submissionString[3] = false;
-        			model.addRow(submissionString);
-        		}
-                
-            } 
-        });
 
-		reviewSubmissionsTable = new JTable(model) {
-			private static final long serialVersionUID = 1L;
-			
-			boolean[] columnEditables = new boolean[] {
-				false, false, false, true
-			};
-			
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
-			}
-			
-            @Override
-            public Class<?> getColumnClass(int column) {
-                switch (column) {
-                    case 0:
-                        return Integer.class;
-                    case 1:
-                        return String.class;
-                    case 2:
-                        return String.class;
-                    default:
-                        return Boolean.class;
-                }
-            }
-		};
-		
-		JButton btnNewButton_1 = new JButton("Review Submissions");
-		btnNewButton_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ArrayList<Submission> selectedSubmissions = new ArrayList<Submission>();
-				for(int row = 0; row < reviewSubmissionsTable.getRowCount(); row++) {
-					if(reviewSubmissionsTable.getValueAt(row, 3).toString() == "true") {
-						selectedSubmissions.add(submissions.get(row));
-						System.out.println(submissions.get(row).getArticle().getArticleId());
-					}
-				}
-				if(selectedSubmissions.size() == 0) {
-					JOptionPane.showMessageDialog(null, "Please select upto 3 submissions to review", "Error in reviewing submission", 0);
-				}else if(selectedSubmissions.size() < 4) {
-					AuthorOfArticle aoa = authorOfArticles.get(selectedAuthorOfArticle);
-					Reviewer reviewer = new Reviewer(aoa);
-					Database.registerReviewer(reviewer, selectedSubmissions);
-					new ReviewerMainWindow(roles);
-					frmAuthorsDashboard.dispose();
-				}else {
-					JOptionPane.showMessageDialog(null, "Too many submissions selected.\n Select at most 3 submissions", "Error in reviewing submission", 0);
-				}
-				
-			}
-		});
-		reviewSubmissionsTable.setRowSelectionAllowed(false);
-		scrollPane.setViewportView(reviewSubmissionsTable);
-		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
-		gbc_btnNewButton_1.anchor = GridBagConstraints.WEST;
-		gbc_btnNewButton_1.gridx = 0;
-		gbc_btnNewButton_1.gridy = 5;
-		panel.add(btnNewButton_1, gbc_btnNewButton_1);
 		frmAuthorsDashboard.getContentPane().setLayout(groupLayout);
 		
 		// Menu bar
