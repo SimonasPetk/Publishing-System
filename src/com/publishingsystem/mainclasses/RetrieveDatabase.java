@@ -235,6 +235,7 @@ public class RetrieveDatabase extends Database{
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
+			int numReviewsPromised = 0;
 			int numReviewsDone = 0;
 			String query = "SELECT SUM(NUMREVIEWS) AS TOTALREVIEWS FROM REVIEWERS R, AUTHORS A, AUTHOROFARTICLE Aoa "
 					+ "WHERE R.AUTHORID = A.AUTHORID "
@@ -244,12 +245,26 @@ public class RetrieveDatabase extends Database{
 				preparedStmt.setInt(1,reviewerId);
 				ResultSet res = preparedStmt.executeQuery();
 				if(res.next()) {
-					return res.getInt("TOTALREVIEWS");
+					numReviewsPromised = res.getInt("TOTALREVIEWS");
 				}
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
-			return numReviewsDone;
+			
+			query = "SELECT COUNT(*) AS REVIEWSDONE FROM REVIEWERS R, REVIEWS Rev "
+					+ "WHERE R.REVIEWERID = Rev.REVIEWERID "
+					+ "AND R.REVIEWERID = ? "
+					+ "GROUP BY R.REVIEWERID";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1,reviewerId);
+				ResultSet res = preparedStmt.executeQuery();
+				if(res.next()) {
+					numReviewsDone = res.getInt("REVIEWSDONE");
+				}
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			return numReviewsPromised-numReviewsDone;
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
