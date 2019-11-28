@@ -30,7 +30,7 @@ public class Database {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			
+
 			for(Editor e : editors) {
 				boolean academicExists = false;
 				String query = "SELECT 1 FROM ACADEMICS WHERE emailAddress = ?";
@@ -79,7 +79,7 @@ public class Database {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public static void updateEditorOfJournal(ArrayList<Editor> editor, Journal j) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
@@ -121,7 +121,7 @@ public class Database {
 				}
 				if(academicExists)
 					continue;
-				
+
 				query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setString(1, a.getTitle());
@@ -203,15 +203,15 @@ public class Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			
+
 			// Add submission to article table
 			String query = "INSERT INTO ARTICLES values (null, ?, null, ?, ?)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, article.getJournal().getISSN());
 				preparedStmt.setString(2, article.getTitle());
 				preparedStmt.setString(3, article.getSummary());
-				preparedStmt.execute();		
-				
+				preparedStmt.execute();
+
 				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ARTICLES");
 				while(rs.next())
 					article.setArticleId(Integer.valueOf(rs.getString("last_id")));
@@ -249,7 +249,7 @@ public class Database {
 		    		ex.printStackTrace();
 		    	}
 		    }
-	
+
 		    ArrayList<PDF> pdfs = article.getSubmission().getVersions();
 		    PDF pdf = pdfs.get(pdfs.size()-1);
 		    query = "INSERT INTO PDF values (null, ?, ?, ?)";
@@ -257,7 +257,7 @@ public class Database {
 		    	preparedStmt.setInt(1, article.getSubmission().getSubmissionId());
 		    	preparedStmt.setDate(2, pdf.getDate());
 		    	preparedStmt.setBlob(3, PDFConverter.getPDFBlob(pdfBytes));
-		    	
+
 
 		    	preparedStmt.execute();
 		    	ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from PDF");
@@ -287,7 +287,7 @@ public class Database {
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
-			
+
 			for(ReviewerOfSubmission ros : r.getReviewerOfSubmissions()) {
 				Submission s = ros.getSubmission();
 				query = "INSERT INTO REVIEWEROFSUBMISSION values (?, ?)";
@@ -295,7 +295,7 @@ public class Database {
 					preparedStmt.setInt(1, r.getReviewerId());
 					preparedStmt.setInt(2, s.getSubmissionId());
 					preparedStmt.execute();
-	
+
 					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
 					while(rs.next())
 						r.setReviewerId(Integer.valueOf(rs.getString("last_id")));
@@ -303,7 +303,7 @@ public class Database {
 					ex.printStackTrace();
 				}
 			}
-			
+
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -316,7 +316,7 @@ public class Database {
 			statement.close();
 			Reviewer reviewer = review.getReviewer();
 			Submission submission = review.getSubmission();
-			
+
 			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, null)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, reviewer.getReviewerId());
@@ -356,7 +356,7 @@ public class Database {
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
-			
+
 			if(numReviews == 3) {
 				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
@@ -379,7 +379,7 @@ public class Database {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			
+
 			Reviewer reviewer = r.getReviewer();
 			Submission submission = r.getSubmission();
 
@@ -489,7 +489,7 @@ public class Database {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public static void addRevisedSubmission(PDF pdf, byte[] pdfBytes) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
@@ -503,7 +503,7 @@ public class Database {
 				preparedStmt.setDate(2, pdf.getDate());
 				preparedStmt.setBlob(3, PDFConverter.getPDFBlob(pdfBytes));
 				preparedStmt.execute();
-				
+
 				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from PDF");
 				while(rs.next())
 					pdf.setPdfId(Integer.valueOf(rs.getString("last_id")));
@@ -514,15 +514,15 @@ public class Database {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	public static void acceptArticle(Submission s) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			
-			
-			
+
+
+
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -615,5 +615,5 @@ public class Database {
 		}
 
 	}
-	
+
 }

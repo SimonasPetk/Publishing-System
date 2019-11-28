@@ -181,6 +181,7 @@ public class RegistrationWindow {
 		    			case COAUTHOR:
 		    				Author coAuthor = new Author(academicID, title, forenames, surname, email, university, pwdHash);
 		    				submitArticleGUI.addCoAuthor(coAuthor, 0);
+		    				break;
 		    			case CHIEFEDITOR:
 		    				Editor chiefEditor = new Editor(academicID, title, forenames, surname, email, university, pwdHash);
                             Academic[] roles = {chiefEditor, null, null}; // New on the system, their only role will be chiefEditor
@@ -193,6 +194,7 @@ public class RegistrationWindow {
 		    				addition.setEditor(editor);
 		    				addition.addEditorAsChiefEditor();
 		    				System.out.println("Editor path followed");
+		    				break;
 		    			default:
 			        }
 			        frmRegistrationForm.dispose();

@@ -58,6 +58,11 @@ public class Editor extends Academic{
 			}
 		}
 	}
+	
+	public Journal getJournal() {
+		EditorOfJournal e = editorOfJournals.get(0);
+		return e.getJournal();
+	}
 
 	public void publishArticle(Article a) {
 

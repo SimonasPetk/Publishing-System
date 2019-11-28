@@ -198,6 +198,12 @@ public class ChiefMainWindow {
 		menuBar.add(mnMenu);
 		
 		JMenuItem mntmRetireFromChief = new JMenuItem("Retire From Chief Editors");
+		mntmRetireFromChief.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				new RetireAsChiefEditor(editor.getJournal());	
+			}
+		});
 		mnMenu.add(mntmRetireFromChief);
 		
 		JMenuItem menuItem = new JMenuItem("Change Password");
