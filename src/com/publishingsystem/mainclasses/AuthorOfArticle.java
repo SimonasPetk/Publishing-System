@@ -29,4 +29,7 @@ public class AuthorOfArticle {
 		return mainAuthor;
 	}
 	
+	public String toString() {
+	    return "AuthorOfArticle: (" + this.article + "), " + this.author + ", " + this.mainAuthor + ", " + this.numReviews;
+	}
 }

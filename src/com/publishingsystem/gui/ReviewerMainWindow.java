@@ -45,7 +45,8 @@ public class ReviewerMainWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ReviewerMainWindow window = new ReviewerMainWindow(null);
+				    Academic[] roles = new Academic[3];
+					ReviewerMainWindow window = new ReviewerMainWindow(roles);
 					window.frmReviewDashboard.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

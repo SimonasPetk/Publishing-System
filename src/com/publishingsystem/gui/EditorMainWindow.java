@@ -24,6 +24,7 @@ import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.AuthorOfArticle;
 import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
+import com.publishingsystem.mainclasses.Hash;
 import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.Submission;
@@ -152,11 +153,7 @@ public class EditorMainWindow {
 		tblEditor.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				
-				tblEditor.setValueAt("Press Again", 0, 0);
-
 				if (arg0.getClickCount() == 2 && tblEditor.rowAtPoint(arg0.getPoint()) == 0) {
-
 			        txtrAbstract.append("This is the abstract of the article you pressed on");
 				}
 			}
@@ -164,6 +161,7 @@ public class EditorMainWindow {
 		
 		ArrayList<Submission> allSubmissions = new ArrayList<Submission>();
     	for (EditorOfJournal jour : ((Editor)roles[0]).getEditorOfJournals()) {
+    	    System.out.println(jour);
     	    // For every journal the editor is an editor of, get all in progress submissions for them
     	    ArrayList<Submission> thisJournalsSubmissions = RetrieveDatabase.getSubmissionsToJournal(jour.getJournal().getISSN());
     	    allSubmissions.addAll(thisJournalsSubmissions);
@@ -175,8 +173,11 @@ public class EditorMainWindow {
             tableContents[i][0] = currentSubmission.getArticle().getTitle();
 
             ArrayList<AuthorOfArticle> authorsOfArticle = currentSubmission.getArticle().getAuthorsOfArticle();
+            System.out.println(authorsOfArticle);
+            System.out.println(authorsOfArticle.size());
             String authors = "";
             for (AuthorOfArticle aoa : authorsOfArticle) {
+                System.out.println("aoa: " + aoa);
                 authors = authors + aoa.getAuthor().getForename() + " " + aoa.getAuthor().getSurname() + "\n";
             }
             tableContents[i][1] = authors;

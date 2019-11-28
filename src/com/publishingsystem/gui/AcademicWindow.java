@@ -15,6 +15,14 @@ import javax.swing.SwingConstants;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * REDUNDANT
+ * 
+ * FUNCTIONALITY NOW IN JournalWindow.java
+ * @author Alex
+ *
+ */
+
 public class AcademicWindow {
 
 	private JFrame frmAcademicDashboard;
