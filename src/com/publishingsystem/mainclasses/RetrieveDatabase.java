@@ -163,17 +163,6 @@ public class RetrieveDatabase extends Database{
 							}
 						}
 						roles[1] = author;
-
-						query = "SELECT R.REVIEWERID, REV.SUMMARY, TYPINGERRORS, REV.SUBMISSIONID, S.ARTICLEID, S.STATUS, A.TITLE, A.SUMMARY AS ARTICLESUMMARY, J.ISSN, J.NAME, J.DATEOFPUBLICATION "
-								+ "FROM REVIEWERS R, REVIEWEROFSUBMISSION ROS, REVIEWS REV, SUBMISSIONS S, ARTICLES A, AUTHORS Aut, JOURNALS J "
-								+ "WHERE R.REVIEWERID = ROS.REVIEWERID "
-								+ "AND ROS.SUBMISSIONID = S.SUBMISSIONID "
-								+ "AND ROS.SUBMISSIONID = REV.SUBMISSIONID "
-								+ "AND ROS.REVIEWERID = REV.REVIEWERID "
-								+ "AND S.ARTICLEID = A.ARTICLEID "
-								+ "AND A.ISSN = J.ISSN "
-								+ "AND R.AUTHORID = Aut.AUTHORID "
-								+ "AND R.AUTHORID = ?";
 					}catch (SQLException ex) {
 						ex.printStackTrace();
 					}
@@ -182,43 +171,49 @@ public class RetrieveDatabase extends Database{
 				ex.printStackTrace();
 			}
 
-			query = " SELECT R.REVIEWERID, R.AUTHORID, REV.SUMMARY, TYPINGERRORS, REV.SUBMISSIONID, S.ARTICLEID, "
-					+ "S.STATUS, A.TITLE, A.SUMMARY AS ARTICLESUMMARY, J.ISSN, J.NAME, J.DATEOFPUBLICATION "
-					+ "FROM REVIEWERS R, REVIEWEROFSUBMISSION ROS, REVIEWS REV, SUBMISSIONS S, "
-					+ "ARTICLES A, AUTHORS Aut, JOURNALS J "
-					+ "WHERE R.REVIEWERID = ROS.REVIEWERID "
-					+ "AND ROS.SUBMISSIONID = S.SUBMISSIONID "
-					+ "AND ROS.SUBMISSIONID = REV.SUBMISSIONID "
-					+ "AND ROS.REVIEWERID = REV.REVIEWERID "
-					+ "AND S.ARTICLEID = A.ARTICLEID "
-					+ "AND A.ISSN = J.ISSN "
-					+ "AND R.AUTHORID = Aut.AUTHORID "
-					+ "AND Aut.ACADEMICID = ?";
+			query = "SELECT R.REVIEWERID, R.AUTHORID FROM REVIEWERS R, AUTHORS A WHERE A.AUTHORID = R.AUTHORID AND A.ACADEMICID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, academicId);
 				ResultSet res = preparedStmt.executeQuery();
 				Reviewer reviewer = null;
-				while(res.next()) {
-					if(reviewer == null) {
-						reviewer = new Reviewer(res.getInt("AUTHORID"), res.getInt("REVIEWERID"), title, forename, surname, emailId, university, null);
-						reviewer.setAcademicId(academicId);
-					}
-					Journal journal = new Journal(res.getInt("ISSN"), res.getString("NAME"), res.getDate("dateOfPublication"));
-					Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("ARTICLESUMMARY"), journal);
-					Submission submission = new Submission(res.getInt("SUBMISSIONID"), article, SubmissionStatus.valueOf(res.getString("STATUS")), null);
-					query = "SELECT CRITICISMID, CRITICISM, ANSWER FROM CRITICISMS WHERE SUBMISSIONID = ? AND REVIEWERID = ?";
-					try(PreparedStatement preparedStmt2 = con.prepareStatement(query)){
-						preparedStmt2.setInt(1, submission.getSubmissionId());
-						preparedStmt2.setInt(2, reviewer.getReviewerId());
-						ResultSet crticismRes = preparedStmt2.executeQuery();
-						ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
-						while(crticismRes.next()) {
-							criticisms.add(new Criticism(crticismRes.getString("CRITICISM"), crticismRes.getString("ANSWER")));
+				if(res.next()) {
+					reviewer = new Reviewer(res.getInt("AUTHORID"), res.getInt("REVIEWERID"), title, forename, surname, emailId, university, null);
+					reviewer.setAcademicId(academicId);
+					query = " SELECT REV.SUMMARY, TYPINGERRORS, REV.SUBMISSIONID, S.ARTICLEID, "
+							+ "S.STATUS, A.TITLE, A.SUMMARY AS ARTICLESUMMARY, J.ISSN, J.NAME, J.DATEOFPUBLICATION "
+							+ "FROM REVIEWERS R, REVIEWEROFSUBMISSION ROS, REVIEWS REV, SUBMISSIONS S, "
+							+ "ARTICLES A, AUTHORS Aut, JOURNALS J "
+							+ "WHERE R.REVIEWERID = ROS.REVIEWERID "
+							+ "AND ROS.SUBMISSIONID = S.SUBMISSIONID "
+							+ "AND ROS.SUBMISSIONID = REV.SUBMISSIONID "
+							+ "AND ROS.REVIEWERID = REV.REVIEWERID "
+							+ "AND S.ARTICLEID = A.ARTICLEID "
+							+ "AND A.ISSN = J.ISSN "
+							+ "AND R.REVIEWERID = ?";
+					try(PreparedStatement preparedStmt1 = con.prepareStatement(query)){
+						preparedStmt1.setInt(1, reviewer.getReviewerId());
+						ResultSet res1 = preparedStmt1.executeQuery();
+						while(res1.next()) {
+							Journal journal = new Journal(res1.getInt("ISSN"), res1.getString("NAME"), res1.getDate("dateOfPublication"));
+							Article article = new Article(res1.getInt("ARTICLEID"), res1.getString("TITLE"), res1.getString("ARTICLESUMMARY"), journal);
+							Submission submission = new Submission(res1.getInt("SUBMISSIONID"), article, SubmissionStatus.valueOf(res1.getString("STATUS")), null);
+							query = "SELECT CRITICISMID, CRITICISM, ANSWER FROM CRITICISMS WHERE SUBMISSIONID = ? AND REVIEWERID = ?";
+							try(PreparedStatement preparedStmt2 = con.prepareStatement(query)){
+								preparedStmt2.setInt(1, submission.getSubmissionId());
+								preparedStmt2.setInt(2, reviewer.getReviewerId());
+								ResultSet crticismRes = preparedStmt2.executeQuery();
+								ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
+								while(crticismRes.next()) {
+									criticisms.add(new Criticism(crticismRes.getString("CRITICISM"), crticismRes.getString("ANSWER")));
+								}
+								ReviewerOfSubmission ros = new ReviewerOfSubmission(reviewer, submission);
+								Review review = new Review(new ReviewerOfSubmission(reviewer, submission), res1.getString("SUMMARY"), res1.getString("TYPINGERRORS"), criticisms);
+								ros.addReview(review);
+								reviewer.addReviewerOfSubmission(ros);
+							}catch (SQLException ex) {
+								ex.printStackTrace();
+							}
 						}
-						ReviewerOfSubmission ros = new ReviewerOfSubmission(reviewer, submission);
-						Review review = new Review(new ReviewerOfSubmission(reviewer, submission), res.getString("SUMMARY"), res.getString("TYPINGERRORS"), criticisms);
-						ros.addReview(review);
-						reviewer.addReviewerOfSubmission(ros);
 					}catch (SQLException ex) {
 						ex.printStackTrace();
 					}
@@ -227,7 +222,6 @@ public class RetrieveDatabase extends Database{
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
-
 			return roles;
 		}catch (SQLException ex) {
 			ex.printStackTrace();

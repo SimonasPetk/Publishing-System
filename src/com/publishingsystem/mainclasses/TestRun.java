@@ -73,13 +73,13 @@ public class TestRun {
 		reviewers.add(new Reviewer(a4));
 		reviewers.add(new Reviewer(a5));
 		
-////		
+		Database.registerReviewers(reviewers);
 		//Reviewer and reviews
 		for(Reviewer r : reviewers) {
 			ArrayList<Submission> submissions = new ArrayList<Submission>();
 			submissions.add(article.getSubmission());
 			r.addSubmissionsToReview(submissions);
-			Database.registerReviewer(r);
+			Database.selectSubmissionsToReview(r, submissions);
 			ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
 			criticisms.add(new Criticism("Perhaps explain origin of doe"));
 			

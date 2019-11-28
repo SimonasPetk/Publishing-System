@@ -24,6 +24,7 @@ import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.PDF;
 import com.publishingsystem.mainclasses.PDFConverter;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
+import com.publishingsystem.mainclasses.Reviewer;
 import com.publishingsystem.mainclasses.Role;
 
 import javax.swing.JTextField;
@@ -267,7 +268,7 @@ public class SubmitArticle {
 						else
 							numberOfReviews.add(num);
 					}catch(NumberFormatException nfe) {
-						
+						numberOfReviewsOkay = false;
 					}
 				}
 				int totalNumberOfReviews = 0;
@@ -289,7 +290,7 @@ public class SubmitArticle {
 				if(!numberOfReviewsOkay) {
 					JOptionPane.showMessageDialog(null, "Please enter a number between 0 and 3 for each Author", "Error in submission", 0);
 				}
-				if(totalNumberOfReviews!=3) {
+				else if(totalNumberOfReviews!=3) {
 					JOptionPane.showMessageDialog(null, "The total number of reviews the author team has to do is 3", "Error in submission", 0);
 				}
 				if(title != null && summary != null && journal != null && pdfPath != null && numberOfReviewsOkay && totalNumberOfReviews == 3){
@@ -301,14 +302,26 @@ public class SubmitArticle {
 					mainAuthor.registerCoAuthors(article, coAuthors, numberOfReviews);
 					Calendar calendar = Calendar.getInstance();
 					mainAuthor.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), article.getSubmission()), numberOfReviews.get(0));
-	
 					coAuthors.add(mainAuthor);
-					
-					//ADDING TO THE DATABASE;
 					Database.registerAuthors(coAuthors);
 					Database.addSubmission(article, pdf);
-			
-			
+					
+					ArrayList<Reviewer> reviewers = new ArrayList<Reviewer>();
+					for(int i = 1; i < coAuthors.size(); i++) {
+						if(numberOfReviews.get(i) > 0)
+							reviewers.add(new Reviewer(coAuthors.get(i)));
+					}
+					Reviewer reviewer = new Reviewer(mainAuthor);
+					if(roles[2] == null)
+						roles[2] = reviewer;
+					
+					//ADDING TO THE DATABASE;
+					if(numberOfReviews.get(0) > 0)
+						reviewers.add(reviewer);
+
+					Database.registerReviewers(reviewers);
+					
+					
 					new AuthorMainWindow(roles);
 					//This is for just adding co-authors
 					frmSubmitAnArticle.dispose();

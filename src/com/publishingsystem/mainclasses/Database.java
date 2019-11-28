@@ -10,12 +10,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
 public class Database {
-	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	protected static final String DATABASE = "team022";
+//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+//	protected static final String DATABASE = "team022";
 
 	//localhost
-//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-//	protected static final String DATABASE = "publishing_system";
+	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -296,37 +296,38 @@ public class Database {
 		}
     }
 
-	public static void registerReviewer(Reviewer r) {
+	public static void registerReviewers(ArrayList<Reviewer> reviewers) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 			
-			boolean reviewerExists = false;
-			String query = "SELECT 1 FROM EDITORS WHERE ACADEMICID = ?";
-			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, r.getAcademicId());
-				ResultSet res = preparedStmt.executeQuery();
-				if (res.next())
-					reviewerExists = true;
-			}catch (SQLException ex) {
-				ex.printStackTrace();
-			}
-			
-			if(!reviewerExists) {
-				query = "INSERT INTO REVIEWERS values (null, ?)";
+			for(Reviewer r : reviewers) {
+				boolean reviewerExists = false;
+				String query = "SELECT 1 FROM REVIEWERS WHERE AUTHORID = ?";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, r.getAuthorId());
-					preparedStmt.execute();
-	
-					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
-					while(rs.next())
-						r.setReviewerId(Integer.valueOf(rs.getString("last_id")));
+					ResultSet res = preparedStmt.executeQuery();
+					if (res.next())
+						reviewerExists = true;
 				}catch (SQLException ex) {
 					ex.printStackTrace();
 				}
+				
+				if(!reviewerExists) {
+					query = "INSERT INTO REVIEWERS values (null, ?)";
+					try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+						preparedStmt.setInt(1, r.getAuthorId());
+						preparedStmt.execute();
+		
+						ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
+						while(rs.next())
+							r.setReviewerId(Integer.valueOf(rs.getString("last_id")));
+					}catch (SQLException ex) {
+						ex.printStackTrace();
+					}
+				}
 			}
-
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -343,10 +344,6 @@ public class Database {
 					preparedStmt.setInt(1, r.getReviewerId());
 					preparedStmt.setInt(2, s.getSubmissionId());
 					preparedStmt.execute();
-
-					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
-					while(rs.next())
-						r.setReviewerId(Integer.valueOf(rs.getString("last_id")));
 				}catch (SQLException ex) {
 					ex.printStackTrace();
 				}

@@ -23,6 +23,7 @@ import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
+import com.publishingsystem.mainclasses.Reviewer;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -39,6 +40,7 @@ public class ReviewerMainWindow {
 	private JFrame frmReviewDashboard;
 	private JTable tblChooseToReview;
 	private JTable tblToReview;
+	private int numReviewsToBeDone;
 
 	/**
 	 * Launch the application.
@@ -68,12 +70,14 @@ public class ReviewerMainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Academic[] roles) {
+		Reviewer reviewer = (Reviewer)roles[2];
 		frmReviewDashboard = new JFrame();
 		frmReviewDashboard.setBounds(100, 100, 900, 740);
 		frmReviewDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmReviewDashboard.setVisible(true);
 		
-		JLabel lblArticleListToChoose = new JLabel("Choose Articles to Review:");
+		numReviewsToBeDone = RetrieveDatabase.getNumberOfReviewsToBeDone(reviewer.getReviewerId());
+		JLabel lblArticleListToChoose = new JLabel("Choose "+numReviewsToBeDone+" Articles to Review:");
 		lblArticleListToChoose.setToolTipText("");
 		lblArticleListToChoose.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		

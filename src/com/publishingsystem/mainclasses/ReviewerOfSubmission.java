@@ -11,7 +11,7 @@ public class ReviewerOfSubmission {
 	}
 	
 	public void addReview(Review r) {
-		this.review = review;
+		this.review = r;
 	}
 
 	public Review getReview() {
