@@ -15,6 +15,7 @@ import com.publishingsystem.mainclasses.Role;
 import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
+import com.publishingsystem.mainclasses.Hash;
 import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 
@@ -201,6 +202,10 @@ public class ChiefMainWindow {
 		mntmRetireFromChief.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
+				for (EditorOfJournal r: editor.getEditorOfJournals()) {
+					System.out.println(r.toString());
+				}
+				System.out.println("Finished");
 				new RetireAsChiefEditor(editor.getJournal());	
 			}
 		});

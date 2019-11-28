@@ -16,7 +16,10 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
+import com.publishingsystem.mainclasses.Academic;
+import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
+import com.publishingsystem.mainclasses.Hash;
 import com.publishingsystem.mainclasses.Journal;
 
 import java.awt.Button;
@@ -61,6 +64,8 @@ public class RetireAsChiefEditor {
 		frmRetireAsChief = new JFrame();
 		frmRetireAsChief.setTitle("Retire as chief editor");
 		frmRetireAsChief.setBounds(100, 100, 432, 302);
+		//RetireAsChiefEditor window = new RetireAsChiefEditor(null);
+		frmRetireAsChief.setVisible(true);
 		frmRetireAsChief.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JLabel lblRetireAsChief = new JLabel("Please choose the editor to replace you");
@@ -91,6 +96,7 @@ public class RetireAsChiefEditor {
 					.addContainerGap())
 		);
 		ArrayList<EditorOfJournal> ed = j.getBoardOfEditors();
+		System.out.println(ed.size());
 		ArrayList<EditorOfJournal> displayEditors = new ArrayList<EditorOfJournal>();
 		for (EditorOfJournal e: ed) {
 			if (!e.isChiefEditor()) {
@@ -99,8 +105,13 @@ public class RetireAsChiefEditor {
 		}
 		String[] editors = new String[displayEditors.size()];
 		for (int i=0;i<displayEditors.size();i++) {
-			editors[i] = displayEditors.get(i).getEditor().getForename();
+			editors[i] = displayEditors.get(i).getEditor().getFullName();
 		}
+		System.out.println(editors.toString());
+		Academic Ross = new Editor(69,"Mr","Ross","Mansfield","rm@gm.com","Sheffield",new Hash("password"));
+		System.out.println(Ross.getFullName());
+		System.out.println("Here are the editors");
+		System.out.println(editors);
 		JList potentialChiefs = new JList();
 		scrollPane.setViewportView(potentialChiefs);
 		frmRetireAsChief.getContentPane().setLayout(groupLayout);

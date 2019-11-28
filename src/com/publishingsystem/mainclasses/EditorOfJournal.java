@@ -52,5 +52,6 @@ public class EditorOfJournal {
 		editors.add(editor);
 		Database.registerEditors(editors);
 		Database.updateEditorOfJournal(editors, journal);
+		journal.addEditorToBoard(this);
 	}
 }

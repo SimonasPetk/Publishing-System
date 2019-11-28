@@ -1,4 +1,5 @@
 package com.publishingsystem.mainclasses;
+import com.publishingsystem.mainclasses.*;
 
 public abstract class Academic {
 	protected int academicId;
@@ -69,4 +70,8 @@ public abstract class Academic {
 	public String toString() {
         return this.academicId + ", " + title + ", " + forename + ", " + surname + ", " + emailId + ", " + university;
     }
+	
+	public String getFullName() {
+		return forename + " " + surname;
+	}
 }

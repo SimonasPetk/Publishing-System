@@ -53,6 +53,10 @@ public class Journal {
 		return this.boardOfEditors;
 	}
 	
+	public void setBoardOfEditors(ArrayList<EditorOfJournal> e) {
+		this.boardOfEditors = e;
+	}
+	
 	public void addEditorToBoard(EditorOfJournal e) {
 		this.boardOfEditors.add(e);
 	}

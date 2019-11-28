@@ -265,21 +265,16 @@ public class CreateDatabase extends Database{
 		System.out.println(System.getProperty("jdbc.drivers"));
 		System.out.println("\nDrivers loaded by DriverManager:");
 		Enumeration<Driver> list = DriverManager.getDrivers();
-		dropTables();
-		createTables();
-//		while (list.hasMoreElements())
-//			System.out.println(list.nextElement());
-//		System.out.println();
-//        try (Connection con = DriverManager.getConnection(CONNECTION)) {
-//		    printAllRecords("JOURNALS");
-//			printAllRecords("EDITORS");
-//			printAllRecords("VOLUMES");
-//			printAllRecords("EDITIONS");
-//			printAllRecords("EDITOROFJOURNAL");
-//			printAllRecords("ACADEMICS");
-//		} catch (SQLException ex) {
-//		    ex.printStackTrace();
-//		}		
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+		    printAllRecords("JOURNALS");
+			printAllRecords("EDITORS");
+			printAllRecords("VOLUMES");
+			printAllRecords("EDITIONS");
+			printAllRecords("EDITOROFJOURNAL");
+			printAllRecords("ACADEMICS");
+		} catch (SQLException ex) {
+		    ex.printStackTrace();
+		}		
 //    try (Connection con = DriverManager.getConnection(CONNECTION)) {
 //          Statement statement = con.createStatement();
 //          statement.execute("USE "+DATABASE+";");

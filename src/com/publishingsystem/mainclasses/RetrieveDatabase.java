@@ -90,10 +90,10 @@ public class RetrieveDatabase extends Database{
 						editor = new Editor(res.getInt("editorID"), title, forename, surname, emailId, university, null);
 						editor.setAcademicId(academicId);
 					}
-					Journal journal = new Journal(res.getInt("ISSN"), res.getString("NAME"), res.getDate("dateOfPublication"));
+					Journal journal = RetrieveDatabase.getJournal(res.getInt("ISSN"));
 					boolean chiefEditor = res.getBoolean("chiefEditor");
 					EditorOfJournal editorOfJournal = new EditorOfJournal(journal, editor, chiefEditor);
-					journal.addEditorToBoard(editorOfJournal);
+					//journal.addEditorToBoard(editorOfJournal);
 					editor.addEditorOfJournal(editorOfJournal);
 				}
 				roles[0] = editor;
@@ -371,11 +371,98 @@ public class RetrieveDatabase extends Database{
 				String resName = res.getString(2);
 				Date resDate = res.getDate(3);
 				result = new Journal(resISSN, resName, resDate);
+				ArrayList<EditorOfJournal> editors = getEditorsOfJournal(resISSN,result);
+				result.setBoardOfEditors(editors);
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
 		return result;
+	}
+	
+	public static ArrayList<EditorOfJournal> getEditorsOfJournal(int issn, Journal j) {
+		ArrayList<EditorOfJournal> editorsOfJournal = new ArrayList<EditorOfJournal>();
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			String query = "SELECT editorID FROM EDITOROFJOURNAL WHERE issn = " + issn + ";";
+			ResultSet res = statement.executeQuery(query);
+			List<Integer> ids = new ArrayList<Integer>();
+			if (res.next()) {
+				ids.add(res.getInt(1));
+			}
+			List<Integer> aca = new ArrayList<Integer>();
+			for(int i: ids) {
+				aca.add(getAcademicIdByEditorId(i));
+			}
+			ArrayList<Editor> editors = new ArrayList<Editor>();
+			for(int i: aca) {
+				editors.add(getEditorByAcademicId(i));
+			}
+			for(Editor e: editors) {
+				editorsOfJournal.add(new EditorOfJournal(j,e,isChiefEditorByEditorId(e.getEditorId())));
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return editorsOfJournal;
+	}
+	
+	public static boolean isChiefEditorByEditorId(int editorId) {
+		boolean result = false;
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			String query = "SELECT ChiefEditor FROM EDITOROFJOURNAL WHERE editorID= '" + editorId + "';";
+			ResultSet res = statement.executeQuery(query);
+			if (res.next()) {
+				if (res.getInt(1) == 1) {
+					result = true;
+				}
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	    return result;
+	}
+	
+	public static int getAcademicIdByEditorId(int editorId) {
+		int result = -1;
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			String query = "SELECT academicID FROM EDITORS WHERE  editorID = '" + editorId + "';";
+			System.out.println(query);
+			ResultSet res = statement.executeQuery(query);
+			if (res.next()) result = res.getInt(1);
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return result;
+	}
+	
+	public static Editor getEditorByAcademicId(int academicId) {
+		Editor editor = null;
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			String query = "SELECT title, forename, surname, emailAddress, university, hash FROM ACADEMICS WHERE academicID = " + academicId + ";";
+			ResultSet res = statement.executeQuery(query);
+			if (res.next()) {
+				String resTitle = res.getString(1);
+				String resForenames = res.getString(2);
+				String resSurname = res.getString(3);
+				String resEmail = res.getString(4);
+				String resUniversity = res.getString(5);
+				//Hash resHash = res.getString(6);
+				Hash resHash = null;
+				
+				editor = new Editor(academicId, resTitle, resForenames, resSurname, resEmail, resUniversity, resHash);
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return editor;
 	}
 
 	public static int getAcademicIdByEmail(String email) {
