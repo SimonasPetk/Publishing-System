@@ -13,6 +13,11 @@ public class Criticism {
 		this.criticism = criticism;
 		this.answer = answer;
 	}
+	public Criticism(int criticismId, String criticism, String answer) {
+		this.criticismId = criticismId;
+		this.criticism = criticism;
+		this.answer = answer;
+	}
 	
 	public int getCriticismId() {
 		return criticismId;

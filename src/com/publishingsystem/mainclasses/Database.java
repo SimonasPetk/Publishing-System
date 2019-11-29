@@ -10,8 +10,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
 public class Database {
-	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	protected static final String DATABASE = "team022";
+//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+//	protected static final String DATABASE = "team022";
+	
+	//localhost
+	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -358,13 +362,16 @@ public class Database {
 			Reviewer reviewer = review.getReviewerOfSubmission().getReviewer();
 			Submission submission = review.getReviewerOfSubmission().getSubmission();
 
-			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, null)";
+			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, ?)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, reviewer.getReviewerId());
 				preparedStmt.setInt(2, submission.getSubmissionId());
 				preparedStmt.setString(3, review.getSummary());
 				preparedStmt.setString(4, review.getTypingErrors());
-
+				if(review.getVerdict() != null)
+					preparedStmt.setString(5, review.getVerdict().asString());
+				else
+					preparedStmt.setNull(5, Types.VARCHAR);
 				preparedStmt.execute();
 			}catch (SQLException ex) {
 				ex.printStackTrace();
@@ -426,7 +433,7 @@ public class Database {
 
 			String query = "UPDATE REVIEWS SET verdict = ? WHERE reviewerID = ? and submissionID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setString(1, r.getVerdict().toString());
+				preparedStmt.setString(1, r.getVerdict().asString());
 				preparedStmt.setInt(2, reviewer.getReviewerId());
 				preparedStmt.setInt(3, submission.getSubmissionId());
 

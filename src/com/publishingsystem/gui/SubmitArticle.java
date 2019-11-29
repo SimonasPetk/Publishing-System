@@ -8,6 +8,8 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.AbstractListModel;
+import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
@@ -115,7 +117,7 @@ public class SubmitArticle {
 	public void addCoAuthor(Author coAuthor, int numReview) {
 		this.coAuthors.add(coAuthor);
 	    for (Author author : coAuthors){
-        	this.coAuthorsModel.addRow(new Object[] {author.getForename()+" "+author.getSurname()+" ("+author.getEmailId()+")", "ENTER NO. OF REVIEWS"}); 
+        	this.coAuthorsModel.addRow(new Object[] {author.getForename()+" "+author.getSurname()+" ("+author.getEmailId()+")", "0"}); 
 	    }
 	}
 
@@ -166,10 +168,10 @@ public class SubmitArticle {
         tblAuthor.setRowSelectionAllowed(false);
 		tblAuthor.setModel(new DefaultTableModel(
 			new Object[][] {
-				{mainAuthor.getForename()+" "+mainAuthor.getSurname()+" ("+mainAuthor.getEmailId()+")", "How many reviews"},
+				{mainAuthor.getForename()+" "+mainAuthor.getSurname()+" ("+mainAuthor.getEmailId()+")", "0"},
 			},
 			new String[] {
-				"Name", "Number of Reviews"
+				"Name", "No. of Reviews"
 			}
 		) {
 			boolean[] columnEditables = new boolean[] {
@@ -181,6 +183,14 @@ public class SubmitArticle {
 		});
 		tblAuthor.getColumnModel().getColumn(0).setResizable(false);
 		tblAuthor.getColumnModel().getColumn(1).setResizable(false);
+		tblAuthor.getColumnModel().getColumn(1).setPreferredWidth(2);
+		tblAuthor.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(
+			    new JComboBox(new DefaultComboBoxModel(new String[] {
+			      "0",
+			      "1",
+			      "2",
+			      "3"
+			    }))));
 		scrPaneAuthors.setViewportView(tblAuthor);
         coAuthorsModel = (DefaultTableModel) tblAuthor.getModel();
 
@@ -205,17 +215,21 @@ public class SubmitArticle {
 		btnUploadPdf.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				FileDialog fd = new FileDialog(new JFrame());
-				fd.setVisible(true);
-				File[] f = fd.getFiles();
-
-				if(f.length > 0){
-					pdfPath = fd.getFiles()[0].getAbsolutePath();
-					System.out.println(pdfPath);
-					lblPdfIsNot.setText("PDF is successfully uploaded");
-				}		
-				else {
-					lblPdfIsNot.setText("Try Again! PDF did not upload!");
+				if(pdfPath == null) {
+					FileDialog fd = new FileDialog(new JFrame());
+					fd.setVisible(true);
+					File[] f = fd.getFiles();
+	
+					if(f.length > 0){
+						pdfPath = fd.getFiles()[0].getAbsolutePath();
+						System.out.println(pdfPath);
+						lblPdfIsNot.setText("PDF is successfully uploaded");
+					}		
+					else {
+						lblPdfIsNot.setText("Try Again! PDF did not upload!");
+					}
+				}else {
+					JOptionPane.showMessageDialog(null, "PDF already uploaded", "Error in submission", 0);
 				}
 			}
 		});
@@ -263,10 +277,7 @@ public class SubmitArticle {
 				for(int row = 0; row < tblAuthor.getRowCount(); row++) {
 					try {
 						int num = Integer.valueOf(String.valueOf(tblAuthor.getValueAt(row, 1)));
-						if(num > 3 || num < 0)
-							numberOfReviewsOkay = false;
-						else
-							numberOfReviews.add(num);
+						numberOfReviews.add(num);
 					}catch(NumberFormatException nfe) {
 						numberOfReviewsOkay = false;
 					}
@@ -287,10 +298,7 @@ public class SubmitArticle {
 				if(pdfPath == null) {
 					JOptionPane.showMessageDialog(null, "Please upload a pdf of your article", "Error in submission", 0);
 				}
-				if(!numberOfReviewsOkay) {
-					JOptionPane.showMessageDialog(null, "Please enter a number between 0 and 3 for each Author", "Error in submission", 0);
-				}
-				else if(totalNumberOfReviews!=3) {
+				if(totalNumberOfReviews!=3) {
 					JOptionPane.showMessageDialog(null, "The total number of reviews the author team has to do is 3", "Error in submission", 0);
 				}
 				if(title != null && summary != null && journal != null && pdfPath != null && numberOfReviewsOkay && totalNumberOfReviews == 3){

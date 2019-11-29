@@ -84,7 +84,7 @@ public class TestRun {
 			criticisms.add(new Criticism("Perhaps explain origin of doe"));
 			
 			ReviewerOfSubmission ros = new ReviewerOfSubmission(r, article.getSubmission());
-			Review review = new Review(ros, "Good", "None", criticisms);
+			Review review = new Review(ros, "Good", "None", criticisms, null);
 			ros.addReview(review);
 			Database.addReview(review);
 

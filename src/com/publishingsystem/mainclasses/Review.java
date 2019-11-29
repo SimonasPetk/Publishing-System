@@ -8,7 +8,7 @@ public class Review {
 	private ArrayList<Criticism> criticisms;
 	private Verdict verdict;
 	
-	public Review(ReviewerOfSubmission ros, String summary, String typingErrors, ArrayList<Criticism> criticisms) {
+	public Review(ReviewerOfSubmission ros, String summary, String typingErrors, ArrayList<Criticism> criticisms, Verdict v) {
 		this.reviewerOfSubmission = ros;
 		this.summary = summary;
 		this.typingErrors = typingErrors;
