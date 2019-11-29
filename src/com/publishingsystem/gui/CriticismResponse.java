@@ -50,7 +50,7 @@ public class CriticismResponse {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					CriticismResponse window = new CriticismResponse(new Review(null,  "Good", "No errors", new ArrayList<Criticism>()));
+					CriticismResponse window = new CriticismResponse(new Review(null,  "Good", "No errors", new ArrayList<Criticism>(), null));
 					window.frmRespondToCriticism.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -108,6 +108,11 @@ public class CriticismResponse {
 		lblCriticisms.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JButton btnAddUpdatedPdf = new JButton("Add Updated PDF ");
+		btnAddUpdatedPdf.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+			}
+		});
 		btnAddUpdatedPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JLabel lblPleaseSubmitYour = new JLabel("Please submit your article's accordingly updated PDF file");
