@@ -57,7 +57,7 @@ public class RegistrationWindow {
 	}
 	
 	public RegistrationWindow(Role r, SubmitArticle submitArticleGUI) {
-		initialize(r, submitArticleGUI, null,null);
+		initialize(r, submitArticleGUI, null, null);
 	}
 	
 	public RegistrationWindow(Role r, AddJournal addJournalGUI) {
@@ -176,7 +176,7 @@ public class RegistrationWindow {
 			        switch(r) {
 		    			case AUTHOR:
 		    				Author author = new Author(academicID, title, forenames, surname, email, university, pwdHash);
-		    				new SubmitArticle(author);
+		    				new SubmitArticleTable(author);
 		    				break;
 		    			case COAUTHOR:
 		    				Author coAuthor = new Author(academicID, title, forenames, surname, email, university, pwdHash);

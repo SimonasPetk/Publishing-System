@@ -186,7 +186,7 @@ public class JournalWindow {
       				if(roles == null) {
     				    new RegistrationWindow(Role.AUTHOR);
     				}else {
-    					new SubmitArticle(roles);
+    					new SubmitArticleTable(roles);
     				}
     				frmJournalWindow.dispose();
 			    }

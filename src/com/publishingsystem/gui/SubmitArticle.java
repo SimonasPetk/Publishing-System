@@ -8,8 +8,6 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.AbstractListModel;
-import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
@@ -26,7 +24,6 @@ import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.PDF;
 import com.publishingsystem.mainclasses.PDFConverter;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
-import com.publishingsystem.mainclasses.Reviewer;
 import com.publishingsystem.mainclasses.Role;
 
 import javax.swing.JTextField;
@@ -49,8 +46,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.ListSelectionModel;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 
 public class SubmitArticle {
 
@@ -58,10 +53,11 @@ public class SubmitArticle {
 	private JTextField txtfldTitle;
 	private String selectedJournalName;
 	private ArrayList<Author> coAuthors;
+	private ArrayList<Integer> numReviewsOfCoAuthors;
 	private String pdfPath;
 	private JScrollPane scrPaneAuthors;
-	private DefaultTableModel coAuthorsModel;
-	private JTable tblAuthor;
+	private DefaultListModel<String> coAuthorsModel;
+    private JList<String> listOfAuthors;
 
 	/**
 	 * Launch the application.
@@ -85,6 +81,7 @@ public class SubmitArticle {
 	 */
 	public SubmitArticle(Author a) {
         coAuthors = new ArrayList<Author>();
+        numReviewsOfCoAuthors = new ArrayList<Integer>();
         Academic[] newRoles = new Academic[3];
 		newRoles[1] = a;
 		initialize(a, newRoles);
@@ -92,6 +89,7 @@ public class SubmitArticle {
 	
 	public SubmitArticle(Academic[] roles) {
 		coAuthors = new ArrayList<Author>();
+		numReviewsOfCoAuthors = new ArrayList<Integer>();
 		Author a = null;
 		if(roles[1] == null) {
 			Academic aca = null;
@@ -116,9 +114,11 @@ public class SubmitArticle {
 
 	public void addCoAuthor(Author coAuthor, int numReview) {
 		this.coAuthors.add(coAuthor);
+		this.numReviewsOfCoAuthors.add(numReview);
+		this.coAuthorsModel.clear();
 	    for (Author author : coAuthors){
-        	this.coAuthorsModel.addRow(new Object[] {author.getForename()+" "+author.getSurname()+" ("+author.getEmailId()+")", "0"}); 
-	    }
+        	coAuthorsModel.addElement(author.getForename()+" "+author.getSurname()+" ("+author.getEmailId()+")");
+        }
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class SubmitArticle {
 	private void initialize(Author mainAuthor, Academic[] roles) {
 		frmSubmitAnArticle = new JFrame();
 		frmSubmitAnArticle.setTitle("Submit an Article");
-		frmSubmitAnArticle.setBounds(100, 100, 750, 650);
+		frmSubmitAnArticle.setBounds(100, 100, 700, 552);
 		frmSubmitAnArticle.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmSubmitAnArticle.setVisible(true);
 		selectedJournalName = null;
@@ -162,42 +162,17 @@ public class SubmitArticle {
 
         JScrollPane scrPaneAuthors = new JScrollPane();
         scrPaneAuthors.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-      
-        tblAuthor = new JTable();
-        tblAuthor.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tblAuthor.setRowSelectionAllowed(false);
-		tblAuthor.setModel(new DefaultTableModel(
-			new Object[][] {
-				{mainAuthor.getForename()+" "+mainAuthor.getSurname()+" ("+mainAuthor.getEmailId()+")", "0"},
-			},
-			new String[] {
-				"Name", "No. of Reviews"
-			}
-		) {
-			boolean[] columnEditables = new boolean[] {
-				false, true
-			};
-			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
-			}
-		});
-		tblAuthor.getColumnModel().getColumn(0).setResizable(false);
-		tblAuthor.getColumnModel().getColumn(1).setResizable(false);
-		tblAuthor.getColumnModel().getColumn(1).setPreferredWidth(2);
-		tblAuthor.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(
-			    new JComboBox(new DefaultComboBoxModel(new String[] {
-			      "0",
-			      "1",
-			      "2",
-			      "3"
-			    }))));
-		scrPaneAuthors.setViewportView(tblAuthor);
-        coAuthorsModel = (DefaultTableModel) tblAuthor.getModel();
 
-        /*String[] listOfAuthors = new String[coAuthors.size()];
+        coAuthorsModel = new DefaultListModel<>();
+        listOfAuthors = new JList<>(coAuthorsModel);
+        listOfAuthors.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        coAuthorsModel.addElement(mainAuthor.getForename()+" "+mainAuthor.getSurname()+" ("+mainAuthor.getEmailId()+")");
+        scrPaneAuthors.setViewportView(listOfAuthors);
+
+        String[] listOfAuthors = new String[coAuthors.size()];
         for (int i=0; i<coAuthors.size(); i++) {
             listOfAuthors[i] = coAuthors.get(i).getForename() + " " + coAuthors.get(i).getSurname();
-        }*/
+        }
 
         SubmitArticle submitArticleGUI = this;
         JButton btnRegisterANew = new JButton("Register a New Co-Author");
@@ -215,21 +190,17 @@ public class SubmitArticle {
 		btnUploadPdf.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				if(pdfPath == null) {
-					FileDialog fd = new FileDialog(new JFrame());
-					fd.setVisible(true);
-					File[] f = fd.getFiles();
-	
-					if(f.length > 0){
-						pdfPath = fd.getFiles()[0].getAbsolutePath();
-						System.out.println(pdfPath);
-						lblPdfIsNot.setText("PDF is successfully uploaded");
-					}		
-					else {
-						lblPdfIsNot.setText("Try Again! PDF did not upload!");
-					}
-				}else {
-					JOptionPane.showMessageDialog(null, "PDF already uploaded", "Error in submission", 0);
+				FileDialog fd = new FileDialog(new JFrame());
+				fd.setVisible(true);
+				File[] f = fd.getFiles();
+
+				if(f.length > 0){
+					pdfPath = fd.getFiles()[0].getAbsolutePath();
+					System.out.println(pdfPath);
+					lblPdfIsNot.setText("PDF is successfully uploaded");
+				}		
+				else {
+					lblPdfIsNot.setText("Try Again! PDF did not upload!");
 				}
 			}
 		});
@@ -259,10 +230,7 @@ public class SubmitArticle {
 		btnSubmit.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (tblAuthor.isEditing())
-				    tblAuthor.getCellEditor().stopCellEditing();
 //				JOptionPane.showMessageDialog(null, "To access your Author/Reviewer roles please Log Out and Login In again to the system. Thank you!");
-				
 				String title = txtfldTitle.getText();
 				String summary = editPaneAbstract.getText();
 				System.out.println(summary);
@@ -271,20 +239,6 @@ public class SubmitArticle {
 					if (item.getJournalName().equals(selectedJournalName)) {
 						journal = item;
 					}
-				}
-				boolean numberOfReviewsOkay = true;
-				ArrayList<Integer> numberOfReviews = new ArrayList<Integer>();
-				for(int row = 0; row < tblAuthor.getRowCount(); row++) {
-					try {
-						int num = Integer.valueOf(String.valueOf(tblAuthor.getValueAt(row, 1)));
-						numberOfReviews.add(num);
-					}catch(NumberFormatException nfe) {
-						numberOfReviewsOkay = false;
-					}
-				}
-				int totalNumberOfReviews = 0;
-				for(int n : numberOfReviews) {
-					totalNumberOfReviews+=n;
 				}
 				if(title.isEmpty()) {
 					JOptionPane.showMessageDialog(null, "Please give a title", "Error in submission", 0);
@@ -298,38 +252,21 @@ public class SubmitArticle {
 				if(pdfPath == null) {
 					JOptionPane.showMessageDialog(null, "Please upload a pdf of your article", "Error in submission", 0);
 				}
-				if(totalNumberOfReviews!=3) {
-					JOptionPane.showMessageDialog(null, "The total number of reviews the author team has to do is 3", "Error in submission", 0);
-				}
-				if(title != null && summary != null && journal != null && pdfPath != null && numberOfReviewsOkay && totalNumberOfReviews == 3){
-					
-					// numReviewsOfCoAuthor list of integer check if it is an integer, 
-					
+				
+				if(title != null && summary != null && journal != null && pdfPath != null){
 					byte[] pdf = PDFConverter.getByteArrayFromFile(pdfPath);
 					Article article = new Article(-1, title, summary, journal);
-					mainAuthor.registerCoAuthors(article, coAuthors, numberOfReviews);
+					mainAuthor.registerCoAuthors(article, coAuthors, numReviewsOfCoAuthors);
 					Calendar calendar = Calendar.getInstance();
-					mainAuthor.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), article.getSubmission()), numberOfReviews.get(0));
+					mainAuthor.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), article.getSubmission()));
+	
 					coAuthors.add(mainAuthor);
-					Database.registerAuthors(coAuthors);
-					Database.addSubmission(article, pdf);
-					
-					ArrayList<Reviewer> reviewers = new ArrayList<Reviewer>();
-					for(int i = 0; i < coAuthors.size()-1; i++) {
-						if(numberOfReviews.get(i) > 0)
-							reviewers.add(new Reviewer(coAuthors.get(i)));
-					}
-					Reviewer reviewer = new Reviewer(mainAuthor);
-					if(roles[2] == null)
-						roles[2] = reviewer;
 					
 					//ADDING TO THE DATABASE;
-					if(numberOfReviews.get(0) > 0)
-						reviewers.add(reviewer);
-
-					Database.registerReviewers(reviewers);
-					
-					
+					Database.registerAuthors(coAuthors);
+					Database.addSubmission(article, pdf);
+			
+			
 					new AuthorMainWindow(roles);
 					//This is for just adding co-authors
 					frmSubmitAnArticle.dispose();
@@ -357,11 +294,11 @@ public class SubmitArticle {
 						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
 						.addComponent(txtfldTitle, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
 						.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
-						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-							.addComponent(scrPaneAuthors, GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
-							.addGap(18)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(scrPaneAuthors, GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
+							.addGap(50)
 							.addComponent(btnRegisterANew)
-							.addGap(20))
+							.addGap(35))
 						.addComponent(scrPaneAbstract, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE))
 					.addGap(80))
 				.addGroup(groupLayout.createSequentialGroup()
@@ -377,7 +314,7 @@ public class SubmitArticle {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblChooseAJournal)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblTitle)
 					.addPreferredGap(ComponentPlacement.RELATED)
@@ -385,15 +322,15 @@ public class SubmitArticle {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblAbstract)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrPaneAbstract, GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
+					.addComponent(scrPaneAbstract, GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblAuthors)
 					.addGap(2)
 					.addComponent(lblNewLabel_2)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(10)
-							.addComponent(scrPaneAuthors, GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
+							.addComponent(scrPaneAuthors, GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 								.addComponent(btnUploadPdf)
@@ -402,11 +339,11 @@ public class SubmitArticle {
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(30)
 							.addComponent(btnRegisterANew)
-							.addPreferredGap(ComponentPlacement.RELATED)))
+							.addGap(10)))
 					.addComponent(btnSubmit)
 					.addGap(13))
 		);
-		
+
 		listOfJournals.setModel(new AbstractListModel() {
 			//String[] values = new String[] {"First Journal", "Second journal", "Third Journal", "", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal"};
             String[] values = listContents;

@@ -32,8 +32,8 @@ public class Author extends Academic{
 	}
 	
 	//Main Author
-	public void submit(Article article, PDF pdf, int numReviews) {
-		AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, this, true, numReviews);
+	public void submit(Article article, PDF pdf) {
+		AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, this, true);
 		Submission submission = new Submission(-1, article, SubmissionStatus.SUBMITTED, pdf);
 		pdf.setSubmission(submission);
 		authorOfArticle.getArticle().submit(submission);
@@ -56,7 +56,7 @@ public class Author extends Academic{
 		for(int i = 0; i < coauthors.size(); i++) {
 			Author author = coauthors.get(i);
 			if(!author.emailId.equals(this.emailId)) {
-				AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, author, false, numReviews.get(i));
+				AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, author, false);
 				author.addAuthorOfArticle(authorOfArticle);
 				article.addAuthorOfArticle(authorOfArticle);
 			}

@@ -60,8 +60,8 @@ public class AuthorMainWindow {
 				try {
 				    System.out.println("Hello");
 				    //Academic[] testAcademic = {null, new Author(6, "Mr", "Alex", "Hall", "ahall8@sheffield.ac.uk", "Sheffield", new Hash("password"))};
-				    //Academic[] testAcademic = {null, new Author(7, "Dr", "Kirill", "Bogdanov", "kb@gm.com", "Sheffield", new Hash("password"))};
-				    Academic[] testAcademic = null;
+				    Academic[] testAcademic = {null, new Author(7, "Dr", "Kirill", "Bogdanov", "kb@gm.com", "Sheffield", new Hash("password"))};
+				    //Academic[] testAcademic = null;
 					AuthorMainWindow window = new AuthorMainWindow(testAcademic);
 					window.frmAuthorsDashboard.setVisible(true);
 				} catch (Exception e) {
@@ -142,8 +142,6 @@ public class AuthorMainWindow {
 		});
 		btnRespondToReviews.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JButton btnNewButton = new JButton("New button");
-		
 		// Configure layout
 		GroupLayout groupLayout = new GroupLayout(frmAuthorsDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -153,19 +151,12 @@ public class AuthorMainWindow {
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(scrSubmitted, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addGap(10)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addGroup(groupLayout.createSequentialGroup()
-											.addGap(10)
-											.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-												.addComponent(scrReview, GroupLayout.PREFERRED_SIZE, 393, GroupLayout.PREFERRED_SIZE)
-												.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE)))
-										.addComponent(btnRespondToReviews)))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(18)
-									.addComponent(btnNewButton))))
+								.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
+								.addComponent(btnRespondToReviews)
+								.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED))
 						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
@@ -174,18 +165,17 @@ public class AuthorMainWindow {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
 					.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-					.addGap(10)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(scrSubmitted, GroupLayout.PREFERRED_SIZE, 636, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(scrReview, GroupLayout.PREFERRED_SIZE, 194, GroupLayout.PREFERRED_SIZE)
-							.addGap(11)
-							.addComponent(btnRespondToReviews)
-							.addGap(459)))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnNewButton))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(scrReview, GroupLayout.PREFERRED_SIZE, 198, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnRespondToReviews))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(scrSubmitted, GroupLayout.PREFERRED_SIZE, 636, GroupLayout.PREFERRED_SIZE)
+							.addContainerGap())))
 		);
 
 		frmAuthorsDashboard.getContentPane().setLayout(groupLayout);

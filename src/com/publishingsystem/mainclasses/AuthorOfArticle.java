@@ -4,17 +4,11 @@ public class AuthorOfArticle {
 	private Article article;
 	private Author author;
 	private boolean mainAuthor;
-	private int numReviews;
 	
-	public AuthorOfArticle(Article article, Author author,boolean mainAuthor, int numReviews) {
+	public AuthorOfArticle(Article article, Author author,boolean mainAuthor) {
 		this.article = article;
 		this.author = author;
 		this.mainAuthor = mainAuthor;
-		this.numReviews = numReviews;
-	}
-
-	public int getNumReviews() {
-		return numReviews;
 	}
 
 	public Article getArticle() {
@@ -30,6 +24,6 @@ public class AuthorOfArticle {
 	}
 	
 	public String toString() {
-	    return "AuthorOfArticle: (" + this.article + "), " + this.author + ", " + this.mainAuthor + ", " + this.numReviews;
+	    return "AuthorOfArticle: (" + this.article + "), " + this.author + ", " + this.mainAuthor;
 	}
 }
