@@ -44,6 +44,16 @@ public class EditorOfJournal {
 		return chiefEditor;
 	}
 	
+	public void setChiefEditor() {
+		chiefEditor = true;
+		Database.setChiefEditor(editor.getEditorId());
+	}
+	
+	public void removeChiefEditor() {
+		chiefEditor = false;
+		Database.removeChiefEditor(editor.getEditorId());
+	}
+	
 	public void addEditorAsChiefEditor() {
 		System.out.println(journal);
 		System.out.println(editor);

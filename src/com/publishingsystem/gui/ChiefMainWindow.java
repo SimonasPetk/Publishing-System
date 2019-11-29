@@ -7,6 +7,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -202,11 +203,38 @@ public class ChiefMainWindow {
 		mntmRetireFromChief.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				for (EditorOfJournal r: editor.getEditorOfJournals()) {
-					System.out.println(r.toString());
+				if (editor.getJournal().getBoardOfEditors().size() <= 1) {
+					JOptionPane.showMessageDialog(null, "You don't have enough editors to retire ", "Error", 1);
 				}
-				System.out.println("Finished");
-				new RetireAsChiefEditor(editor.getJournal());	
+				else {
+					ArrayList<EditorOfJournal> newBoardOfEditors = new ArrayList<EditorOfJournal>(); 
+					for(EditorOfJournal e:editor.getJournal().getBoardOfEditors()) {
+						System.out.println(e.getEditor().getFullName());
+						System.out.println(e.getEditor().getEditorId());
+						System.out.println(editor.getEditorId());
+						if (e.getEditor().getAcademicId() != editor.getAcademicId()) {
+							newBoardOfEditors.add(e);
+						}
+						else {
+							e.removeChiefEditor();
+							if (e.isChiefEditor()) {
+							}
+							newBoardOfEditors.add(e);
+						}
+					}
+					if (newBoardOfEditors.get(0).getEditor().getEditorId() != editor.getEditorId()) {
+						newBoardOfEditors.get(0).setChiefEditor();
+					}
+					else {
+						newBoardOfEditors.get(1).setChiefEditor();
+					}
+					editor.getJournal().setBoardOfEditors(newBoardOfEditors);
+					Academic[] userRoles = RetrieveDatabase.getRoles(editor.getEmailId());
+					new EditorMainWindow(userRoles);
+					JOptionPane.showMessageDialog(null, "You have retired", "Retirement", 1);
+					frmChiefEditorsDashboard.dispose();
+				}
+				
 			}
 		});
 		mnMenu.add(mntmRetireFromChief);

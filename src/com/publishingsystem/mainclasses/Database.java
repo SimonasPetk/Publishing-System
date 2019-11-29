@@ -24,7 +24,35 @@ public class Database {
 	public static String getDatabaseName() {
 		return DATABASE;
 	}
-
+	
+	public static void setChiefEditor(int editorId) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			String query = "UPDATE EDITOROFJOURNAL SET ChiefEditor = 1 WHERE editorID = " + editorId;
+			statement.execute(query);
+			statement.close();
+			CreateDatabase.printAllRecords("EDITOROFJOURNAL");
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void removeChiefEditor(int editorId) {
+		System.out.println("Updating the table where editorId = " + editorId);
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			String query = "UPDATE EDITOROFJOURNAL SET ChiefEditor = 0 WHERE editorID = " + editorId;
+			statement.execute(query);
+			statement.close();
+			CreateDatabase.printAllRecords("EDITOROFJOURNAL");
+			System.out.println("Gone through code to remove ChiefEditor");
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
 	public static void registerEditors(ArrayList<Editor> editors) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
@@ -658,6 +686,7 @@ public class Database {
 			printStatements.executeQuery("SELECT * FROM ACADEMICS");
 			printStatements.close();
 			System.out.println("Done");
+			removeChiefEditor(4);
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}

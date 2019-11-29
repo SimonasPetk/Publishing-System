@@ -386,7 +386,32 @@ public class RetrieveDatabase extends Database{
 		return result;
 	}
 	
-	public static ArrayList<EditorOfJournal> getEditorsOfJournal(int issn, Journal j) {
+	public static ArrayList<EditorOfJournal> getEditorsOfJournal(int issn,Journal j) {
+		ArrayList<EditorOfJournal> editorsOfJournal = new ArrayList<EditorOfJournal>();
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			String query = "SELECT Aca.ACADEMICID, Aca.TITLE, Aca.FORENAME, Aca.SURNAME, Aca.UNIVERSITY, Aca.EMAILADDRESS, "
+					+ "E.EDITORID FROM ACADEMICS Aca, EDITORS E, EDITOROFJOURNAL Eoj WHERE Aca.ACADEMICID = E.ACADEMICID "
+					+ "AND E.EDITORID = Eoj.EDITORID AND Eoj.ISSN = " + issn +";";
+			ResultSet res = statement.executeQuery(query);
+			ArrayList<Editor> editors = new ArrayList<Editor>();
+			Editor tempEditor = null;
+			while (res.next()) {
+				tempEditor = new Editor(res.getInt(7),res.getString(2),res.getString(3),res.getString(4),res.getString(5), res.getString(6),null);
+				tempEditor.setAcademicId(res.getInt(1));
+			    editors.add(tempEditor);
+			}
+			for (Editor e: editors) {
+				editorsOfJournal.add(new EditorOfJournal(j,e,isChiefEditorByEditorId(e.getEditorId())));
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return editorsOfJournal;
+	}
+	
+	/*public static ArrayList<EditorOfJournal> getEditorsOfJournal(int issn, Journal j) {
 		ArrayList<EditorOfJournal> editorsOfJournal = new ArrayList<EditorOfJournal>();
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
@@ -395,23 +420,16 @@ public class RetrieveDatabase extends Database{
 			ResultSet res = statement.executeQuery(query);
 			List<Integer> ids = new ArrayList<Integer>();
 			while (res.next()) {
-				System.out.println(res.getInt(1));
 				ids.add(res.getInt(1));
-				System.out.println(res.getInt(1));
 			}
-			System.out.println("Should now have all the editor ids");
 			List<Integer> aca = new ArrayList<Integer>();
 			for(int i: ids) {
 				aca.add(getAcademicIdByEditorId(i));
-				System.out.println(getAcademicIdByEditorId(i));
 			}
-			System.out.println("Should now have all the academic ids");
 			ArrayList<Editor> editors = new ArrayList<Editor>();
 			for(int i: aca) {
 				editors.add(getEditorByAcademicId(i));
-				System.out.println(getEditorByAcademicId(i).toString());
 			}
-			System.out.println("Should have all the editors in the table now");
 			for(Editor e: editors) {
 				editorsOfJournal.add(new EditorOfJournal(j,e,isChiefEditorByEditorId(e.getEditorId())));
 			}
@@ -419,7 +437,7 @@ public class RetrieveDatabase extends Database{
 			ex.printStackTrace();
 		}
 		return editorsOfJournal;
-	}
+	}*/
 	
 	public static boolean isChiefEditorByEditorId(int editorId) {
 		boolean result = false;
@@ -445,7 +463,6 @@ public class RetrieveDatabase extends Database{
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			String query = "SELECT academicID FROM EDITORS WHERE  editorID = '" + editorId + "';";
-			System.out.println(query);
 			ResultSet res = statement.executeQuery(query);
 			if (res.next()) result = res.getInt(1);
 		} catch (SQLException ex) {
