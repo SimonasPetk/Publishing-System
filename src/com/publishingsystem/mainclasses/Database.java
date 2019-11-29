@@ -10,12 +10,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
 public class Database {
-	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	protected static final String DATABASE = "team022";
+//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+//	protected static final String DATABASE = "team022";
 	
 	//localhost
-//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-//	protected static final String DATABASE = "publishing_system";
+	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -230,7 +230,7 @@ public class Database {
 			statement.execute("USE "+DATABASE+";");
 
 			// Add submission to article table
-			String query = "INSERT INTO ARTICLES values (null, ?, null, ?, ?)";
+			String query = "INSERT INTO ARTICLES values (null, ?, null, ?, ?, 0)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, article.getJournal().getISSN());
 				preparedStmt.setString(2, article.getTitle());
@@ -260,7 +260,7 @@ public class Database {
 
 		    // Register each author as an author of the article
 		    for(AuthorOfArticle a : article.getAuthorsOfArticle()) {
-		    	query = "INSERT INTO AUTHOROFARTICLE values (?, ?, ?, ?)";
+		    	query = "INSERT INTO AUTHOROFARTICLE values (?, ?, ?)";
 		    	try(PreparedStatement preparedStmt = con.prepareStatement(query)) {
 		    		preparedStmt.setInt(1, a.getAuthor().getAuthorId());
 		    		preparedStmt.setInt(2, article.getArticleId());
@@ -268,7 +268,6 @@ public class Database {
 		    			preparedStmt.setBoolean(3, true);
 		    		else
 		    			preparedStmt.setBoolean(3, false);
-		    		preparedStmt.setInt(4, a.getNumReviews());
 		    		preparedStmt.execute();
 		    	} catch (SQLException ex) {
 		    		ex.printStackTrace();
@@ -304,9 +303,9 @@ public class Database {
 			
 			for(Reviewer r : reviewers) {
 				boolean reviewerExists = false;
-				String query = "SELECT 1 FROM REVIEWERS WHERE AUTHORID = ?";
+				String query = "SELECT 1 FROM REVIEWERS WHERE ACADEMICID = ?";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setInt(1, r.getAuthorId());
+					preparedStmt.setInt(1, r.getAcademicId());
 					ResultSet res = preparedStmt.executeQuery();
 					if (res.next())
 						reviewerExists = true;
@@ -317,7 +316,7 @@ public class Database {
 				if(!reviewerExists) {
 					query = "INSERT INTO REVIEWERS values (null, ?)";
 					try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-						preparedStmt.setInt(1, r.getAuthorId());
+						preparedStmt.setInt(1, r.getAcademicId());
 						preparedStmt.execute();
 		
 						ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from REVIEWERS");
@@ -333,7 +332,7 @@ public class Database {
 		}
 	}
 	
-	public static void selectSubmissionsToReview(Reviewer r, ArrayList<Submission> submissions) {
+	public static void selectSubmissionsToReview(Reviewer r, ArrayList<Submission> submissions, int articleId) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
@@ -344,6 +343,14 @@ public class Database {
 					preparedStmt.setInt(1, r.getReviewerId());
 					preparedStmt.setInt(2, s.getSubmissionId());
 					preparedStmt.execute();
+				}catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+				
+				query = "UPDATE ARTICLES SET NUMREVIEWS = NUMREVIEWS+1 WHERE ARTICLEID = ?";
+				try(PreparedStatement preparedStmt1 = con.prepareStatement(query)){
+					preparedStmt1.setInt(1, articleId);
+					preparedStmt1.execute();
 				}catch (SQLException ex) {
 					ex.printStackTrace();
 				}

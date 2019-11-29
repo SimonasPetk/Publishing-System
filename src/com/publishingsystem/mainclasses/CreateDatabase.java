@@ -73,7 +73,8 @@ public class CreateDatabase extends Database{
 				+ "ISSN INT REFERENCES JOURNAL(ISSN), "
 				+ "pdfID INT REFERENCES PDF(pdfID), "
 				+ "title TEXT,"
-				+ "summary TEXT)";
+				+ "summary TEXT,"
+				+ "numReviews INT)";
 	}
 
 	public static String createTableSubmissions() {
@@ -97,14 +98,13 @@ public class CreateDatabase extends Database{
 				+ "authorID INT REFERENCES AUTHORS(authorID),"
 				+ "articleID INT REFERENCES ARTICLES(articleID), "
 				+ "mainAuthor BOOLEAN, "
-				+ "numReviews INT, "
 				+ "PRIMARY KEY (authorID, articleID))";
 	}
 
 	public static String createTableReviewers() {
 		return "CREATE TABLE REVIEWERS ("
 				+ "reviewerID INT PRIMARY KEY AUTO_INCREMENT, "
-				+ "authorID INT REFERENCES AUTHORS(authorID))";
+				+ "academicID INT REFERENCES ACADEMICS(academicID))";
 	}
 	
 	public static String createTableReviewerOfSubmission() {
