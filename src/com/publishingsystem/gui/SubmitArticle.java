@@ -24,6 +24,7 @@ import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.PDF;
 import com.publishingsystem.mainclasses.PDFConverter;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
+import com.publishingsystem.mainclasses.Reviewer;
 import com.publishingsystem.mainclasses.Role;
 
 import javax.swing.JTextField;
@@ -31,7 +32,6 @@ import javax.swing.JEditorPane;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
 import javax.swing.JFormattedTextField;
-import javax.swing.JComboBox;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
@@ -256,7 +256,7 @@ public class SubmitArticle {
 				if(title != null && summary != null && journal != null && pdfPath != null){
 					byte[] pdf = PDFConverter.getByteArrayFromFile(pdfPath);
 					Article article = new Article(-1, title, summary, journal);
-					mainAuthor.registerCoAuthors(article, coAuthors, numReviewsOfCoAuthors);
+					mainAuthor.registerCoAuthors(article, coAuthors);
 					Calendar calendar = Calendar.getInstance();
 					mainAuthor.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), article.getSubmission()));
 	
@@ -266,7 +266,13 @@ public class SubmitArticle {
 					Database.registerAuthors(coAuthors);
 					Database.addSubmission(article, pdf);
 			
-			
+					ArrayList<Reviewer> reviewers = new ArrayList<Reviewer>();
+					for(Author a : coAuthors) {
+						reviewers.add(new Reviewer(a));
+					}
+					Database.registerReviewers(reviewers);
+					if(roles[2] == null)
+						roles[2] = reviewers.get(reviewers.size()-1);
 					new AuthorMainWindow(roles);
 					//This is for just adding co-authors
 					frmSubmitAnArticle.dispose();

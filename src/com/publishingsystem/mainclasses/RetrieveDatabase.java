@@ -90,10 +90,9 @@ public class RetrieveDatabase extends Database{
 						editor = new Editor(res.getInt("editorID"), title, forename, surname, emailId, university, null);
 						editor.setAcademicId(academicId);
 					}
-					Journal journal = RetrieveDatabase.getJournal(res.getInt("ISSN"));
+					Journal journal = new Journal(res.getInt("ISSN"), res.getString("NAME"), res.getDate("dateOfPublication"));
 					boolean chiefEditor = res.getBoolean("chiefEditor");
 					EditorOfJournal editorOfJournal = new EditorOfJournal(journal, editor, chiefEditor);
-					//journal.addEditorToBoard(editorOfJournal);
 					editor.addEditorOfJournal(editorOfJournal);
 				}
 				roles[0] = editor;
@@ -171,19 +170,18 @@ public class RetrieveDatabase extends Database{
 				ex.printStackTrace();
 			}
 
-			query = "SELECT R.REVIEWERID, R.AUTHORID, Ros.SUBMISSIONID, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY "
-					+ "FROM AUTHORS A INNER JOIN REVIEWERS R ON A.AUTHORID = R.AUTHORID "
-					+ "LEFT JOIN REVIEWEROFSUBMISSION Ros ON R.REVIEWERID = Ros.REVIEWERID "
+			query = "SELECT R.REVIEWERID, R.ACADEMICID, Ros.SUBMISSIONID, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY "
+					+ "FROM REVIEWERS R LEFT JOIN REVIEWEROFSUBMISSION Ros ON R.REVIEWERID = Ros.REVIEWERID "
 					+ "LEFT JOIN SUBMISSIONS S ON S.SUBMISSIONID = Ros.SUBMISSIONID "
 					+ "LEFT JOIN ARTICLES Art ON Art.ARTICLEID = S.ARTICLEID "
-					+ "WHERE A.ACADEMICID = ?";
+					+ "WHERE R.ACADEMICID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, academicId);
 				ResultSet res = preparedStmt.executeQuery();
 				Reviewer reviewer = null;
 				while(res.next()) {
 					if(reviewer == null) {
-						reviewer = new Reviewer(res.getInt("AUTHORID"), res.getInt("REVIEWERID"), title, forename, surname, emailId, university, null);
+						reviewer = new Reviewer(res.getInt("ACADEMICID"), res.getInt("REVIEWERID"), title, forename, surname, emailId, university, null);
 						reviewer.setAcademicId(academicId);
 					}
 					if(res.getInt("SUBMISSIONID") != 0) {
@@ -230,42 +228,66 @@ public class RetrieveDatabase extends Database{
 		return null;
 
 	}
+	
+	public static ArrayList<Article> getArticlesSubmittedByReviewer(int reviewerId){
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query = "SELECT Art.ARTICLEID, Art.TITLE, Art.SUMMARY, Art.NUMREVIEWS "
+					+ "FROM ARTICLES Art, AUTHOROFARTICLE Aoa, AUTHORS A, ACADEMICS Aca, REVIEWERS R "
+					+ "WHERE R.ACADEMICID = Aca.ACADEMICID "
+					+ "AND Aca.ACADEMICID = A.ACADEMICID "
+					+ "AND A.AUTHORID = Aoa.AUTHORID "
+					+ "AND Aoa.ARTICLEID = Art.ARTICLEID "
+					+ "AND R.REVIEWERID = ? "
+					+ "AND numREVIEWS != 3";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, reviewerId);
+				ResultSet res = preparedStmt.executeQuery();
+				ArrayList<Article> articles = new ArrayList<Article>();
+				while(res.next()) {
+					Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
+					article.setNumReviews(res.getInt("NUMREVIEWS"));
+					articles.add(article);
+				}
+				return articles;
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
 
 	public static int getNumberOfReviewsToBeDone(int reviewerId) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			int numReviewsPromised = 0;
+			int numArticles = 0;
 			int numReviewsDone = 0;
-			String query = "SELECT SUM(NUMREVIEWS) AS TOTALREVIEWS FROM REVIEWERS R, AUTHORS A, AUTHOROFARTICLE Aoa "
-					+ "WHERE R.AUTHORID = A.AUTHORID "
+			String query = "SELECT Art.NUMREVIEWS "
+					+ "FROM ARTICLES Art, AUTHOROFARTICLE Aoa, AUTHORS A, ACADEMICS Aca, REVIEWERS R "
+					+ "WHERE R.ACADEMICID = Aca.ACADEMICID "
+					+ "AND Aca.ACADEMICID = A.ACADEMICID "
 					+ "AND A.AUTHORID = Aoa.AUTHORID "
-					+ "AND REVIEWERID = ?";
-			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1,reviewerId);
-				ResultSet res = preparedStmt.executeQuery();
-				if(res.next()) {
-					numReviewsPromised = res.getInt("TOTALREVIEWS");
-				}
-			}catch (SQLException ex) {
-				ex.printStackTrace();
-			}
-			
-			query = "SELECT COUNT(*) AS REVIEWSSELECTED FROM REVIEWERS R, REVIEWEROFSUBMISSION Ros "
-					+ "WHERE R.REVIEWERID = Ros.REVIEWERID "
+					+ "AND Aoa.ARTICLEID = Art.ARTICLEID "
 					+ "AND R.REVIEWERID = ? "
-					+ "GROUP BY R.REVIEWERID";
+					+ "AND numREVIEWS != 3";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1,reviewerId);
 				ResultSet res = preparedStmt.executeQuery();
-				if(res.next()) {
-					numReviewsDone = res.getInt("REVIEWSSELECTED");
+				while(res.next()) {
+					numArticles++;
+					numReviewsDone += res.getInt("NUMREVIEWS");
 				}
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
-			return numReviewsPromised-numReviewsDone;
+			return numArticles*3-numReviewsDone;
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -552,13 +574,9 @@ public class RetrieveDatabase extends Database{
 	}
 
 	public static void main(String[] args) {
-		System.out.println("SELECT R.REVIEWERID, R.AUTHORID, Ros.SUBMISSIONID, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY "
-					+ "FROM REVIEWERS R, AUTHORS A, REVIEWEROFSUBMISSION Ros, SUBMISSIONS S, ARTICLES Art "
-					+ "WHERE R.REVIEWERID = Ros.REVIEWERID "
-					+ "AND Ros.SUBMISSIONID = S.SUBMISSIONID "
-					+ "AND S.ARTICLEID = Art.ARTICLEID "
-					+ "AND A.AUTHORID = R.AUTHORID "
-					+ "AND A.ACADEMICID = ");
+		for(Article a : RetrieveDatabase.getArticlesSubmittedByReviewer(5)) {
+			System.out.println(a.getNumReviews());
+		};
 		Academic[] roles1 = RetrieveDatabase.getRoles("j.smith@uniofsmith.ac.uk");
 		Editor e = (Editor)roles1[0];
 		Author a = (Author)roles1[1];

@@ -9,13 +9,26 @@ public class Article {
 	private Journal journal;
 	private Submission submission;
 	private PDF pdf;
-	
+	private int numReviews;
+
 	public Article(int articleId, String title, String summary, Journal journal) {
 		this.articleId = articleId;
 		this.title = title;
 		this.summary = summary;
 		this.journal = journal;
 		this.authorsOfArticle = new ArrayList<AuthorOfArticle>();
+	}
+	
+	public void setNumReviews(int numReviews) {
+		this.numReviews = numReviews;
+	}
+
+	public PDF getPdf() {
+		return pdf;
+	}
+
+	public int getNumReviews() {
+		return numReviews;
 	}
 	
 	public void submit(Submission s) {

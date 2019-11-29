@@ -20,6 +20,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.DefaultTableModel;
 
 import com.publishingsystem.mainclasses.Academic;
+import com.publishingsystem.mainclasses.Article;
 import com.publishingsystem.mainclasses.AuthorOfArticle;
 import com.publishingsystem.mainclasses.Database;
 import com.publishingsystem.mainclasses.Editor;
@@ -49,8 +50,11 @@ public class ReviewerMainWindow {
 	private JFrame frmReviewDashboard;
 	private JTable tblChooseToReview;
 	private JTable tblToReview;
+	private JLabel lblArticleListToChoose;
 	private ArrayList<ReviewerOfSubmission> submissionsChosenToReview;
+	private ArrayList<Article> articlesSubmitted;
 	private int numReviewsToBeDone;
+	private Reviewer reviewer;
 
 	/**
 	 * Launch the application.
@@ -74,28 +78,59 @@ public class ReviewerMainWindow {
 	 */
 	public ReviewerMainWindow(Academic[] roles) {
 		submissionsChosenToReview = new ArrayList<ReviewerOfSubmission>();
+		articlesSubmitted = new ArrayList<Article>();
+		reviewer = (Reviewer)roles[2];
 		initialize(roles);
 	}
 	
-	public void refreshChooseToReviewTable(DefaultTableModel str_model1) {
-		str_model1.setRowCount(0);
-		str_model1.addColumn("Article ID");
-		str_model1.addColumn("Title");
+	public void addSubmissionToReview(Submission s) {
+		this.submissionsChosenToReview.add(new ReviewerOfSubmission(reviewer, s));
+	}
+	
+	private void refreshChooseToReviewTable() {
+		DefaultTableModel str_model = (DefaultTableModel)tblChooseToReview.getModel();
+		str_model.setRowCount(0);
+		str_model.setColumnCount(0);
+		str_model.addColumn("Article ID");
+		str_model.addColumn("Title");
 		for(ReviewerOfSubmission ros : submissionsChosenToReview) {
 			Submission s = ros.getSubmission();
 			Object[] submissionString = new Object[4];
 			submissionString[0] = s.getArticle().getArticleId();
 			submissionString[1] = s.getArticle().getTitle();
 			submissionString[2] = s.getArticle().getSummary();
-			str_model1.addRow(submissionString);
+			str_model.addRow(submissionString);
 		}
+	}
+	
+	private void refreshToReviewTable() {
+		articlesSubmitted = RetrieveDatabase.getArticlesSubmittedByReviewer(reviewer.getReviewerId());
+		DefaultTableModel str_model = (DefaultTableModel)tblToReview.getModel();
+		str_model.setRowCount(0);
+		str_model.setColumnCount(0);
+		str_model.addColumn("Article ID");
+		str_model.addColumn("Title");
+		str_model.addColumn("No. of reviews selected by co-authors");
+		for(Article a : articlesSubmitted) {
+			Object[] submissionString = new Object[3];
+			submissionString[0] = a.getArticleId();
+			submissionString[1] = a.getTitle();
+			submissionString[2] = a.getNumReviews();
+			str_model.addRow(submissionString);
+		}
+	}
+	
+	public void refreshTables() {
+		numReviewsToBeDone = RetrieveDatabase.getNumberOfReviewsToBeDone(reviewer.getReviewerId());
+		lblArticleListToChoose.setText("Number of articles to review remaining : "+numReviewsToBeDone);
+		this.refreshChooseToReviewTable();
+		this.refreshToReviewTable();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Academic[] roles) {
-		Reviewer reviewer = (Reviewer)roles[2];
 		submissionsChosenToReview = reviewer.getReviewerOfSubmissions();
 		frmReviewDashboard = new JFrame();
 		frmReviewDashboard.setBounds(100, 100, 900, 740);
@@ -224,97 +259,41 @@ public class ReviewerMainWindow {
 		panel.add(scrSubmitted, BorderLayout.CENTER);
 		scrSubmitted.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		JLabel lblArticleListToChoose = new JLabel("Number of articles to review remaining : "+numReviewsToBeDone);
+		lblArticleListToChoose = new JLabel("Number of articles to review remaining : "+numReviewsToBeDone);
 		panel.add(lblArticleListToChoose, BorderLayout.NORTH);
 		lblArticleListToChoose.setToolTipText("");
 		lblArticleListToChoose.setFont(new Font("Tahoma", Font.PLAIN, 20));
 
 		DefaultTableModel str_model1 = new DefaultTableModel();
-		
-		refreshChooseToReviewTable(str_model1);
-		
 		tblChooseToReview = new JTable(str_model1);
+		refreshChooseToReviewTable();
 		tblChooseToReview.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrChosenToReview.setViewportView(tblChooseToReview);
 			
-		if(numReviewsToBeDone > 0) {
+		articlesSubmitted = RetrieveDatabase.getArticlesSubmittedByReviewer(reviewer.getReviewerId());
+		if(articlesSubmitted.size() > 0) {
 			JPanel panel_1 = new JPanel();
 			panel.add(panel_1, BorderLayout.SOUTH);
 			
-			
-			ArrayList<Submission> submissionsToReview = RetrieveDatabase.getSubmissions(reviewer);
-			DefaultTableModel str_model = new DefaultTableModel();
-			str_model.addColumn("Article ID");
-			str_model.addColumn("Title");
-			str_model.addColumn("Select");
-			for(Submission s : submissionsToReview) {
-    			Object[] submissionString = new Object[4];
-    			submissionString[0] = s.getArticle().getArticleId();
-    			submissionString[1] = s.getArticle().getTitle();
-    			submissionString[2] = false;
-    			str_model.addRow(submissionString);
-    		}
-			
+			DefaultTableModel str_model = new DefaultTableModel();			
 
-			tblToReview = new JTable(str_model) {
-				private static final long serialVersionUID = 1L;
-				
-				boolean[] columnEditables = new boolean[] {
-					false, false, true
-				};
-				
-				@Override
-				public boolean isCellEditable(int row, int column) {
-					return columnEditables[column];
-				}
-				
-	            @Override
-	            public Class<?> getColumnClass(int column) {
-	                switch (column) {
-	                    case 0:
-	                        return Integer.class;
-	                    case 1:
-	                        return String.class;
-	                    default:
-	                        return Boolean.class;
-	                }
-	            }
-			};
+			tblToReview = new JTable(str_model);
+			refreshToReviewTable();
+			ReviewerMainWindow rmw = this;
 			tblToReview.getColumnModel().getColumn(0).setResizable(false);
 			tblToReview.getColumnModel().getColumn(1).setResizable(false);
 			tblToReview.getColumnModel().getColumn(2).setResizable(false);
-
-			JButton btnSelectArticles = new JButton("Select Articles");
-			btnSelectArticles.addMouseListener(new MouseAdapter() {
+			tblToReview.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			tblToReview.setEnabled(false);
+			tblToReview.addMouseListener(new MouseAdapter() {
 				@Override
-				public void mousePressed(MouseEvent e) {
-						if(submissionsToReview.size() < numReviewsToBeDone) {
-							JOptionPane.showMessageDialog(null, "Kindly wait till the required number of articles are added to the system", "Error in selecting submission", 0);
-						}
-						else {
-							ArrayList<Submission> selectedSubmissions = new ArrayList<Submission>();
-							for(int row = 0; row < tblToReview.getRowCount(); row++) {
-								if(tblToReview.getValueAt(row, 2).toString() == "true") {
-									selectedSubmissions.add(submissionsToReview.get(row));
-									System.out.println(submissionsToReview.get(row).getArticle().getArticleId());
-								}
-							}
-							if(selectedSubmissions.size() == 0) {
-								JOptionPane.showMessageDialog(null, "Please select "+numReviewsToBeDone+" submissions to review", "Error in selecting submission", 0);
-							}else if(selectedSubmissions.size() == numReviewsToBeDone) {
-								for(Submission s : selectedSubmissions) {
-									submissionsChosenToReview.add(new ReviewerOfSubmission(reviewer, s));
-								}
-								refreshChooseToReviewTable((DefaultTableModel)tblChooseToReview.getModel());
-								Database.selectSubmissionsToReview(reviewer, selectedSubmissions);
-								panel.setVisible(false);
-							}else {
-								JOptionPane.showMessageDialog(null, "Too many submissions selected.\n Select at most "+numReviewsToBeDone+" submissions", "Error in reviewing submission", 0);
-							}
-						}
-				}
+				public void mouseClicked(MouseEvent arg0) {
+				    // Open new window displaying the articles in the selected article
+					int selectedArticle = (int)tblToReview.getValueAt(tblToReview.rowAtPoint(arg0.getPoint()), 0);				
+					System.out.println(selectedArticle);
+					new ChooseArticlesToReview(reviewer, selectedArticle, rmw);
+				} 
 			});
-			panel_1.add(btnSelectArticles);
 			
 			scrSubmitted.setViewportView(tblToReview);
 		}else {

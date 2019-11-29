@@ -33,16 +33,18 @@ public class TestRun {
 		authors.add(a2);
 		authors.add(a1);
 		Article article = new Article(-1, "How doe works", "Article about how doe works", j);
-		ArrayList<Integer> numReview1 = new ArrayList<Integer>();
-		numReview1.add(1);
-		numReview1.add(2);
-		a1.registerCoAuthors(article, authors, numReview1);
+	
+		a1.registerCoAuthors(article, authors);
 //		
-		a1.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), null), 1);
+		a1.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), null));
 		System.out.println(a1.getAuthorOfArticles().size());
-//		
+
 //		//Adding to DB
 		Database.registerAuthors(authors);
+		ArrayList<Reviewer> authorsReviewers1 = new ArrayList<Reviewer>();
+		authorsReviewers1.add(new Reviewer(a1));
+		authorsReviewers1.add(new Reviewer(a2));
+		Database.registerReviewers(authorsReviewers1);
 		Database.addSubmission(article, new byte[] {});
 ////		
 
@@ -58,12 +60,8 @@ public class TestRun {
 //		
 		Article tempS = new Article(-1, "Temp article", "Article about temp", j);
 	
-		ArrayList<Integer> numReview = new ArrayList<Integer>();
-		numReview.add(1);
-		numReview.add(2);
-		numReview.add(0);
-		a4.registerCoAuthors(tempS, authorsReviewers, numReview);
-		a4.submit(tempS, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), null), 1);
+		a4.registerCoAuthors(tempS, authorsReviewers);
+		a4.submit(tempS, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), null));
 		
 		Database.registerAuthors(authorsReviewers);
 		Database.addSubmission(tempS, new byte[] {});
@@ -79,7 +77,7 @@ public class TestRun {
 			ArrayList<Submission> submissions = new ArrayList<Submission>();
 			submissions.add(article.getSubmission());
 			r.addSubmissionsToReview(submissions);
-			Database.selectSubmissionsToReview(r, submissions);
+			Database.selectSubmissionsToReview(r, submissions, tempS.getArticleId());
 			ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
 			criticisms.add(new Criticism("Perhaps explain origin of doe"));
 			

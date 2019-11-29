@@ -52,7 +52,7 @@ public class Author extends Academic{
 		}
 	}
 	
-	public void registerCoAuthors(Article article, ArrayList<Author> coauthors, ArrayList<Integer> numReviews) {
+	public void registerCoAuthors(Article article, ArrayList<Author> coauthors) {
 		for(int i = 0; i < coauthors.size(); i++) {
 			Author author = coauthors.get(i);
 			if(!author.emailId.equals(this.emailId)) {
