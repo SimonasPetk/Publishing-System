@@ -172,12 +172,11 @@ public class RetrieveDatabase extends Database{
 			}
 
 			query = "SELECT R.REVIEWERID, R.AUTHORID, Ros.SUBMISSIONID, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY "
-					+ "FROM REVIEWERS R, AUTHORS A, REVIEWEROFSUBMISSION Ros, SUBMISSIONS S, ARTICLES Art "
-					+ "WHERE R.REVIEWERID = Ros.REVIEWERID "
-					+ "AND Ros.SUBMISSIONID = S.SUBMISSIONID "
-					+ "AND S.ARTICLEID = Art.ARTICLEID "
-					+ "AND A.AUTHORID = R.AUTHORID "
-					+ "AND A.ACADEMICID = ?";
+					+ "FROM AUTHORS A INNER JOIN REVIEWERS R ON A.AUTHORID = R.AUTHORID "
+					+ "LEFT JOIN REVIEWEROFSUBMISSION Ros ON R.REVIEWERID = Ros.REVIEWERID "
+					+ "LEFT JOIN SUBMISSIONS S ON S.SUBMISSIONID = Ros.SUBMISSIONID "
+					+ "LEFT JOIN ARTICLES Art ON Art.ARTICLEID = S.ARTICLEID "
+					+ "WHERE A.ACADEMICID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, academicId);
 				ResultSet res = preparedStmt.executeQuery();
@@ -187,10 +186,12 @@ public class RetrieveDatabase extends Database{
 						reviewer = new Reviewer(res.getInt("AUTHORID"), res.getInt("REVIEWERID"), title, forename, surname, emailId, university, null);
 						reviewer.setAcademicId(academicId);
 					}
-					Article a = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
-					Submission s = new Submission(res.getInt("SUBMISSIONID"), a, SubmissionStatus.valueOf(res.getString("STATUS")), null);
-					ReviewerOfSubmission ros = new ReviewerOfSubmission(reviewer, s);
-					reviewer.addReviewerOfSubmission(ros);
+					if(res.getInt("SUBMISSIONID") != 0) {
+						Article a = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
+						Submission s = new Submission(res.getInt("SUBMISSIONID"), a, SubmissionStatus.valueOf(res.getString("STATUS")), null);
+						ReviewerOfSubmission ros = new ReviewerOfSubmission(reviewer, s);
+						reviewer.addReviewerOfSubmission(ros);
+					}
 				}
 				if(reviewer != null) {
 					for(ReviewerOfSubmission ros : reviewer.getReviewerOfSubmissions()) {
@@ -527,6 +528,13 @@ public class RetrieveDatabase extends Database{
 	}
 
 	public static void main(String[] args) {
+		System.out.println("SELECT R.REVIEWERID, R.AUTHORID, Ros.SUBMISSIONID, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY "
+					+ "FROM REVIEWERS R, AUTHORS A, REVIEWEROFSUBMISSION Ros, SUBMISSIONS S, ARTICLES Art "
+					+ "WHERE R.REVIEWERID = Ros.REVIEWERID "
+					+ "AND Ros.SUBMISSIONID = S.SUBMISSIONID "
+					+ "AND S.ARTICLEID = Art.ARTICLEID "
+					+ "AND A.AUTHORID = R.AUTHORID "
+					+ "AND A.ACADEMICID = ");
 		Academic[] roles1 = RetrieveDatabase.getRoles("j.smith@uniofsmith.ac.uk");
 		Editor e = (Editor)roles1[0];
 		Author a = (Author)roles1[1];

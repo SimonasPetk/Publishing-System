@@ -315,7 +315,7 @@ public class SubmitArticle {
 					Database.addSubmission(article, pdf);
 					
 					ArrayList<Reviewer> reviewers = new ArrayList<Reviewer>();
-					for(int i = 1; i < coAuthors.size(); i++) {
+					for(int i = 0; i < coAuthors.size()-1; i++) {
 						if(numberOfReviews.get(i) > 0)
 							reviewers.add(new Reviewer(coAuthors.get(i)));
 					}
