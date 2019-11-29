@@ -122,7 +122,7 @@ public class RetrieveDatabase extends Database{
 					Journal journal = new Journal(res.getInt("ISSN"), res.getString("NAME"), res.getDate("dateOfPublication"));
 					Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), journal);
 					article.submit(new Submission( res.getInt("SUBMISSIONID"), article, SubmissionStatus.valueOf(res.getString("STATUS")), null));
-					AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, author, res.getBoolean("MAINAUTHOR"), res.getInt("NUMREVIEWS"));
+					AuthorOfArticle authorOfArticle = new AuthorOfArticle(article, author, res.getBoolean("MAINAUTHOR"));
 					article.addAuthorOfArticle(authorOfArticle);
 					author.addAuthorOfArticle(authorOfArticle);
 				}
@@ -394,17 +394,24 @@ public class RetrieveDatabase extends Database{
 			String query = "SELECT editorID FROM EDITOROFJOURNAL WHERE issn = " + issn + ";";
 			ResultSet res = statement.executeQuery(query);
 			List<Integer> ids = new ArrayList<Integer>();
-			if (res.next()) {
+			while (res.next()) {
+				System.out.println(res.getInt(1));
 				ids.add(res.getInt(1));
+				System.out.println(res.getInt(1));
 			}
+			System.out.println("Should now have all the editor ids");
 			List<Integer> aca = new ArrayList<Integer>();
 			for(int i: ids) {
 				aca.add(getAcademicIdByEditorId(i));
+				System.out.println(getAcademicIdByEditorId(i));
 			}
+			System.out.println("Should now have all the academic ids");
 			ArrayList<Editor> editors = new ArrayList<Editor>();
 			for(int i: aca) {
 				editors.add(getEditorByAcademicId(i));
+				System.out.println(getEditorByAcademicId(i).toString());
 			}
+			System.out.println("Should have all the editors in the table now");
 			for(Editor e: editors) {
 				editorsOfJournal.add(new EditorOfJournal(j,e,isChiefEditorByEditorId(e.getEditorId())));
 			}
