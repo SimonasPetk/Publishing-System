@@ -18,6 +18,10 @@ public class Submission{
 		this.versions.add(pdf);
 	}
 	
+	public void setReviewersOfSubmission(ArrayList<ReviewerOfSubmission> ros) {
+		this.reviewersOfSubmission = ros;
+	}
+	
 	public ArrayList<ReviewerOfSubmission> getReviewersOfSubmission() {
 		return reviewersOfSubmission;
 	}

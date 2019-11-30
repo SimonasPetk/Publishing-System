@@ -6,7 +6,8 @@ public class Review {
 	private String summary;
 	private String typingErrors;
 	private ArrayList<Criticism> criticisms;
-	private Verdict verdict;
+	private Verdict initialVerdict;
+	private Verdict finalVerdict;
 	
 	public Review(ReviewerOfSubmission ros, String summary, String typingErrors, ArrayList<Criticism> criticisms, Verdict v) {
 		this.reviewerOfSubmission = ros;
@@ -14,11 +15,11 @@ public class Review {
 		this.typingErrors = typingErrors;
 		this.criticisms = new ArrayList<Criticism>();
 		this.criticisms = criticisms;
-		this.verdict = v;
+		this.initialVerdict = v;
 	}
 
-	public void setVerdict(Verdict v) {
-		this.verdict = v;
+	public void setFinalVerdict(Verdict v) {
+		this.finalVerdict = v;
 	}
 
 	public ReviewerOfSubmission getReviewerOfSubmission() {
@@ -33,12 +34,22 @@ public class Review {
 		return typingErrors;
 	}
 	
-	public Verdict getVerdict() {
-		return this.verdict;
+	public Verdict getInitialVerdict() {
+		return this.initialVerdict;
+	}
+	
+	public Verdict getFinalVerdict() {
+		return this.finalVerdict;
 	}
 
 	public ArrayList<Criticism> getCriticisms() {
 		return this.criticisms;
+	}
+	
+	public void answer(ArrayList<String> answers) {
+		for(int i = 0; i < answers.size(); i++) {
+			this.criticisms.get(i).answer(answers.get(i));
+		}
 	}
 	
 	public String toString() {

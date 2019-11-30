@@ -111,7 +111,6 @@ public class CreateDatabase extends Database{
 		return "CREATE TABLE REVIEWEROFSUBMISSION ("
 				+ "reviewerID INT REFERENCES REVIEWERS(reviewerID), "
 				+ "submissionID INT REFERENCES SUBMISSIONS(submissionID), "
-				+ "completed BOOLEAN, "
 				+ "PRIMARY KEY (reviewerID, submissionID))";
 	}
 
@@ -121,7 +120,8 @@ public class CreateDatabase extends Database{
 				+ "submissionID INT REFERENCES REVIEWEROFSUBMISSION(submissionID),"
 				+ "summary TEXT,"
 				+ "typingErrors TEXT,"
-				+ "verdict TEXT,"
+				+ "initialVerdict TEXT,"
+				+ "finalVerdict TEXT,"
 				+ "PRIMARY KEY (submissionID, reviewerID))";
 	}
 
@@ -266,8 +266,8 @@ public class CreateDatabase extends Database{
 		System.out.println(System.getProperty("jdbc.drivers"));
 		System.out.println("\nDrivers loaded by DriverManager:");
 		Enumeration<Driver> list = DriverManager.getDrivers();
-		//dropTables();
-		//createTables();
+		dropTables();
+		createTables();
         try (Connection con = DriverManager.getConnection(CONNECTION)) {
 		    printAllRecords("JOURNALS");
 			printAllRecords("EDITORS");

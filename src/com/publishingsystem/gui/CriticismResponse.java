@@ -20,6 +20,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javax.swing.SwingConstants;
 import javax.swing.JTextArea;
@@ -35,14 +36,18 @@ import javax.swing.DefaultListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.JScrollBar;
 import com.publishingsystem.mainclasses.Criticism;
+import com.publishingsystem.mainclasses.Database;
+import com.publishingsystem.mainclasses.PDF;
+import com.publishingsystem.mainclasses.PDFConverter;
 import com.publishingsystem.mainclasses.Review;
+import com.publishingsystem.mainclasses.ReviewerOfSubmission;
 
 import java.awt.FlowLayout;
 
 public class CriticismResponse {
 
 	private JFrame frmRespondToCriticism;
-	private ArrayList<JEditorPane> textAreaAnswers;
+	private ArrayList<JTextArea> textAreaAnswers;
 	private ArrayList<Criticism> criticisms;
 	private String pdfPath;
 
@@ -53,7 +58,7 @@ public class CriticismResponse {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					CriticismResponse window = new CriticismResponse(new Review(null,  "Good", "No errors", new ArrayList<Criticism>(), null));
+					CriticismResponse window = new CriticismResponse(null, null);
 					window.frmRespondToCriticism.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -65,16 +70,16 @@ public class CriticismResponse {
 	/**
 	 * Create the application.
 	 */
-	public CriticismResponse(Review review) {
-		textAreaAnswers= new ArrayList<JEditorPane>();
-		criticisms = review.getCriticisms();
-		initialize(review);
+	public CriticismResponse(AuthorMainWindow amw, ReviewerOfSubmission ros) {
+		textAreaAnswers= new ArrayList<JTextArea>();
+		criticisms = ros.getReview().getCriticisms();
+		initialize(amw, ros);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Review review) {
+	private void initialize(AuthorMainWindow amw, ReviewerOfSubmission ros) {
 		frmRespondToCriticism = new JFrame();
 		frmRespondToCriticism.setTitle("Respond to Criticism");
 		frmRespondToCriticism.setBounds(100, 100, 534, 604);
@@ -93,13 +98,26 @@ public class CriticismResponse {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				boolean allAnswered = true;
-				for(JEditorPane jta : textAreaAnswers) {
-					System.out.println(jta.getText());
-					if(jta.getText().isEmpty())
+				ArrayList<String> answers = new ArrayList<String>();
+				for(JTextArea jta : textAreaAnswers) {
+					if(jta.getText().isEmpty()) {
 						allAnswered = false;
+						break;
+					}
+					answers.add(jta.getText());
 				}
 				if(!allAnswered)
 					JOptionPane.showMessageDialog(null, "Please answer all criticisms", "Error in response", 0);
+				else {
+					
+					Calendar calendar = Calendar.getInstance();
+					PDF revisedPDF = new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), ros.getSubmission());
+					ros.getReview().answer(answers);
+					amw.refreshReviewTable();
+					Database.addResponse(ros);
+					Database.addRevisedSubmission(revisedPDF, PDFConverter.getByteArrayFromFile(pdfPath));
+					frmRespondToCriticism.dispose();
+				}
 			}
 		});
 		btnSubmitResponse.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -213,13 +231,15 @@ public class CriticismResponse {
 					.addGap(10))
 		);
 		
-		JTextArea textAreaSummary = new JTextArea(review.getSummary());
+		JTextArea textAreaSummary = new JTextArea(ros.getReview().getSummary());
+		textAreaSummary.setLineWrap(true);
 		textAreaSummary.setEditable(false);
-		scrollPane_2.setViewportView(textAreaSummary);
+		scrollPane_1.setViewportView(textAreaSummary);
 		
-		JTextArea textAreaTypeErrors = new JTextArea(review.getTypingErrors());
+		JTextArea textAreaTypeErrors = new JTextArea(ros.getReview().getTypingErrors());
+		textAreaTypeErrors.setLineWrap(true);
 		textAreaTypeErrors.setEditable(false);
-		scrollPane_1.setViewportView(textAreaTypeErrors);
+		scrollPane_2.setViewportView(textAreaTypeErrors);
 		
 		JPanel panel = new JPanel();
 		scrollPane.setViewportView(panel);
@@ -231,7 +251,7 @@ public class CriticismResponse {
 		panel.setLayout(gbl_panel);
 		
 		int qCount = 1;
-		for(int i = 0; i < 4; i++) {
+		for(int i = 0; i < criticisms.size()*2; i++) {
 			JPanel panel_1 = new JPanel();
 			panel_1.setBorder(null);
 			GridBagConstraints gbc_panel_1 = new GridBagConstraints();
@@ -242,11 +262,12 @@ public class CriticismResponse {
 			panel.add(panel_1, gbc_panel_1);
 			panel_1.setLayout(new GridLayout(0, 1, 0, 0));
 			
-			JLabel lblNewLabel = new JLabel("	"+"Q"+qCount+":");
+			JLabel lblNewLabel = new JLabel("	"+"Q"+qCount+":"+criticisms.get(i).getCriticism());
 			lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
 			panel_1.add(lblNewLabel);
 			
-			JEditorPane textArea = new JEditorPane();
+			JTextArea textArea = new JTextArea();
+			textArea.setLineWrap(true);
 			textArea.setLayout(null);
 			textAreaAnswers.add(textArea);
 			GridBagConstraints gbc_textField_1 = new GridBagConstraints();
