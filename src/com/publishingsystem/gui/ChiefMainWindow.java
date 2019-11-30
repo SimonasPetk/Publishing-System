@@ -203,8 +203,13 @@ public class ChiefMainWindow {
 		transferChiefEditor.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				new TransferChiefEditorRole(editor.getJournal(),editor);
-				frmChiefEditorsDashboard.dispose();
+				if (editor.getJournal().getBoardOfEditors().size() <= 1) {
+					JOptionPane.showMessageDialog(null, "You have no editors to transfer your role too", "Error", 1);
+				}
+				else {
+					new TransferChiefEditorRole(editor.getJournal(),editor);
+					frmChiefEditorsDashboard.dispose();
+				}
 			}
 		});
 		mnMenu.add(transferChiefEditor);

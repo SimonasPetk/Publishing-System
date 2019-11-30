@@ -203,7 +203,18 @@ public class EditorMainWindow {
 		
 		JMenuItem mntmRetireFromEditors = new JMenuItem("Retire From Editors");
 		mnEditorsMenu.add(mntmRetireFromEditors);
-		
+		mntmRetireFromEditors.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				for (EditorOfJournal e: editor.getEditorOfJournals()) {
+					if  ((e.getEditor().getEditorId()) == (editor.getEditorId())) {
+						e.retire(e.getJournal().getISSN(), editor.getEmailId());
+					}
+				}
+				new LoginScreen();
+				frmDashboard.dispose();
+			}
+		});
 		JMenuItem mntmChangePassword = new JMenuItem("Change Password");
 		mntmChangePassword.addMouseListener(new MouseAdapter() {
 			@Override
