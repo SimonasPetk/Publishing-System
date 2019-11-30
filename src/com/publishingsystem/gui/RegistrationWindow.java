@@ -20,6 +20,8 @@ import javax.swing.JComboBox;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 
@@ -75,7 +77,13 @@ public class RegistrationWindow {
 		frmRegistrationForm = new JFrame();
 		frmRegistrationForm.setTitle("Registration Form");
 		frmRegistrationForm.setBounds(500, 100, 653, 559);
-		frmRegistrationForm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frmRegistrationForm.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+            	new JournalWindow(null);
+            	frmRegistrationForm.dispose();
+            }
+        });
 		frmRegistrationForm.setVisible(true);
 
 		JLabel lblYourTitle = new JLabel("Your Title:");
@@ -176,7 +184,7 @@ public class RegistrationWindow {
 			        switch(r) {
 		    			case AUTHOR:
 		    				Author author = new Author(academicID, title, forenames, surname, email, university, pwdHash);
-		    				new SubmitArticleTable(author);
+		    				new SubmitArticle(author);
 		    				break;
 		    			case COAUTHOR:
 		    				Author coAuthor = new Author(academicID, title, forenames, surname, email, university, pwdHash);

@@ -18,6 +18,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class LoginScreen {
@@ -56,8 +58,15 @@ public class LoginScreen {
 		frmLogInScreen = new JFrame();
 		frmLogInScreen.setTitle("Login");
 		frmLogInScreen.setBounds(100, 100, 700, 500);
-		frmLogInScreen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmLogInScreen.setVisible(true);
+		
+		frmLogInScreen.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+            	new JournalWindow(null);
+            	frmLogInScreen.dispose();
+            }
+        });
 
 		JLabel lblEmail = new JLabel("Email Address:");
 		lblEmail.setFont(new Font("Tahoma", Font.PLAIN, 15));

@@ -14,6 +14,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.SwingConstants;
 import javax.swing.JTextArea;
@@ -30,6 +31,13 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JScrollBar;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import com.publishingsystem.mainclasses.Criticism;
+import com.publishingsystem.mainclasses.Database;
+import com.publishingsystem.mainclasses.Review;
+import com.publishingsystem.mainclasses.ReviewerOfSubmission;
+import com.publishingsystem.mainclasses.Verdict;
+
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.awt.GridBagLayout;
@@ -39,6 +47,7 @@ import java.awt.Insets;
 public class ReviewArticle {
 
 	private JFrame frmReviewArticle;
+	private ArrayList<JEditorPane> edPaneCriticisms;
 	private int criticisms = 1;
 	private int counter = 0;
 
@@ -49,7 +58,7 @@ public class ReviewArticle {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ReviewArticle window = new ReviewArticle();
+					ReviewArticle window = new ReviewArticle(null, null);
 					window.frmReviewArticle.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -61,14 +70,15 @@ public class ReviewArticle {
 	/**
 	 * Create the application.
 	 */
-	public ReviewArticle() {
-		initialize();
+	public ReviewArticle(ReviewerOfSubmission ros, ReviewerMainWindow rmw) {
+		edPaneCriticisms = new ArrayList<JEditorPane>();
+		initialize(ros, rmw);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize(ReviewerOfSubmission ros, ReviewerMainWindow rmw) {
 		frmReviewArticle = new JFrame();
 		frmReviewArticle.setTitle("Review Article");
 		frmReviewArticle.setBounds(100, 100, 545, 649);
@@ -87,16 +97,6 @@ public class ReviewArticle {
 		JLabel lblReview = new JLabel("Summary of the Review");
 		lblReview.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JButton btnSubmitReview = new JButton("Submit a Review");
-		btnSubmitReview.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				
-				frmReviewArticle.dispose();
-			}
-		});
-		btnSubmitReview.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
 		JLabel lblTypoErrors = new JLabel("Typographical Error");
 		lblTypoErrors.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
@@ -107,12 +107,58 @@ public class ReviewArticle {
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"", "Strong Accept", "Weak Accept", "Weak Reject", "Strong Reject"}));
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"SELECT", "STRONG ACCEPT", "WEAK ACCEPT", "WEAK REJECT", "STRONG REJECT"}));
 		
 		JScrollPane scrTypo = new JScrollPane();
 		scrTypo.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
+		JEditorPane edPaneSummary = new JEditorPane();
+		scrPaneReview1.setViewportView(edPaneSummary);
+		
 		JScrollPane scrollPane_1 = new JScrollPane();
+		JEditorPane edPaneTypoErrors = new JEditorPane();
+		scrTypo.setViewportView(edPaneTypoErrors);
+		
+		JButton btnSubmitReview = new JButton("Submit Review");
+		btnSubmitReview.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				String summary = edPaneSummary.getText();
+				String typoErrors = edPaneTypoErrors.getText();
+				String verdict = String.valueOf(comboBox.getSelectedItem()).replaceAll("\\s+","");
+				boolean criticismsOK = true;
+				ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
+				for(JEditorPane jep : edPaneCriticisms) {
+					String c = jep.getText();
+					if(c.isEmpty()) {
+						criticismsOK = false;
+						break;
+					}
+					criticisms.add(new Criticism(c));
+				}
+				
+				if(summary.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Please give a summary of your review", "Error in submission", 0);
+				}
+				if(typoErrors.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Please enter if there were any typing errors", "Error in submission", 0);
+				}
+				if(!criticismsOK) {
+					JOptionPane.showMessageDialog(null, "Please give fill all criticism fields", "Error in submission", 0);
+				}
+				if(verdict.equals("SELECT")){
+					JOptionPane.showMessageDialog(null, "Please give a verdict", "Error in submission", 0);
+				}
+				if(!summary.isEmpty() && !typoErrors.isEmpty() && criticismsOK && !verdict.equals("SELECT")) {
+					Review review = new Review(ros, summary, typoErrors, criticisms, Verdict.valueOf(verdict));
+					Database.addReview(review);
+					rmw.addReview(review);
+					frmReviewArticle.dispose();
+				}
+			}
+		});
+		btnSubmitReview.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
 		
 		JPanel panel = new JPanel();
 		scrollPane_1.setViewportView(panel);
@@ -128,7 +174,6 @@ public class ReviewArticle {
 		btnAddCriticism.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				System.out.println("PRESSED");
 				counter++;
 				JLabel lblNewLbl = new JLabel("Criticism "+criticisms);
 				GridBagConstraints gbc_lblNewLbl = new GridBagConstraints();
@@ -139,6 +184,7 @@ public class ReviewArticle {
 				panel.add(lblNewLbl, gbc_lblNewLbl);
 				counter++;
 				JEditorPane textArea = new JEditorPane();
+				edPaneCriticisms.add(textArea);
 				GridBagConstraints gbc_textArea = new GridBagConstraints();
 				gbc_textArea.insets = new Insets(0, 0, 5, 0);
 				gbc_textArea.fill = GridBagConstraints.BOTH;
@@ -226,9 +272,6 @@ public class ReviewArticle {
 					.addComponent(btnSubmitReview)
 					.addContainerGap(25, Short.MAX_VALUE))
 		);
-		
-		JEditorPane edPaneTypoErrors = new JEditorPane();
-		scrTypo.setViewportView(edPaneTypoErrors);
 
 		
 		JLabel lblCriticism_1 = new JLabel("Criticism "+criticisms);
@@ -248,9 +291,7 @@ public class ReviewArticle {
 		gbc_textArea.gridx = 0;
 		gbc_textArea.gridy = counter;
 		panel.add(textArea, gbc_textArea);
-		
-		JEditorPane dtrpnReview1 = new JEditorPane();
-		scrPaneReview1.setViewportView(dtrpnReview1);
+		edPaneCriticisms.add(textArea);
 		
 		
 		

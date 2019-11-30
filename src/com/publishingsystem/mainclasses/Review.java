@@ -14,6 +14,7 @@ public class Review {
 		this.typingErrors = typingErrors;
 		this.criticisms = new ArrayList<Criticism>();
 		this.criticisms = criticisms;
+		this.verdict = v;
 	}
 
 	public void setVerdict(Verdict v) {
