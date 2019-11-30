@@ -91,6 +91,7 @@ public class RetrieveDatabase extends Database{
 						editor.setAcademicId(academicId);
 					}
 					Journal journal = new Journal(res.getInt("ISSN"), res.getString("NAME"), res.getDate("dateOfPublication"));
+					journal.setBoardOfEditors(RetrieveDatabase.getEditorsOfJournal(journal.getISSN(), journal));
 					boolean chiefEditor = res.getBoolean("chiefEditor");
 					EditorOfJournal editorOfJournal = new EditorOfJournal(journal, editor, chiefEditor);
 					editor.addEditorOfJournal(editorOfJournal);
@@ -425,7 +426,9 @@ public class RetrieveDatabase extends Database{
 			    editors.add(tempEditor);
 			}
 			for (Editor e: editors) {
-				editorsOfJournal.add(new EditorOfJournal(j,e,isChiefEditorByEditorId(e.getEditorId())));
+				if (!isRetiredByEditorId(e.getEditorId())) {
+					editorsOfJournal.add(new EditorOfJournal(j,e,isChiefEditorByEditorId(e.getEditorId())));
+				}
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -477,6 +480,24 @@ public class RetrieveDatabase extends Database{
 			ex.printStackTrace();
 		}
 	    return result;
+	}
+	
+	public static boolean isRetiredByEditorId(int editorId) {
+		boolean result = false;
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			String query = "SELECT Retired FROM EDITOROFJOURNAL WHERE editorID= '" + editorId + "';";
+			ResultSet res = statement.executeQuery(query);
+			if (res.next()) {
+				if (res.getInt(1) == 1) {
+					result = true;
+				}
+			}
+		} catch (SQLException ex) {
+				ex.printStackTrace();
+		}
+		return result;
 	}
 	
 	public static int getAcademicIdByEditorId(int editorId) {
