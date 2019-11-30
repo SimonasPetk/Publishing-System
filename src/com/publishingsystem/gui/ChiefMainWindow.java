@@ -199,6 +199,14 @@ public class ChiefMainWindow {
 		JMenu mnMenu = new JMenu("Menu");
 		menuBar.add(mnMenu);
 		
+		JMenuItem transferChiefEditor = new JMenuItem("Transfer Chief Editor");
+		transferChiefEditor.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				System.out.println("This is an option");
+			}
+		});
+		
 		JMenuItem mntmRetireFromChief = new JMenuItem("Retire From Chief Editors");
 		mntmRetireFromChief.addMouseListener(new MouseAdapter() {
 			@Override
@@ -221,7 +229,7 @@ public class ChiefMainWindow {
 							newBoardOfEditors.add(e);
 						}
 						else {
-							e.retire();
+							e.retire(editor.getJournal().getISSN(), editor.getEmailId());
 						}
 					}
 					if (newBoardOfEditors.get(0).getEditor().getEditorId() != editor.getEditorId()) {
@@ -231,8 +239,7 @@ public class ChiefMainWindow {
 						newBoardOfEditors.get(1).setChiefEditor();
 					}
 					editor.getJournal().setBoardOfEditors(newBoardOfEditors);
-					Academic[] userRoles = RetrieveDatabase.getRoles(editor.getEmailId());
-					new EditorMainWindow(userRoles);
+					new LoginScreen();
 					JOptionPane.showMessageDialog(null, "You have retired", "Retirement", 1);
 					frmChiefEditorsDashboard.dispose();
 				}

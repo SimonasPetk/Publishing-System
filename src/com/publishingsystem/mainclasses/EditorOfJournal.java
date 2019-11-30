@@ -53,10 +53,10 @@ public class EditorOfJournal {
 		chiefEditor = false;
 		Database.removeChiefEditor(editor.getEditorId());
 	}
-	public void retire() {
+	public void retire(int issn, String email) {
 		chiefEditor = false;
 		Database.removeChiefEditor(editor.getEditorId());
-		Database.retireEditor(editor.getEditorId());
+		Database.retireEditor(editor, issn, email);
 	}
 	
 	public void addEditorAsChiefEditor() {

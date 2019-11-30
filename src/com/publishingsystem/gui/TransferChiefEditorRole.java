@@ -25,7 +25,7 @@ import com.publishingsystem.mainclasses.Journal;
 import java.awt.Button;
 import javax.swing.JButton;
 
-public class RetireAsChiefEditor {
+public class TransferChiefEditorRole {
 
 	private JFrame frmRetireAsChief;
 
@@ -36,7 +36,7 @@ public class RetireAsChiefEditor {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RetireAsChiefEditor window = new RetireAsChiefEditor(null);
+					TransferChiefEditorRole window = new TransferChiefEditorRole(null);
 					window.frmRetireAsChief.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -48,12 +48,12 @@ public class RetireAsChiefEditor {
 	/**
 	 * Create the application.
 	 */
-	public RetireAsChiefEditor() {
+	public TransferChiefEditorRole() {
 		System.out.println("Initialized");
 		initialize(null);
 	}
 	
-	public RetireAsChiefEditor(Journal j) {
+	public TransferChiefEditorRole(Journal j) {
 		initialize(j);
 	}
 
