@@ -171,7 +171,7 @@ public class RetrieveDatabase extends Database{
 				ex.printStackTrace();
 			}
 
-			query = "SELECT R.REVIEWERID, R.ACADEMICID, Ros.SUBMISSIONID, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY "
+			query = "SELECT R.REVIEWERID, R.ACADEMICID, Ros.SUBMISSIONID, Ros.COMPLETED, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY "
 					+ "FROM REVIEWERS R LEFT JOIN REVIEWEROFSUBMISSION Ros ON R.REVIEWERID = Ros.REVIEWERID "
 					+ "LEFT JOIN SUBMISSIONS S ON S.SUBMISSIONID = Ros.SUBMISSIONID "
 					+ "LEFT JOIN ARTICLES Art ON Art.ARTICLEID = S.ARTICLEID "
@@ -185,7 +185,7 @@ public class RetrieveDatabase extends Database{
 						reviewer = new Reviewer(res.getInt("ACADEMICID"), res.getInt("REVIEWERID"), title, forename, surname, emailId, university, null);
 						reviewer.setAcademicId(academicId);
 					}
-					if(res.getInt("SUBMISSIONID") != 0) {
+					if(res.getInt("SUBMISSIONID") != 0 && !res.getBoolean("COMPLETED")) {
 						Article a = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
 						Submission s = new Submission(res.getInt("SUBMISSIONID"), a, SubmissionStatus.valueOf(res.getString("STATUS")), null);
 						ReviewerOfSubmission ros = new ReviewerOfSubmission(reviewer, s);
@@ -228,6 +228,52 @@ public class RetrieveDatabase extends Database{
 		}
 		return null;
 
+	}
+	
+	public static void checkReviewsForAuthor(AuthorOfArticle aoa) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query = "SELECT S.SUBMISSIONID, REVIEWERID, R.SUMMARY, TYPINGERRORS, VERDICT "
+					+ "FROM AUTHOROFARTICLE Aoa, ARTICLES Art, SUBMISSIONS S, REVIEWS R "
+					+ "WHERE Art.ARTICLEID = Aoa.ARTICLEID "
+					+ "AND Aoa.MAINAUTHOR = 1 "
+					+ "AND Art.ARTICLEID = S.ARTICLEID "
+					+ "AND S.SUBMISSIONID = R.SUBMISSIONID "
+					+ "AND authorID = ? "
+					+ "AND Aoa.ARTICLEID = ?";
+
+			try(PreparedStatement preparedStmt1 = con.prepareStatement(query)){
+				preparedStmt1.setInt(1, aoa.getAuthor().getAuthorId());
+				preparedStmt1.setInt(2, aoa.getArticle().getArticleId());
+				ResultSet reviewRes = preparedStmt1.executeQuery();
+				while(reviewRes.next()) {
+					int reviewerID = reviewRes.getInt("REVIEWERID");
+					Submission s = aoa.getArticle().getSubmission();
+					if(aoa.isMainAuthor()) {
+						query = "SELECT CRITICISMID, CRITICISM, ANSWER FROM CRITICISMS WHERE SUBMISSIONID = ? AND REVIEWERID = ?";
+						try(PreparedStatement preparedStmt2 = con.prepareStatement(query)){
+							preparedStmt2.setInt(1, s.getSubmissionId());
+							preparedStmt2.setInt(2, reviewerID);
+							ResultSet crticismRes = preparedStmt2.executeQuery();
+							ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
+							while(crticismRes.next()) {
+								criticisms.add(new Criticism(crticismRes.getString("CRITICISM"), crticismRes.getString("ANSWER")));
+							}
+							ReviewerOfSubmission ros = new ReviewerOfSubmission(null, s);
+							Review review = new Review(ros, reviewRes.getString("SUMMARY"), reviewRes.getString("TYPINGERRORS"), criticisms, Verdict.valueOf(reviewRes.getString("VERDICT")));
+							ros.addReview(review);
+							s.addReviewerOfSubmission(ros);
+						}catch (SQLException ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
 	}
 	
 	public static ArrayList<Article> getArticlesSubmittedByReviewer(int reviewerId){
