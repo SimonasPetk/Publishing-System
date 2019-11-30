@@ -111,6 +111,7 @@ public class CreateDatabase extends Database{
 		return "CREATE TABLE REVIEWEROFSUBMISSION ("
 				+ "reviewerID INT REFERENCES REVIEWERS(reviewerID), "
 				+ "submissionID INT REFERENCES SUBMISSIONS(submissionID), "
+				+ "complete BOOLEAN, "
 				+ "PRIMARY KEY (reviewerID, submissionID))";
 	}
 

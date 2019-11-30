@@ -7,6 +7,7 @@ import java.awt.Font;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -27,6 +28,7 @@ import com.publishingsystem.mainclasses.Criticism;
 import com.publishingsystem.mainclasses.Database;
 import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
+import com.publishingsystem.mainclasses.PDF;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.Review;
 import com.publishingsystem.mainclasses.Reviewer;
@@ -70,7 +72,7 @@ public class ReviewerMainWindow {
 	private Reviewer reviewer;
 	private JPanel panel;
 	private JPanel panel_review;
-	private int submissionRowSelectedToReview;
+	private int submissionRowSelectedToReview = -1;
 
 	/**
 	 * Launch the application.
@@ -93,9 +95,9 @@ public class ReviewerMainWindow {
 	 * Create the application.
 	 */
 	public ReviewerMainWindow(Academic[] roles) {
-		submissionsChosenToReview = new ArrayList<ReviewerOfSubmission>();
 		articlesSubmitted = new ArrayList<Article>();
 		reviewer = (Reviewer)roles[2];
+		submissionsChosenToReview = reviewer.getReviewerOfSubmissions();
 		initialize(roles);
 	}
 	
@@ -172,28 +174,28 @@ public class ReviewerMainWindow {
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				try {
-					// Make this into a thread or maybe you Progress monitors.
-					JOptionPane.showMessageDialog(null, "The File will open soon, Press OK", "Reviewer Window", JOptionPane.INFORMATION_MESSAGE);
-					OutputStream out = new FileOutputStream((System.getProperty("user.home") + "/Desktop/" + "ArticleToReview.pdf"));
-					out.write(RetrieveDatabase.getPDF(1)); //PDF ID
-					if(!Desktop.isDesktopSupported()){
-			            System.out.println("Desktop is not supported");
-			            JOptionPane.showMessageDialog(null, "Unable to open the pdf file", "Reviewer Window", 0);
-			            out.close();
-			            return;
-					} 
-					
-					File file = new File((System.getProperty("user.home") + "/Desktop/" + "ArticleToReview.pdf"));
-					Desktop desktop = Desktop.getDesktop();
-			        if(file.exists()) {
-			        	desktop.open(file);
-			        }
-					out.close();
-				}catch(FileNotFoundException fnf) {
-					
-				}catch(IOException io) {
-					
+				if(submissionRowSelectedToReview != -1) {
+					try {
+						ReviewerOfSubmission ros = submissionsChosenToReview.get(submissionRowSelectedToReview);
+				        Submission s = ros.getSubmission();
+				        ArrayList<byte[]> versions = RetrieveDatabase.getPDF(s.getSubmissionId());
+				        for(byte[] pdf : versions) {
+							JFileChooser f = new JFileChooser();
+					        f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); 
+					        f.showSaveDialog(null);
+					        System.out.println(f.getCurrentDirectory());
+					        System.out.println(f.getSelectedFile());
+					        OutputStream out = new FileOutputStream(f.getSelectedFile()+".pdf");
+							out.write(pdf); //PDF ID
+							out.close();
+				        }
+					}catch(FileNotFoundException fnf) {
+						
+					}catch(IOException io) {
+//						
+					}
+				}else {
+					JOptionPane.showMessageDialog(null, "No article selected", "Error in download", 0);
 				}
 			}
 		});
@@ -400,6 +402,8 @@ public class ReviewerMainWindow {
 		panel_4.add(lblArticleSummary, gbc_lblArticleSummary);
 		
 		JTextArea textAreaArticleSummary = new JTextArea();
+		textAreaArticleSummary.setEditable(false);
+		textAreaArticleSummary.setLineWrap(true);
 		GridBagConstraints gbc_textAreaArticleSummary = new GridBagConstraints();
 		gbc_textAreaArticleSummary.gridheight = 2;
 		gbc_textAreaArticleSummary.fill = GridBagConstraints.BOTH;
@@ -452,6 +456,11 @@ public class ReviewerMainWindow {
 		DefaultTableModel str_model1 = new DefaultTableModel();
 		tblChooseToReview = new JTable(str_model1);
 		refreshChooseToReviewTable();
+		tblChooseToReview.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
+		tblChooseToReview.getColumnModel().getColumn(0).setPreferredWidth(10);
+		tblChooseToReview.getColumnModel().getColumn(1).setPreferredWidth(40);
+		tblChooseToReview.getColumnModel().getColumn(2).setPreferredWidth(50);
+		tblChooseToReview.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		tblChooseToReview.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblChooseToReview.setEnabled(false);
 		scrChosenToReview.setViewportView(tblChooseToReview);
@@ -513,6 +522,7 @@ public class ReviewerMainWindow {
 						gbc_editorPaneAnswer.gridx = 0;
 						gbc_editorPaneAnswer.gridy = counter++;
 						panel_3.add(editorPaneAnswer, gbc_editorPaneAnswer);
+						criticisms++;
 					}
 					if(answered){
 						pnlVerdict.setVisible(true);
@@ -537,16 +547,18 @@ public class ReviewerMainWindow {
 
 			tblToReview = new JTable(str_model);
 			refreshToReviewTable();
-			tblToReview.getColumnModel().getColumn(0).setResizable(false);
-			tblToReview.getColumnModel().getColumn(1).setResizable(false);
-			tblToReview.getColumnModel().getColumn(2).setResizable(false);
+			tblToReview.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
+			tblToReview.getColumnModel().getColumn(0).setPreferredWidth(2);
+			tblToReview.getColumnModel().getColumn(1).setPreferredWidth(40);
+			tblToReview.getColumnModel().getColumn(2).setPreferredWidth(50);
+			tblToReview.setFont(new Font("Tahoma", Font.PLAIN, 16));
 			tblToReview.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			tblToReview.setEnabled(false);
 			tblToReview.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent arg0) {
 				    // Open new window displaying the articles in the selected article
-					int selectedArticle = (int)tblToReview.getValueAt(tblToReview.rowAtPoint(arg0.getPoint()), 0);				
+					int selectedArticle = (int)tblToReview.getValueAt(tblToReview.rowAtPoint(arg0.getPoint()), 0);
 					System.out.println(selectedArticle);
 					new ChooseArticlesToReview(reviewer, selectedArticle, rmw);
 				} 
