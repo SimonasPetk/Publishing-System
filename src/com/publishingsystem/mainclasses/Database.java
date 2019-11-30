@@ -38,6 +38,19 @@ public class Database {
 		}
 	}
 	
+	public static void retireEditor(int editorId) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			String query = "UPDATE EDITOROFJOURNAL SET Retired = 1 WHERE editorID = " + editorId;
+			statement.execute(query);
+			statement.close();
+			CreateDatabase.printAllRecords("EDITOROFJOURNAL");
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
 	public static void removeChiefEditor(int editorId) {
 		System.out.println("Updating the table where editorId = " + editorId);
 		try (Connection con = DriverManager.getConnection(CONNECTION)){

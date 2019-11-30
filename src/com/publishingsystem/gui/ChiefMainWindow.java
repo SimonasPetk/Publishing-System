@@ -203,6 +203,11 @@ public class ChiefMainWindow {
 		mntmRetireFromChief.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
+				System.out.println("Should have started doneing that");
+				for (EditorOfJournal e: editor.getJournal().getBoardOfEditors()) {
+					System.out.println(e.getEditor().getFullName());
+				}
+				System.out.println("Should have done that");
 				if (editor.getJournal().getBoardOfEditors().size() <= 1) {
 					JOptionPane.showMessageDialog(null, "You don't have enough editors to retire ", "Error", 1);
 				}
@@ -216,10 +221,7 @@ public class ChiefMainWindow {
 							newBoardOfEditors.add(e);
 						}
 						else {
-							e.removeChiefEditor();
-							if (e.isChiefEditor()) {
-							}
-							newBoardOfEditors.add(e);
+							e.retire();
 						}
 					}
 					if (newBoardOfEditors.get(0).getEditor().getEditorId() != editor.getEditorId()) {
