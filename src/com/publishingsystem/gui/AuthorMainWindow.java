@@ -94,9 +94,9 @@ public class AuthorMainWindow {
 			String[] reviewString = new String[5];
 			reviewString[0] = "Reviewer "+(i+1);
 			reviewString[1] = review.getSummary();
-			reviewString[2] =  review.getInitialVerdict().toString();
-			reviewString[3] =  finalVerdict == null ? "NONE" : finalVerdict.toString();
-			reviewString[4] =  responded ? "Yes" : "No";
+			reviewString[2] = review.getInitialVerdict().toString();
+			reviewString[3] = finalVerdict == null ? "NONE" : finalVerdict.toString();
+			reviewString[4] = responded ? "Yes" : "No";
 			
 			model.addRow(reviewString);
 		}
@@ -200,7 +200,7 @@ public class AuthorMainWindow {
 		reviewTable.getColumnModel().getColumn(1).setPreferredWidth(40);
 		reviewTable.getColumnModel().getColumn(2).setPreferredWidth(50);
 		reviewTable.getColumnModel().getColumn(3).setPreferredWidth(50);
-		reviewTable.getColumnModel().getColumn(3).setPreferredWidth(10);
+		reviewTable.getColumnModel().getColumn(4).setPreferredWidth(10);
 		reviewTable.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		reviewTable.setEnabled(false);
 		scrollPane_2.setViewportView(reviewTable);

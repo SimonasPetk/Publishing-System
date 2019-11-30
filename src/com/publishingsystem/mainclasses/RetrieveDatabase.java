@@ -131,7 +131,7 @@ public class RetrieveDatabase extends Database{
 				ex.printStackTrace();
 			}
 
-			query = "SELECT R.REVIEWERID, R.ACADEMICID, Ros.SUBMISSIONID, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY "
+			query = "SELECT R.REVIEWERID, R.ACADEMICID, Ros.SUBMISSIONID, Ros.COMPLETE, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY "
 					+ "FROM REVIEWERS R LEFT JOIN REVIEWEROFSUBMISSION Ros ON R.REVIEWERID = Ros.REVIEWERID "
 					+ "LEFT JOIN SUBMISSIONS S ON S.SUBMISSIONID = Ros.SUBMISSIONID "
 					+ "LEFT JOIN ARTICLES Art ON Art.ARTICLEID = S.ARTICLEID "
@@ -145,7 +145,7 @@ public class RetrieveDatabase extends Database{
 						reviewer = new Reviewer(res.getInt("ACADEMICID"), res.getInt("REVIEWERID"), title, forename, surname, emailId, university, null);
 						reviewer.setAcademicId(academicId);
 					}
-					if(res.getInt("SUBMISSIONID") != 0) {
+					if(res.getInt("SUBMISSIONID") != 0 && !res.getBoolean("COMPLETE")) {
 						Article a = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
 						Submission s = new Submission(res.getInt("SUBMISSIONID"), a, SubmissionStatus.valueOf(res.getString("STATUS")), null);
 						ReviewerOfSubmission ros = new ReviewerOfSubmission(reviewer, s);
@@ -153,7 +153,6 @@ public class RetrieveDatabase extends Database{
 					}
 				}
 				if(reviewer != null) {
-					List<ReviewerOfSubmission> rosToRemove = new ArrayList<ReviewerOfSubmission>();
 					for(ReviewerOfSubmission ros : reviewer.getReviewerOfSubmissions()) {
 						Submission submission = ros.getSubmission();
 						query = "SELECT Rev.SUBMISSIONID, Rev.SUMMARY, Rev.TYPINGERRORS, Rev.INITIALVERDICT, Rev.FINALVERDICT, C.CRITICISMID, C.CRITICISM, C.ANSWER FROM REVIEWS Rev LEFT JOIN CRITICISMS C "
@@ -170,7 +169,7 @@ public class RetrieveDatabase extends Database{
 									review = new Review(ros, res1.getString("SUMMARY"), res1.getString("TYPINGERRORS"), criticisms, Verdict.valueOf(res1.getString("INITIALVERDICT")));
 									String v = res1.getString("FINALVERDICT");
 									if(v != null)
-										rosToRemove.add(ros);
+										review.setFinalVerdict(Verdict.valueOf(v));
 								}
 								int criticismId = res1.getInt("CRITICISMID");
 								if(criticismId != 0)
@@ -180,7 +179,16 @@ public class RetrieveDatabase extends Database{
 						}catch (SQLException ex) {
 							ex.printStackTrace();
 						}
-						reviewer.getReviewerOfSubmissions().removeAll(rosToRemove);
+						query = "SELECT PDFID, UPLOADDATE FROM PDF WHERE SUBMISSIONID = ?";
+						try(PreparedStatement preparedStmt1 = con.prepareStatement(query)){
+							preparedStmt1.setInt(1, submission.getSubmissionId());
+							ResultSet res1 = preparedStmt1.executeQuery();
+							while(res1.next()) {
+								submission.addVersion(new PDF(res1.getInt("PDFID"), res1.getDate("UPLOADDATE"), submission));
+							}
+						}catch (SQLException ex) {
+							ex.printStackTrace();
+						}
 					}
 				}
 				roles[2] = reviewer;
@@ -200,7 +208,7 @@ public class RetrieveDatabase extends Database{
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			String query = "SELECT S.SUBMISSIONID, Ros.REVIEWERID, R.SUMMARY, TYPINGERRORS, INITIALVERDICT, FINALVERDICT "
+			String query = "SELECT S.SUBMISSIONID, Ros.REVIEWERID, Ros.COMPLETE, R.SUMMARY, TYPINGERRORS, INITIALVERDICT, FINALVERDICT "
 					+ "FROM AUTHOROFARTICLE Aoa, ARTICLES Art, SUBMISSIONS S, REVIEWEROFSUBMISSION Ros, REVIEWS R "
 					+ "WHERE Art.ARTICLEID = Aoa.ARTICLEID "
 					+ "AND Aoa.MAINAUTHOR = 1 "
@@ -232,6 +240,7 @@ public class RetrieveDatabase extends Database{
 								criticisms.add(c);
 							}
 							ReviewerOfSubmission ros = new ReviewerOfSubmission(new Reviewer(0, reviewerID, null, null, null, null, null, null), s);
+							ros.setComplete(reviewRes.getBoolean("COMPLETE"));
 							Review review = new Review(ros, reviewRes.getString("SUMMARY"), reviewRes.getString("TYPINGERRORS"), criticisms, Verdict.valueOf(reviewRes.getString("INITIALVERDICT")));
 							String v = reviewRes.getString("FINALVERDICT");
 							if(v != null)
@@ -357,7 +366,10 @@ public class RetrieveDatabase extends Database{
 					//Don't get submissions which the reviewer has already decided to review
 					+ "AND SUBMISSIONID NOT IN "
 					+ "(SELECT SUBMISSIONID FROM REVIEWEROFSUBMISSION "
-					+ "WHERE REVIEWERID = ?)";
+					+ "WHERE REVIEWERID = ?)"
+					//Don't get submissions where the number of reviewers who have selected it is 3
+					+ "AND SUBMISSIONID NOT IN "
+					+ "(SELECT SUBMISSIONID AS NUMR FROM REVIEWEROFSUBMISSION GROUP BY SUBMISSIONID HAVING COUNT(*) > 2)";
 			ArrayList<Submission> submissions = new ArrayList<Submission>();
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setString(1, r.getUniversity());
@@ -407,21 +419,23 @@ public class RetrieveDatabase extends Database{
 		}
 		return null;
 	}
-
-	public static byte[] getPDF(int pdfId) {
+	
+	public static ArrayList<byte[]> getPDF(int submissionID) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			String query = "SELECT PDFTEXT FROM PDF WHERE pdfID = ?";
+			String query = "SELECT PDFTEXT FROM PDF WHERE submissionID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, pdfId);
+				preparedStmt.setInt(1, submissionID);
 				ResultSet res = preparedStmt.executeQuery();
+				ArrayList<byte[]> versions = new ArrayList<byte[]>();
 				while(res.next()) {
 					Blob blob = res.getBlob("PDFTEXT");
-					int blobLength = (int) blob.length();  
-					return blob.getBytes(1, blobLength);
+					int blobLength = (int) blob.length(); 
+					versions.add(blob.getBytes(1, blobLength));
 				}
+				return versions;
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}

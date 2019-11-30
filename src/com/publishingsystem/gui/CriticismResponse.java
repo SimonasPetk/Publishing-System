@@ -134,17 +134,21 @@ public class CriticismResponse {
 		btnAddUpdatedPdf.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				FileDialog fd = new FileDialog(new JFrame());
-				fd.setVisible(true);
-				File[] f = fd.getFiles();
-
-				if(f.length > 0){
-					pdfPath = fd.getFiles()[0].getAbsolutePath();
-					System.out.println(pdfPath);
-					lblPdfIsNot.setText("PDF is successfully uploaded");
-				}		
-				else {
-					lblPdfIsNot.setText("Try Again! PDF did not upload!");
+				if(pdfPath == null) {
+					FileDialog fd = new FileDialog(new JFrame());
+					fd.setVisible(true);
+					File[] f = fd.getFiles();
+	
+					if(f.length > 0){
+						pdfPath = fd.getFiles()[0].getAbsolutePath();
+						System.out.println(pdfPath);
+						lblPdfIsNot.setText("PDF is successfully uploaded");
+					}		
+					else {
+						lblPdfIsNot.setText("Try Again! PDF did not upload!");
+					}
+				}else {
+					JOptionPane.showMessageDialog(null, "PDF already uploaded", "Error in submission", 0);
 				}
 			}
 		});
@@ -251,14 +255,15 @@ public class CriticismResponse {
 		panel.setLayout(gbl_panel);
 		
 		int qCount = 1;
-		for(int i = 0; i < criticisms.size()*2; i++) {
+		int counter = 0;
+		for(int i = 0; i < criticisms.size(); i++) {
 			JPanel panel_1 = new JPanel();
 			panel_1.setBorder(null);
 			GridBagConstraints gbc_panel_1 = new GridBagConstraints();
 			gbc_panel_1.insets = new Insets(0, 0, 5, 0);
 			gbc_panel_1.fill = GridBagConstraints.HORIZONTAL;
 			gbc_panel_1.gridx = 0;
-			gbc_panel_1.gridy = i;
+			gbc_panel_1.gridy = counter;
 			panel.add(panel_1, gbc_panel_1);
 			panel_1.setLayout(new GridLayout(0, 1, 0, 0));
 			
@@ -266,6 +271,7 @@ public class CriticismResponse {
 			lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
 			panel_1.add(lblNewLabel);
 			
+			counter++;
 			JTextArea textArea = new JTextArea();
 			textArea.setLineWrap(true);
 			textArea.setLayout(null);
@@ -274,9 +280,9 @@ public class CriticismResponse {
 			gbc_textField_1.insets = new Insets(0, 0, 10, 0);
 			gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
 			gbc_textField_1.gridx = 0;
-			gbc_textField_1.gridy = i+1;
+			gbc_textField_1.gridy = counter;
 			panel.add(textArea, gbc_textField_1);
-			i++;
+			counter++;
 			qCount++;
 		}	
 		frmRespondToCriticism.getContentPane().setLayout(groupLayout);
