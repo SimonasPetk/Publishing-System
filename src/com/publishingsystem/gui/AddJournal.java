@@ -6,6 +6,7 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import java.awt.Font;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -91,30 +92,39 @@ public class AddJournal {
 			    // Create new journal object
 				String journalName = textField.getText();
 				String JournalISSN = textField_1.getText();
-				Date now = new Date(System.currentTimeMillis());
-				Journal newJournal = new Journal(Integer.parseInt(JournalISSN), journalName, now);
 				
-				// Register the chief editor as a chief editor
-				ArrayList<Editor> editors = new ArrayList<Editor>();
-                editors.add((Editor)roles[0]);
-                Database.registerEditors(editors);
-				
-                // Add the editor to the journal as the chief editor
-				EditorOfJournal chief = new EditorOfJournal(newJournal, (Editor)roles[0], true);
-				//ArrayList<EditorOfJournal> editorOfNewJournal = new ArrayList<EditorOfJournal>();
-				//editorOfNewJournal.add(chief);
-				newJournal.addEditorToBoard(chief);
+				try {
+					Date now = new Date(System.currentTimeMillis());
+					Journal newJournal = new Journal(Integer.parseInt(JournalISSN), journalName, now);
+					// Register the chief editor as a chief editor
+					ArrayList<Editor> editors = new ArrayList<Editor>();
+	                editors.add((Editor)roles[0]);
+	                Database.registerEditors(editors);
+					
+	                // Add the editor to the journal as the chief editor
+					EditorOfJournal chief = new EditorOfJournal(newJournal, (Editor)roles[0], true);
+					//ArrayList<EditorOfJournal> editorOfNewJournal = new ArrayList<EditorOfJournal>();
+					//editorOfNewJournal.add(chief);
+					newJournal.addEditorToBoard(chief);
 
-				// Record that the editor is an editor of the new journal
-				((Editor)roles[0]).addEditorOfJournal(chief);
-				
-				// Add the journal to the database
-				Database.addJournal(newJournal);
-				
-				// Open ChiefMainWindow
-				frmAddJournal.dispose();
-				new ChiefMainWindow(roles);
-				System.out.println("Should be on that menu now boya");
+					// Record that the editor is an editor of the new journal
+					((Editor)roles[0]).addEditorOfJournal(chief);
+					
+					// Add the journal to the database
+					Database.addJournal(newJournal);
+					
+					// Open ChiefMainWindow
+					frmAddJournal.dispose();
+					new ChiefMainWindow(roles);
+					System.out.println("Should be on that menu now boya");
+			      }
+			      catch (Exception e) {
+			         System.out.println("Exception occurred ISSN contains non-digit characters");
+			         
+			         final JPanel panel = new JPanel();
+
+			         JOptionPane.showMessageDialog(panel, "Please only enter 8 digits of ISSN code, No other characters are needed.", "Warning", JOptionPane.WARNING_MESSAGE);
+			      }
 			}
 		});
 		btnAddJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));
