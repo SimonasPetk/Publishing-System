@@ -52,6 +52,8 @@ import javax.swing.JTextArea;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 
 public class ReviewerMainWindow {
@@ -153,7 +155,7 @@ public class ReviewerMainWindow {
 	private void initialize(Academic[] roles) {
 		submissionsChosenToReview = reviewer.getReviewerOfSubmissions();
 		frmReviewDashboard = new JFrame();
-		frmReviewDashboard.setBounds(100, 100, 900, 740);
+		frmReviewDashboard.setBounds(100, 100, 1197, 740);
 		frmReviewDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmReviewDashboard.setVisible(true);
 		
@@ -168,7 +170,7 @@ public class ReviewerMainWindow {
 		});
 		btnCheckResponses.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JLabel lblArticlesReview = new JLabel("Article's Review");
+		JLabel lblArticlesReview = new JLabel("Article's Review:");
 		lblArticlesReview.setToolTipText("");
 		lblArticlesReview.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
@@ -212,8 +214,9 @@ public class ReviewerMainWindow {
 		panel = new JPanel();
 		
 		JScrollPane scrollPane_2 = new JScrollPane();
+		scrollPane_2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		JLabel lblArticle = new JLabel("Article");
+		JLabel lblArticle = new JLabel("Article:");
 		lblArticle.setToolTipText("");
 		lblArticle.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
@@ -221,6 +224,8 @@ public class ReviewerMainWindow {
 		btnReviewArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JScrollPane scrollPane = new JScrollPane();
+		
+		JPanel pnlVerdict = new JPanel();
         
 		GroupLayout groupLayout = new GroupLayout(frmReviewDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -228,28 +233,25 @@ public class ReviewerMainWindow {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(scrChosenToReview, GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)
+							.addComponent(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addComponent(lblArticlesYouHave))
+					.addGap(30)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE)
+						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+							.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 171, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnReviewArticle, GroupLayout.PREFERRED_SIZE, 176, GroupLayout.PREFERRED_SIZE))
+						.addComponent(scrollPane_2, Alignment.TRAILING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(scrChosenToReview, GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)
-								.addComponent(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-							.addGap(30)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 124, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnReviewArticle, GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE))
-								.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(btnCheckResponses, GroupLayout.PREFERRED_SIZE, 146, GroupLayout.PREFERRED_SIZE)
-									.addGap(145))
-								.addComponent(lblArticle, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE)))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblArticlesYouHave)
-							.addPreferredGap(ComponentPlacement.RELATED, 342, Short.MAX_VALUE)
-							.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE)
-							.addGap(22)))
-					.addGap(16))
+							.addComponent(btnCheckResponses, GroupLayout.PREFERRED_SIZE, 164, GroupLayout.PREFERRED_SIZE)
+							.addGap(18)
+							.addComponent(pnlVerdict, GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE))
+						.addComponent(lblArticle, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE)
+						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE))
+					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -261,23 +263,51 @@ public class ReviewerMainWindow {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE)
+							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 274, Short.MAX_VALUE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnCheckResponses)
-							.addGap(27)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(pnlVerdict, 0, 0, Short.MAX_VALUE)
+								.addComponent(btnCheckResponses, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblArticle, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 204, GroupLayout.PREFERRED_SIZE)
+							.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnNewButton)
-								.addComponent(btnReviewArticle)))
+								.addComponent(btnReviewArticle)
+								.addComponent(btnNewButton)))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrChosenToReview, GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+							.addComponent(scrChosenToReview, GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
 							.addGap(29)
 							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 436, GroupLayout.PREFERRED_SIZE)))
 					.addGap(31))
 		);
+		
+		JComboBox cmbVerdict = new JComboBox();
+		cmbVerdict.setModel(new DefaultComboBoxModel(new String[] {"Strong Accept", "Weak Accept", "Weak Reject", "Strong Reject"}));
+		cmbVerdict.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		
+		JButton btnVerdict = new JButton("Submit Final Verdict");
+		btnVerdict.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		GroupLayout gl_pnlVerdict = new GroupLayout(pnlVerdict);
+		gl_pnlVerdict.setHorizontalGroup(
+			gl_pnlVerdict.createParallelGroup(Alignment.LEADING)
+				.addGroup(Alignment.TRAILING, gl_pnlVerdict.createSequentialGroup()
+					.addContainerGap(42, Short.MAX_VALUE)
+					.addComponent(cmbVerdict, GroupLayout.PREFERRED_SIZE, 207, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(btnVerdict))
+		);
+		gl_pnlVerdict.setVerticalGroup(
+			gl_pnlVerdict.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_pnlVerdict.createSequentialGroup()
+					.addGroup(gl_pnlVerdict.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnVerdict)
+						.addComponent(cmbVerdict, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+		);
+		pnlVerdict.setLayout(gl_pnlVerdict);
+		pnlVerdict.setVisible(false);
 		
 		JPanel panel_review = new JPanel();
 		panel_review.setVisible(false);
@@ -285,7 +315,7 @@ public class ReviewerMainWindow {
 		GridBagLayout gbl_panel_2 = new GridBagLayout();
 		gbl_panel_2.columnWidths = new int[]{287, 0};
 		gbl_panel_2.rowHeights = new int[]{44, 44, 44, 44, 44, 0, 0, 0};
-		gbl_panel_2.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_panel_2.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		gbl_panel_2.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel_review.setLayout(gbl_panel_2);
 		
@@ -340,9 +370,9 @@ public class ReviewerMainWindow {
 		JPanel panel_4 = new JPanel();
 		scrollPane_2.setViewportView(panel_4);
 		GridBagLayout gbl_panel_4 = new GridBagLayout();
-		gbl_panel_4.columnWidths = new int[]{287, 0};
+		gbl_panel_4.columnWidths = new int[] {220, 0};
 		gbl_panel_4.rowHeights = new int[]{40, 40, 40, 40, 40, 0};
-		gbl_panel_4.columnWeights = new double[]{0.0, Double.MIN_VALUE};
+		gbl_panel_4.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		gbl_panel_4.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel_4.setLayout(gbl_panel_4);
 		
