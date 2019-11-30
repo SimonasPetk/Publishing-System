@@ -10,12 +10,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
 public class Database {
-//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-//	protected static final String DATABASE = "team022";
+	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+	protected static final String DATABASE = "team022";
 	
 	//localhost
-	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-	protected static final String DATABASE = "publishing_system";
+//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+//	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -38,14 +38,32 @@ public class Database {
 		}
 	}
 	
-	public static void retireEditor(int editorId) {
+	public static void retireEditor(Editor editor, int issn, String email) {
+		int editorId = editor.getEditorId();
+		int academicId = editor.getAcademicId();
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "UPDATE EDITOROFJOURNAL SET Retired = 1 WHERE editorID = " + editorId;
+			String query = "DELETE FROM EDITOROFJOURNAL WHERE editorID = " + editorId + " AND ISSN = " + issn;
+			System.out.println(query);
 			statement.execute(query);
 			statement.close();
-			CreateDatabase.printAllRecords("EDITOROFJOURNAL");
+			Academic[] roles = RetrieveDatabase.getRoles(email);
+			if (roles.length == 0) {
+				deleteAcademic(academicId);
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void deleteAcademic(int academicId) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			String query = "DELETE FROM ACADEMICS WHERE editorID = " + academicId;
+			statement.execute(query);
+			statement.close();
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}

@@ -45,6 +45,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
+
 public class JournalWindow {
 
 	private JFrame frmJournalWindow;
