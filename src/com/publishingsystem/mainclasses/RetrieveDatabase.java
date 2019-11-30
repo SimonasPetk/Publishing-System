@@ -28,7 +28,9 @@ public class RetrieveDatabase extends Database{
 					int issn = res.getInt("ISSN");
 					String name = res.getString("name");
 					Date date = res.getDate("dateOfPublication");
-					journals.add(new Journal(issn, name, date));
+					Journal j = new Journal(issn,name,date);
+					j.setBoardOfEditors(RetrieveDatabase.getEditorsOfJournal(issn, j));
+					journals.add(j);
 				}
 				return journals;
 
