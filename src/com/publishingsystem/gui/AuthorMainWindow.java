@@ -32,6 +32,7 @@ import java.awt.Insets;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.GridLayout;
 
 /* NOTE TO DO
  * 
@@ -86,7 +87,7 @@ public class AuthorMainWindow {
 	    // Configure frame
 		frmAuthorsDashboard = new JFrame();
 		frmAuthorsDashboard.setTitle("Author's Dashboard");
-		frmAuthorsDashboard.setBounds(100, 100, 900, 740);
+		frmAuthorsDashboard.setBounds(100, 100, 976, 740);
 		frmAuthorsDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAuthorsDashboard.setVisible(true);
 		
@@ -118,20 +119,11 @@ public class AuthorMainWindow {
         
         tblSubmitted.setEnabled(false);
         scrSubmitted.setViewportView(tblSubmitted);
-
 		
 		// Review panel
 		JLabel lblArticlesReview = new JLabel("Article's Review");
         lblArticlesReview.setToolTipText("");
         lblArticlesReview.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		
-		JScrollPane scrReview = new JScrollPane();
-		scrReview.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrReview.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        JEditorPane editPaneReview = new JEditorPane();
-        editPaneReview.setEditable(false);
-        scrReview.setViewportView(editPaneReview);
 		
 		JButton btnRespondToReviews = new JButton("Respond to Reviews");
 		btnRespondToReviews.addMouseListener(new MouseAdapter() {
@@ -142,6 +134,20 @@ public class AuthorMainWindow {
 		});
 		btnRespondToReviews.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
+		   tblSubmitted.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent arg0) {
+				    // Open new window displaying the articles in the selected article
+					int row = tblSubmitted.rowAtPoint(arg0.getPoint());
+					
+					System.out.println(row);
+				}
+	        });
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+		
 		// Configure layout
 		GroupLayout groupLayout = new GroupLayout(frmAuthorsDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -151,12 +157,16 @@ public class AuthorMainWindow {
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(scrSubmitted, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addGap(10)
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(scrReview, GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
-								.addComponent(btnRespondToReviews)
-								.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(btnRespondToReviews))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGap(18)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 345, GroupLayout.PREFERRED_SIZE)
+										.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE))))
+							.addGap(117))
 						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
@@ -166,17 +176,59 @@ public class AuthorMainWindow {
 					.addGap(10)
 					.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(scrReview, GroupLayout.PREFERRED_SIZE, 198, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(btnRespondToReviews))
+							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addComponent(scrSubmitted, GroupLayout.PREFERRED_SIZE, 636, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+							.addGap(19))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrSubmitted, GroupLayout.PREFERRED_SIZE, 636, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap())))
+							.addGap(31)
+							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 290, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(btnRespondToReviews)
+							.addGap(280))))
 		);
+		
+		JPanel panel = new JPanel();
+		scrollPane.setViewportView(panel);
+		GridBagLayout gbl_panel = new GridBagLayout();
+		gbl_panel.columnWidths = new int[]{341, 0};
+		gbl_panel.rowHeights = new int[]{71, 71, 71, 71, 0};
+		gbl_panel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		panel.setLayout(gbl_panel);
+		
+		JLabel lblSummary = new JLabel("Summary");
+		GridBagConstraints gbc_lblSummary = new GridBagConstraints();
+		gbc_lblSummary.fill = GridBagConstraints.BOTH;
+		gbc_lblSummary.insets = new Insets(0, 0, 5, 0);
+		gbc_lblSummary.gridx = 0;
+		gbc_lblSummary.gridy = 0;
+		panel.add(lblSummary, gbc_lblSummary);
+		
+		JEditorPane editorPane = new JEditorPane();
+		GridBagConstraints gbc_editorPane = new GridBagConstraints();
+		gbc_editorPane.fill = GridBagConstraints.BOTH;
+		gbc_editorPane.insets = new Insets(0, 0, 5, 0);
+		gbc_editorPane.gridx = 0;
+		gbc_editorPane.gridy = 1;
+		panel.add(editorPane, gbc_editorPane);
+		
+		JLabel lblTypingErrors = new JLabel("Typing Errors");
+		GridBagConstraints gbc_lblTypingErrors = new GridBagConstraints();
+		gbc_lblTypingErrors.fill = GridBagConstraints.BOTH;
+		gbc_lblTypingErrors.insets = new Insets(0, 0, 5, 0);
+		gbc_lblTypingErrors.gridx = 0;
+		gbc_lblTypingErrors.gridy = 2;
+		panel.add(lblTypingErrors, gbc_lblTypingErrors);
+		
+		JEditorPane editorPane_1 = new JEditorPane();
+		GridBagConstraints gbc_editorPane_1 = new GridBagConstraints();
+		gbc_editorPane_1.fill = GridBagConstraints.BOTH;
+		gbc_editorPane_1.gridx = 0;
+		gbc_editorPane_1.gridy = 3;
+		panel.add(editorPane_1, gbc_editorPane_1);
 
 		frmAuthorsDashboard.getContentPane().setLayout(groupLayout);
 		
