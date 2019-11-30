@@ -23,6 +23,25 @@ public enum SubmissionStatus {
 		}
 	}
 	
+	public String getStatus() {
+		switch(this) {
+		case SUBMITTED:
+			return "Submitted";
+		case REVIEWSRECEIVED:
+			return "Submitted -> Reviews received";
+		case INITIALVERDICT:
+			return "Submitted -> Reviews received -> Initial verdict";
+		case RESPONSESRECEIVED:
+			return "Submitted -> Reviews received -> Initial verdict -> Responses received";
+		case FINALVERDICT:
+			return "Submitted -> Reviews received -> Initial verdict -> Responses received -> Final verdict";
+		case COMPLETED:
+			return "Completed";
+		default:
+			return "";
+		}
+	}
+	
 	public String toString() {
 		switch(this) {
 			case SUBMITTED:

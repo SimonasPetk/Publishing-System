@@ -47,7 +47,7 @@ import java.awt.Insets;
 public class ReviewArticle {
 
 	private JFrame frmReviewArticle;
-	private ArrayList<JEditorPane> edPaneCriticisms;
+	private ArrayList<JTextArea> edPaneCriticisms;
 	private int criticisms = 1;
 	private int counter = 0;
 
@@ -71,7 +71,7 @@ public class ReviewArticle {
 	 * Create the application.
 	 */
 	public ReviewArticle(ReviewerOfSubmission ros, ReviewerMainWindow rmw) {
-		edPaneCriticisms = new ArrayList<JEditorPane>();
+		edPaneCriticisms = new ArrayList<JTextArea>();
 		initialize(ros, rmw);
 	}
 
@@ -128,7 +128,7 @@ public class ReviewArticle {
 				String verdict = String.valueOf(comboBox.getSelectedItem()).replaceAll("\\s+","");
 				boolean criticismsOK = true;
 				ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
-				for(JEditorPane jep : edPaneCriticisms) {
+				for(JTextArea jep : edPaneCriticisms) {
 					String c = jep.getText();
 					if(c.isEmpty()) {
 						criticismsOK = false;
@@ -183,7 +183,8 @@ public class ReviewArticle {
 				gbc_lblNewLbl.gridy = counter;
 				panel.add(lblNewLbl, gbc_lblNewLbl);
 				counter++;
-				JEditorPane textArea = new JEditorPane();
+				JTextArea textArea = new JTextArea();
+				textArea.setLineWrap(true);
 				edPaneCriticisms.add(textArea);
 				GridBagConstraints gbc_textArea = new GridBagConstraints();
 				gbc_textArea.insets = new Insets(0, 0, 5, 0);
@@ -283,7 +284,8 @@ public class ReviewArticle {
 		panel.add(lblCriticism_1, gbc_lblCriticism_1);
 		counter++;
 		criticisms++;
-		JEditorPane textArea = new JEditorPane();
+		JTextArea textArea = new JTextArea();
+		textArea.setLineWrap(true);
 		//textArea.setRows(2);
 		GridBagConstraints gbc_textArea = new GridBagConstraints();
 		gbc_textArea.insets = new Insets(0, 0, 5, 0);

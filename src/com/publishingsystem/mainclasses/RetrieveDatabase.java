@@ -145,7 +145,7 @@ public class RetrieveDatabase extends Database{
 						reviewer = new Reviewer(res.getInt("ACADEMICID"), res.getInt("REVIEWERID"), title, forename, surname, emailId, university, null);
 						reviewer.setAcademicId(academicId);
 					}
-					if(res.getInt("SUBMISSIONID") != 0 && !res.getBoolean("COMPLETED")) {
+					if(res.getInt("SUBMISSIONID") != 0) {
 						Article a = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
 						Submission s = new Submission(res.getInt("SUBMISSIONID"), a, SubmissionStatus.valueOf(res.getString("STATUS")), null);
 						ReviewerOfSubmission ros = new ReviewerOfSubmission(reviewer, s);
@@ -153,9 +153,10 @@ public class RetrieveDatabase extends Database{
 					}
 				}
 				if(reviewer != null) {
+					List<ReviewerOfSubmission> rosToRemove = new ArrayList<ReviewerOfSubmission>();
 					for(ReviewerOfSubmission ros : reviewer.getReviewerOfSubmissions()) {
 						Submission submission = ros.getSubmission();
-						query = "SELECT Rev.SUBMISSIONID, Rev.SUMMARY, Rev.TYPINGERRORS, Rev.VERDICT, C.CRITICISMID, C.CRITICISM, C.ANSWER FROM REVIEWS Rev LEFT JOIN CRITICISMS C "
+						query = "SELECT Rev.SUBMISSIONID, Rev.SUMMARY, Rev.TYPINGERRORS, Rev.INITIALVERDICT, Rev.FINALVERDICT, C.CRITICISMID, C.CRITICISM, C.ANSWER FROM REVIEWS Rev LEFT JOIN CRITICISMS C "
 								+ "ON C.SUBMISSIONID = Rev.SUBMISSIONID AND C.REVIEWERID = Rev.REVIEWERID "
 								+ "WHERE Rev.REVIEWERID = ? AND Rev.SUBMISSIONID = ?";
 						try(PreparedStatement preparedStmt1 = con.prepareStatement(query)){
@@ -166,7 +167,10 @@ public class RetrieveDatabase extends Database{
 							ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
 							while(res1.next()) {
 								if(review == null) {
-									review = new Review(ros, res1.getString("SUMMARY"), res1.getString("TYPINGERRORS"), criticisms, Verdict.valueOf(res1.getString("VERDICT")));
+									review = new Review(ros, res1.getString("SUMMARY"), res1.getString("TYPINGERRORS"), criticisms, Verdict.valueOf(res1.getString("INITIALVERDICT")));
+									String v = res1.getString("FINALVERDICT");
+									if(v != null)
+										rosToRemove.add(ros);
 								}
 								int criticismId = res1.getInt("CRITICISMID");
 								if(criticismId != 0)
@@ -176,6 +180,7 @@ public class RetrieveDatabase extends Database{
 						}catch (SQLException ex) {
 							ex.printStackTrace();
 						}
+						reviewer.getReviewerOfSubmissions().removeAll(rosToRemove);
 					}
 				}
 				roles[2] = reviewer;
@@ -195,12 +200,14 @@ public class RetrieveDatabase extends Database{
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			String query = "SELECT S.SUBMISSIONID, REVIEWERID, R.SUMMARY, TYPINGERRORS, VERDICT "
-					+ "FROM AUTHOROFARTICLE Aoa, ARTICLES Art, SUBMISSIONS S, REVIEWS R "
+			String query = "SELECT S.SUBMISSIONID, Ros.REVIEWERID, R.SUMMARY, TYPINGERRORS, INITIALVERDICT, FINALVERDICT "
+					+ "FROM AUTHOROFARTICLE Aoa, ARTICLES Art, SUBMISSIONS S, REVIEWEROFSUBMISSION Ros, REVIEWS R "
 					+ "WHERE Art.ARTICLEID = Aoa.ARTICLEID "
 					+ "AND Aoa.MAINAUTHOR = 1 "
 					+ "AND Art.ARTICLEID = S.ARTICLEID "
-					+ "AND S.SUBMISSIONID = R.SUBMISSIONID "
+					+ "AND S.SUBMISSIONID = Ros.SUBMISSIONID "
+					+ "AND Ros.REVIEWERID = R.REVIEWERID "
+					+ "AND Ros.SUBMISSIONID = R.SUBMISSIONID "
 					+ "AND authorID = ? "
 					+ "AND Aoa.ARTICLEID = ?";
 
@@ -208,38 +215,62 @@ public class RetrieveDatabase extends Database{
 				preparedStmt1.setInt(1, aoa.getAuthor().getAuthorId());
 				preparedStmt1.setInt(2, aoa.getArticle().getArticleId());
 				ResultSet reviewRes = preparedStmt1.executeQuery();
+				ArrayList<ReviewerOfSubmission> revOfSubs = new ArrayList<ReviewerOfSubmission>();
+				Submission s = aoa.getArticle().getSubmission();
 				while(reviewRes.next()) {
 					int reviewerID = reviewRes.getInt("REVIEWERID");
-					Submission s = aoa.getArticle().getSubmission();
-					boolean reviewerPresent = false;
-					for(ReviewerOfSubmission ros : s.getReviewersOfSubmission()) {
-						if(ros.getReviewer().getReviewerId() == reviewerID) {
-							reviewerPresent = true;
-						}
-					}
-					if(aoa.isMainAuthor() && !reviewerPresent) {
+					if(aoa.isMainAuthor()) {
 						query = "SELECT CRITICISMID, CRITICISM FROM CRITICISMS WHERE SUBMISSIONID = ? AND REVIEWERID = ?";
 						try(PreparedStatement preparedStmt2 = con.prepareStatement(query)){
 							preparedStmt2.setInt(1, s.getSubmissionId());
 							preparedStmt2.setInt(2, reviewerID);
-							ResultSet crticismRes = preparedStmt2.executeQuery();
+							ResultSet criticismRes = preparedStmt2.executeQuery();
 							ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
-							while(crticismRes.next()) {
-								criticisms.add(new Criticism(crticismRes.getString("CRITICISM")));
+							while(criticismRes.next()) {
+								Criticism c = new Criticism(criticismRes.getString("CRITICISM"));
+								c.setCriticismId(criticismRes.getInt("CRITICISMID"));
+								criticisms.add(c);
 							}
 							ReviewerOfSubmission ros = new ReviewerOfSubmission(new Reviewer(0, reviewerID, null, null, null, null, null, null), s);
-							Review review = new Review(ros, reviewRes.getString("SUMMARY"), reviewRes.getString("TYPINGERRORS"), criticisms, Verdict.valueOf(reviewRes.getString("VERDICT")));
+							Review review = new Review(ros, reviewRes.getString("SUMMARY"), reviewRes.getString("TYPINGERRORS"), criticisms, Verdict.valueOf(reviewRes.getString("INITIALVERDICT")));
+							String v = reviewRes.getString("FINALVERDICT");
+							if(v != null)
+								review.setFinalVerdict(Verdict.valueOf(v));
 							ros.addReview(review);
-							s.addReviewerOfSubmission(ros);
+							revOfSubs.add(ros);
 						}catch (SQLException ex) {
 							ex.printStackTrace();
 						}
 					}
 				}
+				s.setReviewersOfSubmission(revOfSubs);
 			}
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	public static boolean checkIfAllAnswered(ReviewerOfSubmission ros) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query = "SELECT 1 FROM REVIEWS R, CRITICISMS C WHERE C.SUBMISSIONID = R.SUBMISSIONID AND C.REVIEWERID = R.REVIEWERID AND ANSWER IS NULL AND R.REVIEWERID = ? AND R.SUBMISSIONID = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, ros.getReviewer().getReviewerId());
+				preparedStmt.setInt(2, ros.getSubmission().getSubmissionId());
+				ResultSet res = preparedStmt.executeQuery();
+				if(res.next()) {
+					return false;
+				}
+				return true;
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return false;
 	}
 	
 	public static ArrayList<Article> getArticlesSubmittedByReviewer(int reviewerId){

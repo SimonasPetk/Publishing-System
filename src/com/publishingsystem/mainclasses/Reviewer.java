@@ -40,8 +40,5 @@ public class Reviewer extends Academic{
 	public int getReviewerId() {
 		return this.reviewerId;
 	}
-	
-	public void setVerdict(Review r, Verdict v) {
-		r.setVerdict(v);
-	}
+
 }

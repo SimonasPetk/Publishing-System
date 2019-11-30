@@ -10,12 +10,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
 public class Database {
-	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	protected static final String DATABASE = "team022";
+//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+//	protected static final String DATABASE = "team022";
 	
 	//localhost
-//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-//	protected static final String DATABASE = "publishing_system";
+	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -397,11 +397,10 @@ public class Database {
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 			for(Submission s : submissions) {
-				String query = "INSERT INTO REVIEWEROFSUBMISSION values (?, ?, ?)";
+				String query = "INSERT INTO REVIEWEROFSUBMISSION values (?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, r.getReviewerId());
 					preparedStmt.setInt(2, s.getSubmissionId());
-					preparedStmt.setBoolean(3, false);
 					preparedStmt.execute();
 				}catch (SQLException ex) {
 					ex.printStackTrace();
@@ -429,16 +428,13 @@ public class Database {
 			Reviewer reviewer = review.getReviewerOfSubmission().getReviewer();
 			Submission submission = review.getReviewerOfSubmission().getSubmission();
 
-			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, ?)";
+			String query = "INSERT INTO REVIEWS values (?, ?, ?, ?, ?, null)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, reviewer.getReviewerId());
 				preparedStmt.setInt(2, submission.getSubmissionId());
 				preparedStmt.setString(3, review.getSummary());
 				preparedStmt.setString(4, review.getTypingErrors());
-				if(review.getVerdict() != null)
-					preparedStmt.setString(5, review.getVerdict().asString());
-				else
-					preparedStmt.setNull(5, Types.VARCHAR);
+				preparedStmt.setString(5, review.getInitialVerdict().asString());
 				preparedStmt.execute();
 			}catch (SQLException ex) {
 				ex.printStackTrace();
@@ -498,9 +494,9 @@ public class Database {
 			Reviewer reviewer = r.getReviewerOfSubmission().getReviewer();
 			Submission submission = r.getReviewerOfSubmission().getSubmission();
 
-			String query = "UPDATE REVIEWS SET verdict = ? WHERE reviewerID = ? and submissionID = ?";
+			String query = "UPDATE REVIEWS SET finalVerdict = ? WHERE reviewerID = ? and submissionID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setString(1, r.getVerdict().asString());
+				preparedStmt.setString(1, r.getFinalVerdict().asString());
 				preparedStmt.setInt(2, reviewer.getReviewerId());
 				preparedStmt.setInt(3, submission.getSubmissionId());
 
@@ -508,46 +504,24 @@ public class Database {
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
-			
-			query = "UPDATE REVIEWEROFSUBMISSION SET completed = 1 WHERE reviewerID = ? and submissionID = ?";
-			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, reviewer.getReviewerId());
-				preparedStmt.setInt(2, submission.getSubmissionId());
-				preparedStmt.execute();
-			}catch (SQLException ex) {
-				ex.printStackTrace();
-			}
 
+			int numFinalVerdicts = 0;
 
-			int numVerdicts = 0;
-			SubmissionStatus status = null;
-
-			query = "SELECT REVIEWS.SUBMISSIONID, COUNT(*) AS REVIEWS, STATUS FROM REVIEWS, "
+			query = "SELECT REVIEWS.SUBMISSIONID, COUNT(*) AS REVIEWS FROM REVIEWS, "
 					+ "SUBMISSIONS WHERE REVIEWS.submissionID = ? AND SUBMISSIONS.submissionID = ? "
-					+ "AND verdict IS NOT NULL";
+					+ "AND finalVerdict IS NOT NULL";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, submission.getSubmissionId());
 				preparedStmt.setInt(2, submission.getSubmissionId());
 				ResultSet rs = preparedStmt.executeQuery();
 				while(rs.next()) {
-					numVerdicts = rs.getInt("REVIEWS");
-					status = SubmissionStatus.valueOf(rs.getString("Status"));
+					numFinalVerdicts = rs.getInt("REVIEWS");
 				}
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
 
-			if(numVerdicts == 3 && status.equals(SubmissionStatus.REVIEWSRECEIVED)){
-				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
-				try(PreparedStatement ps = con.prepareStatement(query)){
-					ps.setString(1, SubmissionStatus.INITIALVERDICT.asString());
-					ps.setInt(2, submission.getSubmissionId());
-					ps.execute();
-				}catch (SQLException ex) {
-					ex.printStackTrace();
-				}
-
-			}else if(numVerdicts == 3 && status.equals(SubmissionStatus.RESPONSESRECEIVED)) {
+			if(numFinalVerdicts == 3) {
 				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
 				try(PreparedStatement ps = con.prepareStatement(query)){
 					ps.setString(1, SubmissionStatus.FINALVERDICT.asString());
@@ -563,28 +537,30 @@ public class Database {
 		}
 	}
 
-	public static void addResponse(Review r) {
+	public static void addResponse(ReviewerOfSubmission ros) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			Submission submission = r.getReviewerOfSubmission().getSubmission();
+			Submission submission = ros.getSubmission();
 
-			boolean allCriticismsAnswered = false;
-			String query = "SELECT COUNT(*) AS ANSWERSLEFT FROM CRITICISMS WHERE submissionID = ? AND answer = null";
+			int numResponded = 0;
+			String query = " SELECT COUNT(*) AS NUMRESPONDED FROM REVIEWS R, CRITICISMS C "
+					+ "WHERE C.SUBMISSIONID = R.SUBMISSIONID "
+					+ "AND C.REVIEWERID = R.REVIEWERID "
+					+ "AND ANSWER IS NOT NULL "
+					+ "AND R.SUBMISSIONID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, submission.getSubmissionId());
 				ResultSet rs = preparedStmt.executeQuery();
-				while(rs.next()) {
-					int numAnswersLeft = rs.getInt("ANSWERSLEFT");
-					if(numAnswersLeft == 0)
-						allCriticismsAnswered = true;
+				if(rs.next()) {
+					numResponded = rs.getInt("NUMRESPONDED");
 				}
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
 
-			if(allCriticismsAnswered) {
+			if(numResponded == 3) {
 				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setString(1, SubmissionStatus.RESPONSESRECEIVED.asString());
@@ -596,7 +572,7 @@ public class Database {
 				}
 			}
 
-			ArrayList<Criticism> criticisms = r.getCriticisms();
+			ArrayList<Criticism> criticisms = ros.getReview().getCriticisms();
 			for(Criticism c : criticisms) {
 				query = "UPDATE CRITICISMS SET ANSWER = ? WHERE criticismID = ?";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
