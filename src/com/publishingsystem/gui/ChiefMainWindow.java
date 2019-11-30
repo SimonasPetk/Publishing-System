@@ -203,9 +203,11 @@ public class ChiefMainWindow {
 		transferChiefEditor.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				System.out.println("This is an option");
+				new TransferChiefEditorRole(editor.getJournal(),editor);
+				frmChiefEditorsDashboard.dispose();
 			}
 		});
+		mnMenu.add(transferChiefEditor);
 		
 		JMenuItem mntmRetireFromChief = new JMenuItem("Retire From Chief Editors");
 		mntmRetireFromChief.addMouseListener(new MouseAdapter() {
