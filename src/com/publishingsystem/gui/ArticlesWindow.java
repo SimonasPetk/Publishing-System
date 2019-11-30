@@ -98,7 +98,7 @@ public class ArticlesWindow {
 		 * Template for getting contents of table
 		 * Taken from JournalWindow.java
 
-        ArrayList<Journal> allJournals= RetrieveDatabase.getJournals();
+        ArrayList<Article> allArticles= RetrieveDatabase.getJournals();
         Object[][] tableContents = new Object[allJournals.size()][3];
         for (int i=0; i<allJournals.size(); i++) {
             Journal currentJournal = allJournals.get(i);

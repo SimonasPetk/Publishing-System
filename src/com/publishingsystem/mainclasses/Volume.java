@@ -6,10 +6,10 @@ public class Volume {
 	private String dateOfPublication;
 	private int volumeNumber;
 	
-	public Volume(String dateOfPublication, int volumeNumber) {
+	public Volume(String dateOfPublication, int volumeNumber, ArrayList<Edition> editions) {
 		this.dateOfPublication = dateOfPublication;
 		this.volumeNumber = volumeNumber;
-		this.editions = new ArrayList<Edition>();
+		this.editions = editions;
 	}
 	
 	public void setDateOfPublication(String dateOfPublication) {
