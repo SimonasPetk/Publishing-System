@@ -126,47 +126,7 @@ public class RetrieveDatabase extends Database{
 					article.addAuthorOfArticle(authorOfArticle);
 					author.addAuthorOfArticle(authorOfArticle);
 				}
-				if(author != null) {
-					query = "SELECT S.SUBMISSIONID, REVIEWERID, R.SUMMARY, TYPINGERRORS, VERDICT "
-							+ "FROM AUTHOROFARTICLE Aoa, ARTICLES Art, SUBMISSIONS S, REVIEWS R "
-							+ "WHERE Art.ARTICLEID = Aoa.ARTICLEID "
-							+ "AND Aoa.MAINAUTHOR = 1 "
-							+ "AND Art.ARTICLEID = S.ARTICLEID "
-							+ "AND S.SUBMISSIONID = R.SUBMISSIONID "
-							+ "AND authorID = ?";
-
-					try(PreparedStatement preparedStmt1 = con.prepareStatement(query)){
-						preparedStmt1.setInt(1, author.getAuthorId());
-						ResultSet reviewRes = preparedStmt1.executeQuery();
-						while(reviewRes.next()) {
-							int reviewerID = reviewRes.getInt("REVIEWERID");
-							for(AuthorOfArticle aoa : author.getAuthorOfArticles()) {
-								Submission s = aoa.getArticle().getSubmission();
-								if(aoa.isMainAuthor()) {
-									query = "SELECT CRITICISMID, CRITICISM, ANSWER FROM CRITICISMS WHERE SUBMISSIONID = ? AND REVIEWERID = ?";
-									try(PreparedStatement preparedStmt2 = con.prepareStatement(query)){
-										preparedStmt2.setInt(1, s.getSubmissionId());
-										preparedStmt2.setInt(2, reviewerID);
-										ResultSet crticismRes = preparedStmt2.executeQuery();
-										ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
-										while(crticismRes.next()) {
-											criticisms.add(new Criticism(crticismRes.getString("CRITICISM"), crticismRes.getString("ANSWER")));
-										}
-										ReviewerOfSubmission ros = new ReviewerOfSubmission(null, s);
-										Review review = new Review(ros, reviewRes.getString("SUMMARY"), reviewRes.getString("TYPINGERRORS"), criticisms, Verdict.valueOf(reviewRes.getString("VERDICT")));
-										ros.addReview(review);
-										s.addReviewerOfSubmission(ros);
-									}catch (SQLException ex) {
-										ex.printStackTrace();
-									}
-								}
-							}
-						}
-						roles[1] = author;
-					}catch (SQLException ex) {
-						ex.printStackTrace();
-					}
-				}
+				roles[1] = author;
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
@@ -251,17 +211,23 @@ public class RetrieveDatabase extends Database{
 				while(reviewRes.next()) {
 					int reviewerID = reviewRes.getInt("REVIEWERID");
 					Submission s = aoa.getArticle().getSubmission();
-					if(aoa.isMainAuthor()) {
-						query = "SELECT CRITICISMID, CRITICISM, ANSWER FROM CRITICISMS WHERE SUBMISSIONID = ? AND REVIEWERID = ?";
+					boolean reviewerPresent = false;
+					for(ReviewerOfSubmission ros : s.getReviewersOfSubmission()) {
+						if(ros.getReviewer().getReviewerId() == reviewerID) {
+							reviewerPresent = true;
+						}
+					}
+					if(aoa.isMainAuthor() && !reviewerPresent) {
+						query = "SELECT CRITICISMID, CRITICISM FROM CRITICISMS WHERE SUBMISSIONID = ? AND REVIEWERID = ?";
 						try(PreparedStatement preparedStmt2 = con.prepareStatement(query)){
 							preparedStmt2.setInt(1, s.getSubmissionId());
 							preparedStmt2.setInt(2, reviewerID);
 							ResultSet crticismRes = preparedStmt2.executeQuery();
 							ArrayList<Criticism> criticisms = new ArrayList<Criticism>();
 							while(crticismRes.next()) {
-								criticisms.add(new Criticism(crticismRes.getString("CRITICISM"), crticismRes.getString("ANSWER")));
+								criticisms.add(new Criticism(crticismRes.getString("CRITICISM")));
 							}
-							ReviewerOfSubmission ros = new ReviewerOfSubmission(null, s);
+							ReviewerOfSubmission ros = new ReviewerOfSubmission(new Reviewer(0, reviewerID, null, null, null, null, null, null), s);
 							Review review = new Review(ros, reviewRes.getString("SUMMARY"), reviewRes.getString("TYPINGERRORS"), criticisms, Verdict.valueOf(reviewRes.getString("VERDICT")));
 							ros.addReview(review);
 							s.addReviewerOfSubmission(ros);
@@ -460,12 +426,13 @@ public class RetrieveDatabase extends Database{
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
-            String query = "SELECT V.VOLNUM, V.YEAR, E.EDNUM, E.MONTH, P.ARTICLEID, P.PAGERANGE, A.TITLE, A.SUMMARY, AUT.AUTHORID, AUTS.AUTHORNAME, AUTS.UNIVERSITY, AUTS.EMAILADDRESS, PDF.PDFID" +
+            /*String query = "SELECT V.VOLNUM, V.YEAR, E.EDNUM, E.MONTH, P.ARTICLEID, P.PAGERANGE, A.TITLE, A.SUMMARY, AUT.AUTHORID, AUTS.AUTHORNAME, AUTS.UNIVERSITY, AUTS.EMAILADDRESS, PDF.PDFID" +
             			   "FROM VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, AUTHOROFARTICLE AUT, AUTHORS AUTS, PDF" +
-            			   "WHERE V.ISSN = 12345678 AND V.VOLNUM = E.VOLNUM AND E.EDNUM = P.EDNUM AND P.ARTICLEID = A.ARTICLEID" +
+            			   "WHERE V.ISSN = ? AND V.VOLNUM = E.VOLNUM AND E.EDNUM = P.EDNUM AND P.ARTICLEID = A.ARTICLEID" +
             			   "AND A.ARTICLEID = AUT.ARTICLEID AND AUT.AUTHORID = AUTS.AUTHORID AND A.PDFID = PDF.PDFID;";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, issn);
+				System.out.println(preparedStmt);
 				ResultSet res = preparedStmt.executeQuery();
 				ArrayList<Edition> eds = new ArrayList<Edition>();
 			
@@ -484,8 +451,28 @@ public class RetrieveDatabase extends Database{
 				return articlesPublished;
 			}catch (SQLException ex) {
 				ex.printStackTrace();
-			}
-		}catch (SQLException ex) {
+			}*/
+
+            String query = "SELECT V.VOLNUM, V.YEAR, E.EDNUM, E.MONTH, P.ARTICLEID, P.PAGERANGE, A.TITLE, A.SUMMARY, AUT.AUTHORID, AUTS.AUTHORNAME, AUTS.UNIVERSITY, AUTS.EMAILADDRESS, PDF.PDFID " +
+                    "FROM VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, AUTHOROFARTICLE AUT, AUTHORS AUTS, PDF " +
+                    "WHERE V.ISSN = " + issn + " AND V.VOLNUM = E.VOLNUM AND E.EDNUM = P.EDNUM AND P.ARTICLEID = A.ARTICLEID " +
+                    "AND A.ARTICLEID = AUT.ARTICLEID AND AUT.AUTHORID = AUTS.AUTHORID AND A.PDFID = PDF.PDFID;";
+            ResultSet res = statement.executeQuery(query);
+            ArrayList<Edition> eds = new ArrayList<Edition>();
+            
+            while(res.next()) {    
+                Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
+                PublishedArticle PublishedArticle = new PublishedArticle(article, res.getString("PAGERANGE"), res.getInt("EDNUM"));
+                
+                articlesPublished.add(PublishedArticle);
+                
+                Edition ed = new Edition(res.getString("EDNUM"), res.getInt("MONTH"), articlesPublished);
+                eds.add(ed);
+                //Volume vol = new Volume(res.getString("VOLNUM"), res.getInt("YEAR"), eds);
+            }
+            
+            return articlesPublished;
+		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
 		return null;

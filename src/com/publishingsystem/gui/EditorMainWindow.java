@@ -52,7 +52,7 @@ public class EditorMainWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-				    Academic[] roles = {null, null, null};
+				    Academic[] roles = {new Editor(1, "Mr", "Alex", "Hall", "Sheffield", "ahall8@sheffield.ac.uk", new Hash("a")), null, null};
 					EditorMainWindow window = new EditorMainWindow(roles);
 					window.frmDashboard.setVisible(true);
 				} catch (Exception e) {

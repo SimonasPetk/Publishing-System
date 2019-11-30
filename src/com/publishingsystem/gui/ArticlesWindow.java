@@ -11,7 +11,9 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import com.publishingsystem.mainclasses.Academic;
+import com.publishingsystem.mainclasses.Article;
 import com.publishingsystem.mainclasses.Journal;
+import com.publishingsystem.mainclasses.PublishedArticle;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 
 import javax.swing.JLabel;
@@ -97,7 +99,7 @@ public class ArticlesWindow {
 		/*
 		 * Template for getting contents of table
 		 * Taken from JournalWindow.java
-
+		 
         ArrayList<Article> allArticles= RetrieveDatabase.getJournals();
         Object[][] tableContents = new Object[allJournals.size()][3];
         for (int i=0; i<allJournals.size(); i++) {
@@ -111,11 +113,22 @@ public class ArticlesWindow {
             new String[] {
                 "Title", "Date of Publication", "ISSN"
             }
-            */		
+            */
+		
+		ArrayList<PublishedArticle> allArticles = RetrieveDatabase.getArticles(journalID);
+		Object[][] tableContents = new Object[allArticles.size()][5];
+		for (int i=0; i<allArticles.size(); i++) {
+		    PublishedArticle currentArticle = allArticles.get(i);
+		    tableContents[i][0] = currentArticle.getTitle();
+		    tableContents[i][1] = currentArticle.getAuthorsOfArticle().toString();
+		    tableContents[i][2] = "some volume?";
+		    tableContents[i][3] = currentArticle.getPdf().getDate();
+		    tableContents[i][4] = currentArticle.getPageRange();
+		}
 		
 		tblArticles.setModel(new DefaultTableModel(
-			new Object[][] {
-				{"Article Name", "Article smth", "Volume", "Number", "Page range"},
+			/*new Object[][] {
+				{"Title ", "Authors", "Volume", "Date Published", "Page Range"},
 				{"sdasdas", null, null, null, null},
 				{null, null, "sd", null, null},
 				{null, null, null, null, null},
@@ -165,9 +178,10 @@ public class ArticlesWindow {
 				{null, null, null, null, null},
 				{null, null, null, null, null},
 				{null, null, null, null, null},
-			},
+			}*/
+		    tableContents,
 			new String[] {
-				"Article Name", "Journal", "Volume", "Number", "Page-Range"
+                "Title ", "Authors", "Volume", "Date Published", "Page Range"
 			}
 		) {
 			boolean[] columnEditables = new boolean[] {
