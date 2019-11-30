@@ -68,7 +68,7 @@ public class RegisterAcademicAsEditor {
 	 */
 	private void initialize(Journal j) {
 		frmRegisterAcademicAsEditor = new JFrame();
-		frmRegisterAcademicAsEditor.setTitle("Retire from which journal?");
+		frmRegisterAcademicAsEditor.setTitle("Appoint an academic");
 		frmRegisterAcademicAsEditor.setBounds(100, 100, 489, 375);
 		//RetireAsChiefEditor window = new RetireAsChiefEditor(null);
 		frmRegisterAcademicAsEditor.setVisible(true);
@@ -80,21 +80,19 @@ public class RegisterAcademicAsEditor {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		JButton btnUpdate = new JButton("Register");
-		btnUpdate.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				System.out.println(selectedAcademic);
-			}
-		});
-		btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		ArrayList<Academic> aca = RetrieveDatabase.getAllAcademics();
+		ArrayList<Academic> onesToDelete = new ArrayList<Academic>();
 		for (EditorOfJournal e: j.getBoardOfEditors()) {
-			for (Academic a: aca) {
-				if ((e.getEditor().getEmailId()).equals(a.getEmailId())) {
-					aca.remove(a);
+			if (aca.size() != 0) {
+				for (Academic a: aca) {
+					if ((e.getEditor().getEmailId()).equals(a.getEmailId())) {
+						onesToDelete.add(a);
+					}
 				}
 			}
+		}
+		for (Academic a: onesToDelete) {
+			aca.remove(a);
 		}
 		if (aca.size() == 0) {
 			JOptionPane.showMessageDialog(null, "There are no academics for you to register", "Error", 1);
@@ -102,7 +100,7 @@ public class RegisterAcademicAsEditor {
 		}
 		String[] academics = new String[aca.size()];
 		for (int i = 0; i<aca.size(); i++) {
-			academics[i] = aca.get(0).getFullName();
+			academics[i] = aca.get(i).getFullName();
 		}
 		JList academicList = new JList();
 		scrollPane.setViewportView(academicList);
@@ -110,10 +108,26 @@ public class RegisterAcademicAsEditor {
 
 			public void mousePressed(MouseEvent e) {
 				selectedAcademic = (String)academicList.getSelectedValue();
-				System.out.println(selectedAcademic);
 			}
 
 		});
+		
+		JButton btnUpdate = new JButton("Register");
+		btnUpdate.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				for(Academic a: aca) {
+					if ((a.getFullName()).equals(selectedAcademic)) {
+						Editor temp = new Editor(-1,a.getTitle(),a.getForename(), a.getSurname(), a.getEmailId(), a.getUniversity(), a.getHash());
+						EditorOfJournal temp2 = new EditorOfJournal(j,temp,false);
+						j.addEditorToBoard(temp2);
+						temp2.addEditorAsChiefEditor();
+					}
+				}
+				frmRegisterAcademicAsEditor.dispose();
+			}
+		});
+		btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		academicList.setModel(new AbstractListModel() {
             String[] values = academics;

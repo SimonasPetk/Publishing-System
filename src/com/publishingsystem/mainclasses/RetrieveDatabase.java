@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import com.publishingsystem.mainclasses.Hash;
 
 public class RetrieveDatabase extends Database{
 
@@ -25,7 +26,7 @@ public class RetrieveDatabase extends Database{
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				ResultSet res = preparedStmt.executeQuery();
 				while(res.next()) {
-					Academic temp = new Author(-1, res.getString(2), res.getString(3), res.getString(4), res.getString(5), res.getString(6), null);
+					Academic temp = new Author(res.getInt(1), res.getString(2), res.getString(3), res.getString(4), res.getString(5), res.getString(6), new Hash(res.getString(7)));
 					System.out.println(res.getString(1));
 					System.out.println(res.getString(2));
 					System.out.println(res.getString(3));
