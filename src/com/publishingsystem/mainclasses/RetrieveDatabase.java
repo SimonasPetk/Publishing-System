@@ -455,6 +455,46 @@ public class RetrieveDatabase extends Database{
 		return result;
 	}
 	
+	public static ArrayList<PublishedArticle> getArticles(int issn) {
+		ArrayList<PublishedArticle> articlesPublished = new ArrayList<PublishedArticle>();
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            String query = "SELECT V.VOLNUM, V.YEAR, E.EDNUM, E.MONTH, P.ARTICLEID, P.PAGERANGE, A.TITLE, A.SUMMARY, AUT.AUTHORID, AUTS.AUTHORNAME, AUTS.UNIVERSITY, AUTS.EMAILADDRESS, PDF.PDFID" +
+            			   "FROM VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, AUTHOROFARTICLE AUT, AUTHORS AUTS, PDF" +
+            			   "WHERE V.ISSN = 12345678 AND V.VOLNUM = E.VOLNUM AND E.EDNUM = P.EDNUM AND P.ARTICLEID = A.ARTICLEID" +
+            			   "AND A.ARTICLEID = AUT.ARTICLEID AND AUT.AUTHORID = AUTS.AUTHORID AND A.PDFID = PDF.PDFID;";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, issn);
+				ResultSet res = preparedStmt.executeQuery();
+				ArrayList<Edition> eds = new ArrayList<Edition>();
+			
+				while(res.next()) {
+					
+					Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
+					PublishedArticle PublishedArticle = new PublishedArticle(article, res.getString("PAGERANGE"), res.getInt("EDNUM"));
+					
+					articlesPublished.add(PublishedArticle);
+				}
+				
+				Edition ed = new Edition(res.getString("EDNUM"), res.getInt("MONTH"), articlesPublished);
+				eds.add(ed);
+				Volume vol = new Volume(res.getString("VOLNUM"), res.getInt("YEAR"), eds);
+				
+				return articlesPublished;
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
+	
+	// SELECT J.ISSN, V.VOLNUM, E.EDNUM, P.ARTICLEID, A.ARTICLEID, AUT.AUTHORID, AUTS.AUTHORNAME FROM JOURNALS J, VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, AUTHOROFARTICLE AUT, AUTHORS AUTS WHERE AUT.ARTICLEID = A.ARTICLEID AND AUT.AUTHORID = AUTS.AUTHORID;
+	
+	
+	
 	public static ArrayList<EditorOfJournal> getEditorsOfJournal(int issn,Journal j) {
 		ArrayList<EditorOfJournal> editorsOfJournal = new ArrayList<EditorOfJournal>();
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {

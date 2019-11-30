@@ -2,14 +2,14 @@ package com.publishingsystem.mainclasses;
 import java.util.ArrayList;
 
 public class Edition {
-	private ArrayList<Article> articles;
+	private ArrayList<PublishedArticle> articles;
 	private String editionDate;
 	private int editionNumber;
 	
-	public Edition(String editionDate, int editionNumber) {
+	public Edition(String editionDate, int editionNumber, ArrayList<PublishedArticle> articles) {
 		this.editionDate = editionDate;
 		this.editionNumber = editionNumber;
-		this.articles = new ArrayList<Article>();
+		this.articles = articles;
 	}
 
 	public void setEditionDate(String editionDate) {
@@ -20,7 +20,7 @@ public class Edition {
 		this.editionNumber = editionNumber;
 	}
 
-	public ArrayList<Article> getArticles() {
+	public ArrayList<PublishedArticle> getArticles() {
 		return articles;
 	}
 
@@ -31,5 +31,4 @@ public class Edition {
 	public int getEditionNumber() {
 		return editionNumber;
 	}
-	
 }
