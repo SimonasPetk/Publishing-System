@@ -14,6 +14,34 @@ import java.util.List;
 
 public class RetrieveDatabase extends Database{
 
+	public static ArrayList<Academic> getAllAcademics() {
+		ArrayList<Academic> allAcademics = new ArrayList<Academic>();
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			
+			String query = "SELECT * FROM ACADEMICS";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				ResultSet res = preparedStmt.executeQuery();
+				while(res.next()) {
+					Academic temp = new Author(-1, res.getString(2), res.getString(3), res.getString(4), res.getString(5), res.getString(6), null);
+					System.out.println(res.getString(1));
+					System.out.println(res.getString(2));
+					System.out.println(res.getString(3));
+					System.out.println(res.getString(4));
+					System.out.println(res.getString(5));
+					System.out.println(res.getString(6));
+					allAcademics.add(temp);
+				}
+			}
+			
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return allAcademics;
+	}
+	
 	public static ArrayList<Journal> getJournals() {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
