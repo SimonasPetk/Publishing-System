@@ -10,12 +10,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
 public class Database {
-//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-//	protected static final String DATABASE = "team022";
+	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+	protected static final String DATABASE = "team022";
 	
 	//localhost
-	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-	protected static final String DATABASE = "publishing_system";
+//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+//	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -479,6 +479,7 @@ public class Database {
 					ex.printStackTrace();
 				}
 			}
+			
 
 		}catch (SQLException ex) {
 			ex.printStackTrace();
@@ -525,7 +526,7 @@ public class Database {
 			if(numFinalVerdicts == 3) {
 				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
 				try(PreparedStatement ps = con.prepareStatement(query)){
-					ps.setString(1, SubmissionStatus.FINALVERDICT.asString());
+					ps.setString(1, SubmissionStatus.COMPLETED.asString());
 					ps.setInt(2, submission.getSubmissionId());
 					ps.execute();
 				}catch (SQLException ex) {
