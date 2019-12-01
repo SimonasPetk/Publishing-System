@@ -112,12 +112,16 @@ public class ReviewerMainWindow {
 		str_model.addColumn("Submission ID");
 		str_model.addColumn("Title");
 		str_model.addColumn("Reviewed");
+		str_model.addColumn("Respondes Recieved");
+		str_model.addColumn("Final Verdict Given");
 		for(ReviewerOfSubmission ros : submissionsChosenToReview) {
 			Submission s = ros.getSubmission();
-			Object[] submissionString = new Object[3];
+			Object[] submissionString = new Object[5];
 			submissionString[0] = s.getSubmissionId();
 			submissionString[1] = s.getArticle().getTitle();
 			submissionString[2] = ros.getReview() == null ? "No" : "Yes";
+			submissionString[3] = ros.getReview().responsesRecieved() ? "Yes" : "No";
+			submissionString[4] = ros.getReview().getFinalVerdict() == null ? "No" : "Yes";
 			str_model.addRow(submissionString);
 		}
 	}
@@ -146,7 +150,8 @@ public class ReviewerMainWindow {
 		else
 			lblArticleListToChoose.setText("Number of articles to review remaining : "+numReviewsToBeDone);
 		this.refreshChooseToReviewTable();
-		this.refreshToReviewTable();
+		if(this.tblToReview != null)
+			this.refreshToReviewTable();
 	}
 	
 	public void addReview(Review r) {
@@ -440,13 +445,20 @@ public class ReviewerMainWindow {
 				if(v.equals("SELECT")) {
 					JOptionPane.showMessageDialog(null, "Please select a final verdict", "Error in submission", 0);
 				}else {
-					Review review = submissionsChosenToReview.get(submissionRowSelectedToReview).getReview();
-					review.setFinalVerdict(Verdict.valueOf(v));
-					Database.setVerdict(submissionsChosenToReview.get(submissionRowSelectedToReview).getReview());
+					ReviewerOfSubmission ros = submissionsChosenToReview.get(submissionRowSelectedToReview);
+					ros.getReview().setFinalVerdict(Verdict.valueOf(v));
+					Database.setVerdict(ros);
 					submissionsChosenToReview.remove(submissionRowSelectedToReview);
 					refreshChooseToReviewTable();
 					pnlVerdict.setVisible(false);
 					panel_review.setVisible(false);
+					if(submissionsChosenToReview.size() == 0 && numReviewsToBeDone == 0) {
+						Database.deleteReviewer(reviewer.getReviewerId());
+						frmReviewDashboard.dispose();
+						roles[2] = null;
+						JOptionPane.showMessageDialog(null, "Thank you for completing all your Reviewer responsibilities.");
+						new JournalWindow(roles);
+					}
 				}
 			}
 		});

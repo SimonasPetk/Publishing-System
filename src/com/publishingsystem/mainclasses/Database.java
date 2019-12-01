@@ -10,12 +10,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
 public class Database {
-	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	protected static final String DATABASE = "team022";
+//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+//	protected static final String DATABASE = "team022";
 	
 	//localhost
-//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-//	protected static final String DATABASE = "publishing_system";
+	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -397,11 +397,10 @@ public class Database {
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 			for(Submission s : submissions) {
-				String query = "INSERT INTO REVIEWEROFSUBMISSION values (?, ?, ?)";
+				String query = "INSERT INTO REVIEWEROFSUBMISSION values (?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, r.getReviewerId());
 					preparedStmt.setInt(2, s.getSubmissionId());
-					preparedStmt.setBoolean(3, false);
 					preparedStmt.execute();
 				}catch (SQLException ex) {
 					ex.printStackTrace();
@@ -486,7 +485,8 @@ public class Database {
 		}
 	}
 
-	public static void setVerdict(Review r) {
+	public static void setVerdict(ReviewerOfSubmission ros) {
+		Review r = ros.getReview();
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
@@ -500,16 +500,6 @@ public class Database {
 				preparedStmt.setString(1, r.getFinalVerdict().asString());
 				preparedStmt.setInt(2, reviewer.getReviewerId());
 				preparedStmt.setInt(3, submission.getSubmissionId());
-
-				preparedStmt.execute();
-			}catch (SQLException ex) {
-				ex.printStackTrace();
-			}
-			
-			query = "UPDATE REVIEWEROFSUBMISSION SET COMPLETE = 1 WHERE reviewerID = ? and submissionID = ?";
-			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, reviewer.getReviewerId());
-				preparedStmt.setInt(2, submission.getSubmissionId());
 
 				preparedStmt.execute();
 			}catch (SQLException ex) {
@@ -542,7 +532,26 @@ public class Database {
 					ex.printStackTrace();
 				}
 			}
+			
 
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void deleteReviewer(int reviewerId) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query = "DELETE FROM REVIEWERS WHERE REVIEWERID = ?";
+			try(PreparedStatement ps = con.prepareStatement(query)){
+				ps.setInt(1, reviewerId);
+				ps.execute();
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}

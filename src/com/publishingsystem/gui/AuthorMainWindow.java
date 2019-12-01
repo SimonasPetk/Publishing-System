@@ -221,7 +221,9 @@ public class AuthorMainWindow {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				int row = tblSubmitted.rowAtPoint(arg0.getPoint());
+				System.out.println(row);
 				AuthorOfArticle aoa = authorOfArticles.get(row);
+				System.out.println("MAIN AUTHOR: "+aoa.isMainAuthor());
 				
 				if(aoa.isMainAuthor()) {
 					panelArticleReviews.setVisible(true);

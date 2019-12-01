@@ -60,4 +60,13 @@ public class Review {
 		return "Summary: "+this.summary+"\n"+"Typing Errors: "+this.typingErrors+" \n"+criticismString;
 	}
 	
+	public boolean responsesRecieved() {
+		boolean recieved = true;
+		for(Criticism c : this.criticisms) {
+			if(c.getAnswer() == null)
+				recieved = false;
+		}
+		return recieved;
+	}
+	
 }

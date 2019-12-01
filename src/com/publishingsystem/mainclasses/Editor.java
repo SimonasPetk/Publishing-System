@@ -20,20 +20,6 @@ public class Editor extends Academic{
 		return this.editorId;
 	}
 
-	public void viewArticlesInConsideration() {
-
-	}
-
-	public void acceptArticle(Submission s) {
-		s.setDecision(Decision.ACCEPTED);
-	}
-
-	public void rejectArticle(Submission s) {
-		s.setDecision(Decision.REJECTED);
-	}
-
-	public void retire() {}
-	
 	public void addEditorOfJournal(EditorOfJournal eoj){
 		this.editorOfJournals.add(eoj);
 	}
@@ -64,23 +50,4 @@ public class Editor extends Academic{
 		return e.getJournal();
 	}
 
-	public void publishArticle(Article a) {
-
-	}
-
-	public void publishVolume(Volume v) {
-
-	}
-
-	public void publishEdition(Edition e) {
-
-	}
-
-	public void addToNextAvailableEdition(Article a) {
-
-	}
-
-	public void changeRole(){
-
-	}
 }

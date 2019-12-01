@@ -113,9 +113,9 @@ public class CriticismResponse {
 					Calendar calendar = Calendar.getInstance();
 					PDF revisedPDF = new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), ros.getSubmission());
 					ros.getReview().answer(answers);
-					amw.refreshReviewTable();
 					Database.addResponse(ros);
 					Database.addRevisedSubmission(revisedPDF, PDFConverter.getByteArrayFromFile(pdfPath));
+					amw.refreshReviewTable();
 					frmRespondToCriticism.dispose();
 				}
 			}

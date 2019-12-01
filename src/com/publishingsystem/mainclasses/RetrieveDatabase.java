@@ -133,11 +133,12 @@ public class RetrieveDatabase extends Database{
 				ex.printStackTrace();
 			}
 
-			query = "SELECT R.REVIEWERID, R.ACADEMICID, Ros.SUBMISSIONID, Ros.COMPLETE, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY "
+			query = "SELECT R.REVIEWERID, R.ACADEMICID, Ros.SUBMISSIONID, S.STATUS, A.ARTICLEID, A.TITLE, A.SUMMARY "
 					+ "FROM REVIEWERS R LEFT JOIN REVIEWEROFSUBMISSION Ros ON R.REVIEWERID = Ros.REVIEWERID "
+					+ "LEFT JOIN REVIEWS Rev ON Ros.SUBMISSIONID = Rev.SUBMISSIONID AND Ros.REVIEWERID = Rev.REVIEWERID "
 					+ "LEFT JOIN SUBMISSIONS S ON S.SUBMISSIONID = Ros.SUBMISSIONID "
-					+ "LEFT JOIN ARTICLES Art ON Art.ARTICLEID = S.ARTICLEID "
-					+ "WHERE R.ACADEMICID = ?";
+					+ "LEFT JOIN ARTICLES A ON A.ARTICLEID = S.ARTICLEID "
+					+ "WHERE R.ACADEMICID = ? AND Rev.FINALVERDICT IS NULL";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, academicId);
 				ResultSet res = preparedStmt.executeQuery();
@@ -147,7 +148,7 @@ public class RetrieveDatabase extends Database{
 						reviewer = new Reviewer(res.getInt("ACADEMICID"), res.getInt("REVIEWERID"), title, forename, surname, emailId, university, null);
 						reviewer.setAcademicId(academicId);
 					}
-					if(res.getInt("SUBMISSIONID") != 0 && !res.getBoolean("COMPLETE")) {
+					if(res.getInt("SUBMISSIONID") != 0) {
 						Article a = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
 						Submission s = new Submission(res.getInt("SUBMISSIONID"), a, SubmissionStatus.valueOf(res.getString("STATUS")), null);
 						ReviewerOfSubmission ros = new ReviewerOfSubmission(reviewer, s);
@@ -157,7 +158,7 @@ public class RetrieveDatabase extends Database{
 				if(reviewer != null) {
 					for(ReviewerOfSubmission ros : reviewer.getReviewerOfSubmissions()) {
 						Submission submission = ros.getSubmission();
-						query = "SELECT Rev.SUBMISSIONID, Rev.SUMMARY, Rev.TYPINGERRORS, Rev.INITIALVERDICT, Rev.FINALVERDICT, C.CRITICISMID, C.CRITICISM, C.ANSWER FROM REVIEWS Rev LEFT JOIN CRITICISMS C "
+						query = "SELECT Rev.SUBMISSIONID, Rev.SUMMARY, Rev.TYPINGERRORS, Rev.INITIALVERDICT, C.CRITICISMID, C.CRITICISM, C.ANSWER FROM REVIEWS Rev LEFT JOIN CRITICISMS C "
 								+ "ON C.SUBMISSIONID = Rev.SUBMISSIONID AND C.REVIEWERID = Rev.REVIEWERID "
 								+ "WHERE Rev.REVIEWERID = ? AND Rev.SUBMISSIONID = ?";
 						try(PreparedStatement preparedStmt1 = con.prepareStatement(query)){
@@ -169,25 +170,12 @@ public class RetrieveDatabase extends Database{
 							while(res1.next()) {
 								if(review == null) {
 									review = new Review(ros, res1.getString("SUMMARY"), res1.getString("TYPINGERRORS"), criticisms, Verdict.valueOf(res1.getString("INITIALVERDICT")));
-									String v = res1.getString("FINALVERDICT");
-									if(v != null)
-										review.setFinalVerdict(Verdict.valueOf(v));
 								}
 								int criticismId = res1.getInt("CRITICISMID");
 								if(criticismId != 0)
 									criticisms.add(new Criticism(res1.getInt("CRITICISMID"), res1.getString("CRITICISM"), res1.getString("ANSWER")));
 							}
 							ros.addReview(review);
-						}catch (SQLException ex) {
-							ex.printStackTrace();
-						}
-						query = "SELECT PDFID, UPLOADDATE FROM PDF WHERE SUBMISSIONID = ?";
-						try(PreparedStatement preparedStmt1 = con.prepareStatement(query)){
-							preparedStmt1.setInt(1, submission.getSubmissionId());
-							ResultSet res1 = preparedStmt1.executeQuery();
-							while(res1.next()) {
-								submission.addVersion(new PDF(res1.getInt("PDFID"), res1.getDate("UPLOADDATE"), submission));
-							}
 						}catch (SQLException ex) {
 							ex.printStackTrace();
 						}
@@ -210,7 +198,7 @@ public class RetrieveDatabase extends Database{
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			String query = "SELECT S.SUBMISSIONID, Ros.REVIEWERID, Ros.COMPLETE, R.SUMMARY, TYPINGERRORS, INITIALVERDICT, FINALVERDICT "
+			String query = "SELECT S.SUBMISSIONID, Ros.REVIEWERID, R.SUMMARY, TYPINGERRORS, INITIALVERDICT, FINALVERDICT "
 					+ "FROM AUTHOROFARTICLE Aoa, ARTICLES Art, SUBMISSIONS S, REVIEWEROFSUBMISSION Ros, REVIEWS R "
 					+ "WHERE Art.ARTICLEID = Aoa.ARTICLEID "
 					+ "AND Aoa.MAINAUTHOR = 1 "
@@ -242,7 +230,6 @@ public class RetrieveDatabase extends Database{
 								criticisms.add(c);
 							}
 							ReviewerOfSubmission ros = new ReviewerOfSubmission(new Reviewer(0, reviewerID, null, null, null, null, null, null), s);
-							ros.setComplete(reviewRes.getBoolean("COMPLETE"));
 							Review review = new Review(ros, reviewRes.getString("SUMMARY"), reviewRes.getString("TYPINGERRORS"), criticisms, Verdict.valueOf(reviewRes.getString("INITIALVERDICT")));
 							String v = reviewRes.getString("FINALVERDICT");
 							if(v != null)
