@@ -266,8 +266,8 @@ public class CreateDatabase extends Database{
 		System.out.println(System.getProperty("jdbc.drivers"));
 		System.out.println("\nDrivers loaded by DriverManager:");
 		Enumeration<Driver> list = DriverManager.getDrivers();
-		dropTables();
-		createTables();
+		//dropTables();
+		//createTables();
         try (Connection con = DriverManager.getConnection(CONNECTION)) {
 		    printAllRecords("JOURNALS");
 			printAllRecords("EDITORS");

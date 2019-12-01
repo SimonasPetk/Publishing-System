@@ -291,6 +291,15 @@ public class ChiefMainWindow {
 		mnMenu.add(mntmAppointNewEditors);
 		mnMenu.add(mntmLogOut);
 		
+		JMenuItem appointAcademic = new JMenuItem("Appoint Academic as editor");
+		appointAcademic.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				new RegisterAcademicAsEditor(editor.getJournal());
+			}
+		});
+		mnMenu.add(appointAcademic);
+		
 		JMenu mnChangeRole = new JMenu("Change My Role");
 		menuBar.add(mnChangeRole);
 		
