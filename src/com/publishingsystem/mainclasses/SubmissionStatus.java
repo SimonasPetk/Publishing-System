@@ -1,8 +1,7 @@
 package com.publishingsystem.mainclasses;
 
 public enum SubmissionStatus {
-	SUBMITTED, REVIEWSRECEIVED,
-	INITIALVERDICT, RESPONSESRECEIVED, FINALVERDICT, COMPLETED;
+	SUBMITTED, REVIEWSRECEIVED, RESPONSESRECEIVED, FINALVERDICT, COMPLETED;
 	
 	public String asString() {
 		switch(this) {
@@ -10,8 +9,6 @@ public enum SubmissionStatus {
 			return "SUBMITTED";
 		case REVIEWSRECEIVED:
 			return "REVIEWSRECEIVED";
-		case INITIALVERDICT:
-			return "INITIALVERDICT";
 		case RESPONSESRECEIVED:
 			return "RESPONSESRECEIVED";
 		case FINALVERDICT:
@@ -28,13 +25,11 @@ public enum SubmissionStatus {
 		case SUBMITTED:
 			return "Submitted";
 		case REVIEWSRECEIVED:
-			return "Submitted -> Reviews received";
-		case INITIALVERDICT:
 			return "Submitted -> Reviews received -> Initial verdict";
 		case RESPONSESRECEIVED:
-			return "Submitted -> Reviews received -> Initial verdict -> Responses received";
+			return "Submitted -> Reviews & Initial verdict recieved -> Responses received";
 		case FINALVERDICT:
-			return "Submitted -> Reviews received -> Initial verdict -> Responses received -> Final verdict";
+			return "Submitted -> Reviews & Initial verdict recieved -> Responses received -> Final verdict";
 		case COMPLETED:
 			return "Completed";
 		default:
@@ -48,8 +43,6 @@ public enum SubmissionStatus {
 				return "Submitted";
 			case REVIEWSRECEIVED:
 				return "Reviews received";
-			case INITIALVERDICT:
-				return "Initial verdict";
 			case RESPONSESRECEIVED:
 				return "Responses received";
 			case FINALVERDICT:

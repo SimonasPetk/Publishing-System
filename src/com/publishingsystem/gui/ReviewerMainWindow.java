@@ -52,6 +52,8 @@ import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.Toolkit;
+
 import javax.swing.JTextArea;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
@@ -163,11 +165,17 @@ public class ReviewerMainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Academic[] roles) {
+		int width = 1080;
+		int height = 740;
 		submissionsChosenToReview = reviewer.getReviewerOfSubmissions();
 		frmReviewDashboard = new JFrame();
-		frmReviewDashboard.setBounds(100, 100, 1089, 740);
+		frmReviewDashboard.setBounds(100, 100, width, height);
 		frmReviewDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmReviewDashboard.setVisible(true);
+		
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Dimension screenSize = toolkit.getScreenSize();
+		frmReviewDashboard.setLocation(screenSize.width/2-width/2, screenSize.height/2-height/2);
 		
 		numReviewsToBeDone = RetrieveDatabase.getNumberOfReviewsToBeDone(reviewer.getReviewerId());
 		

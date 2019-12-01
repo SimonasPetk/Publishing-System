@@ -1,4 +1,5 @@
 package com.publishingsystem.gui;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -18,6 +19,8 @@ import com.publishingsystem.mainclasses.RetrieveDatabase;
 
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.Toolkit;
+
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
@@ -65,13 +68,20 @@ public class ArticlesWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(int journalID, Academic[] roles) {
+		int width = 1080;
+		int height = 740;
+		
 	    Journal selJournal = RetrieveDatabase.getJournal(journalID);
 	    
 		frmAvailableJournalArticles = new JFrame();
 		frmAvailableJournalArticles.setTitle("View Articles");
-		frmAvailableJournalArticles.setBounds(100, 100, 850, 700);
+		frmAvailableJournalArticles.setBounds(100, 100, width, height);
 		frmAvailableJournalArticles.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAvailableJournalArticles.setVisible(true);
+		
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Dimension screenSize = toolkit.getScreenSize();
+		frmAvailableJournalArticles.setLocation(screenSize.width/2-width/2, screenSize.height/2-height/2);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
@@ -127,58 +137,6 @@ public class ArticlesWindow {
 		}
 		
 		tblArticles.setModel(new DefaultTableModel(
-			/*new Object[][] {
-				{"Title ", "Authors", "Volume", "Date Published", "Page Range"},
-				{"sdasdas", null, null, null, null},
-				{null, null, "sd", null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, "sdad", null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, "dsad", null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-			}*/
 		    tableContents,
 			new String[] {
                 "Title ", "Authors", "Volume", "Date Published", "Page Range"
@@ -194,13 +152,15 @@ public class ArticlesWindow {
 		tblArticles.getColumnModel().getColumn(0).setPreferredWidth(190);
 		tblArticles.getColumnModel().getColumn(2).setPreferredWidth(60);
 		tblArticles.getColumnModel().getColumn(3).setPreferredWidth(60);
+		tblArticles.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
+		tblArticles.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		scrollPane.setViewportView(tblArticles);
 		
-		JLabel lblNewLabel = new JLabel(selJournal.getJournalName());
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		JLabel lblJournalName = new JLabel(selJournal.getJournalName());
+		lblJournalName.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JLabel lblAbstract = new JLabel("Abstract:");
-		lblAbstract.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblAbstract.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JButton btnDownloadPdf = new JButton("Download PDF");
 	
@@ -210,7 +170,7 @@ public class ArticlesWindow {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblJournalName, GroupLayout.PREFERRED_SIZE, 600, GroupLayout.PREFERRED_SIZE)
 						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE))
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
@@ -229,8 +189,8 @@ public class ArticlesWindow {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 15, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblAbstract, GroupLayout.PREFERRED_SIZE, 15, GroupLayout.PREFERRED_SIZE))
+						.addComponent(lblJournalName, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblAbstract, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))
 					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
@@ -247,29 +207,16 @@ public class ArticlesWindow {
 		JMenuBar menuBar = new JMenuBar();
 		frmAvailableJournalArticles.setJMenuBar(menuBar);
 		
-		JMenu mnMenu = new JMenu("Menu");
-		menuBar.add(mnMenu);
-		
-		JMenuItem mntmBackToJournals = new JMenuItem("Back To Journals");
-		mntmBackToJournals.addMouseListener(new MouseAdapter() {
+		JButton btnBackToJournals = new JButton("Back To Journals");
+		btnBackToJournals.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				
 				new JournalWindow(roles);
 				frmAvailableJournalArticles.dispose();
-			}
-		});
-		mnMenu.add(mntmBackToJournals);
-		
-		JMenuItem mntmLogOut = new JMenuItem("Log Out");
-		mntmLogOut.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
 				
-				new LoginScreen();
-				frmAvailableJournalArticles.dispose();
 			}
 		});
-		mnMenu.add(mntmLogOut);
+		menuBar.add(btnBackToJournals);
+	
 	}
 }
