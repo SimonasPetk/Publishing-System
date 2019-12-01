@@ -84,6 +84,61 @@ public class Database {
 		}
 	}
 	
+	public static int getEditorIdFromAcademicId(int academicId) {
+		int editorId = -1;
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query2 = "SELECT * FROM EDITORS WHERE academicID = " + academicId;
+			try(PreparedStatement preparedStmt1 = con.prepareStatement(query2)){
+				ResultSet res2 = preparedStmt1.executeQuery();
+				while (res2.next()) {
+					editorId = res2.getInt("editorID");
+				}
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return editorId;
+	}
+	
+	public static void addAcademicToEditors(int academicId, int issn) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query2 = "SELECT * FROM EDITORS WHERE academicID = " + academicId;
+			int editorId = -1;
+			try(PreparedStatement preparedStmt1 = con.prepareStatement(query2)){
+				ResultSet res2 = preparedStmt1.executeQuery();
+				while (res2.next()) {
+					editorId = res2.getInt("editorID");
+				}
+			}
+			if (editorId == -1) {
+				String query = "INSERT INTO EDITORS values (null, ?)";
+				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+					preparedStmt.setInt(1, academicId);
+					preparedStmt.execute();
+					try(PreparedStatement preparedStmt3 = con.prepareStatement(query2)) {
+						ResultSet res3 = preparedStmt3.executeQuery();
+						while (res3.next()) {
+							editorId = res3.getInt("editorID");
+						}
+					}
+				}
+			}
+			String query3 = "INSERT INTO EDITOROFJOURNAL values (" + editorId + "," + issn + ",0,0)";
+			System.out.println(query3);
+			try(PreparedStatement preparedStmt = con.prepareStatement(query3)){
+				preparedStmt.execute();
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
 	public static void registerEditors(ArrayList<Editor> editors) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
@@ -720,8 +775,10 @@ public class Database {
 			printStatements.execute("USE "+DATABASE+";");
 			printStatements.executeQuery("SELECT * FROM ACADEMICS");
 			printStatements.close();
+			
+			addAcademicToEditors(69, "FakeEditor@gmail.com", 16942069);
 			System.out.println("Done");
-			removeChiefEditor(4);
+			//removeChiefEditor(4);
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}

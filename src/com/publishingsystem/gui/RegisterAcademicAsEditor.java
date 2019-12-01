@@ -118,10 +118,12 @@ public class RegisterAcademicAsEditor {
 			public void mouseClicked(MouseEvent arg0) {
 				for(Academic a: aca) {
 					if ((a.getFullName()).equals(selectedAcademic)) {
-						Editor temp = new Editor(-1,a.getTitle(),a.getForename(), a.getSurname(), a.getEmailId(), a.getUniversity(), a.getHash());
-						EditorOfJournal temp2 = new EditorOfJournal(j,temp,false);
-						j.addEditorToBoard(temp2);
-						temp2.addEditorAsChiefEditor();
+						System.out.println(a.getFullName());
+						System.out.println(j.getISSN());
+						System.out.println(a.getAcademicId());
+						Database.addAcademicToEditors(a.getAcademicId(), j.getISSN());
+						Editor temp = new Editor(Database.getEditorIdFromAcademicId(a.getAcademicId()), a.getTitle(), a.getForename(), a.getSurname(), a.getUniversity(), a.getEmailId(), null);
+						j.addEditorToBoard(new EditorOfJournal(j,temp,false));
 					}
 				}
 				frmRegisterAcademicAsEditor.dispose();

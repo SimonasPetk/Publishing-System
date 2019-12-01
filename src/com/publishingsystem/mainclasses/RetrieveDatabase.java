@@ -26,13 +26,14 @@ public class RetrieveDatabase extends Database{
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				ResultSet res = preparedStmt.executeQuery();
 				while(res.next()) {
-					Academic temp = new Author(res.getInt(1), res.getString(2), res.getString(3), res.getString(4), res.getString(5), res.getString(6), new Hash(res.getString(7)));
-					System.out.println(res.getString(1));
+					Academic temp = new Author(-1, res.getString(2), res.getString(3), res.getString(4), res.getString(5), res.getString(6), new Hash(res.getString(7)));
+					System.out.println(res.getInt(1));
 					System.out.println(res.getString(2));
 					System.out.println(res.getString(3));
 					System.out.println(res.getString(4));
 					System.out.println(res.getString(5));
 					System.out.println(res.getString(6));
+					temp.setAcademicId(res.getInt(1));
 					allAcademics.add(temp);
 				}
 			}

@@ -73,7 +73,7 @@ public class RetireFromWhichJournal {
 		frmRetireFromWhichJournal.setVisible(true);
 		frmRetireFromWhichJournal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JLabel lblRetireAsChief = new JLabel("Please choose the editor to replace you");
+		JLabel lblRetireAsChief = new JLabel("Please the journal to retire from");
 		lblRetireAsChief.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JScrollPane scrollPane = new JScrollPane();
