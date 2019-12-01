@@ -50,12 +50,12 @@ public class TestRun {
 ////		
 
 		
-//		Author a3 = new Author(-1, "Mr", "P.", "Prince", "p.prince@uniofprince.ac.uk", "Uni of prince", new Hash("prince"));
+		Author a3 = new Author(-1, "Mr", "P.", "Prince", "p.prince@uniofprince.ac.uk", "Uni of prince", new Hash("prince"));
 		Author a4 = new Author(-1, "Mr", "K.", "King", "k.king@uniofking.ac.uk", "Uni of king", new Hash("king"));
 		Author a5 = new Author(-1, "Mr", "Q.", "Queen", "q.queen@uniofqueen.ac.uk", "Uni of queen", new Hash("humphry"));
 		
 		ArrayList<Author> authorsReviewers = new ArrayList<Author>();
-		authorsReviewers.add(a1);
+		authorsReviewers.add(a3);
 		authorsReviewers.add(a5);
 		authorsReviewers.add(a4);
 //		
@@ -68,7 +68,7 @@ public class TestRun {
 		Database.addSubmission(tempS, new byte[] {});
 
 		ArrayList<Reviewer> reviewers = new ArrayList<Reviewer>();
-		reviewers.add(ar1);
+		reviewers.add(new Reviewer(a3));
 		reviewers.add(new Reviewer(a4));
 		reviewers.add(new Reviewer(a5));
 		

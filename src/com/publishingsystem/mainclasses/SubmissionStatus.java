@@ -25,11 +25,11 @@ public enum SubmissionStatus {
 		case SUBMITTED:
 			return "Submitted";
 		case REVIEWSRECEIVED:
-			return "Submitted -> Reviews received -> Initial verdict";
+			return "Submitted -> Reviews & Initial verdicts recieved";
 		case RESPONSESRECEIVED:
-			return "Submitted -> Reviews & Initial verdict recieved -> Responses received";
+			return "Submitted -> Reviews & Initial verdicts recieved -> Responses received";
 		case FINALVERDICT:
-			return "Submitted -> Reviews & Initial verdict recieved -> Responses received -> Final verdict";
+			return "Submitted -> Reviews & Initial verdicts recieved -> Responses received -> Final verdicts recieved";
 		case COMPLETED:
 			return "Completed";
 		default:

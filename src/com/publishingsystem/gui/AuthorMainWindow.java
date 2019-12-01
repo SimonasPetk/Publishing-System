@@ -88,6 +88,10 @@ public class AuthorMainWindow {
 		initialize(roles);
 	}
 	
+	public void enable() {
+		this.frmAuthorsDashboard.setEnabled(true);
+	}
+	
 	public void refreshReviewTable() {
 		DefaultTableModel model = ((DefaultTableModel)reviewTable.getModel());
 		model.setRowCount(0);
@@ -126,7 +130,7 @@ public class AuthorMainWindow {
 
 
 		// Window title
-		JLabel lblArticleList = new JLabel("Your articles:");
+		JLabel lblArticleList = new JLabel("Your articles: (To check for reviews, click on an entry)");
 		lblArticleList.setToolTipText("");
 		lblArticleList.setFont(new Font("Tahoma", Font.PLAIN, 20));
 
@@ -184,12 +188,12 @@ public class AuthorMainWindow {
 		GroupLayout groupLayout = new GroupLayout(frmAuthorsDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
+				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
 					.addGap(19)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(panelArticleReviews, GroupLayout.DEFAULT_SIZE, 701, Short.MAX_VALUE)
-						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)
-						.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 1053, Short.MAX_VALUE))
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(scrSubmitted, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 1042, Short.MAX_VALUE)
+						.addComponent(panelArticleReviews, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 1042, Short.MAX_VALUE)
+						.addComponent(lblArticleList, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 800, GroupLayout.PREFERRED_SIZE))
 					.addGap(19))
 		);
 		groupLayout.setVerticalGroup(
@@ -198,15 +202,15 @@ public class AuthorMainWindow {
 					.addGap(20)
 					.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(panelArticleReviews, GroupLayout.PREFERRED_SIZE, 195, GroupLayout.PREFERRED_SIZE)
+					.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 496, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(panelArticleReviews, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
 					.addGap(29))
 		);
 		panelArticleReviews.setLayout(new BorderLayout(0, 0));
 
 		// Review panel
-		JLabel lblArticlesReview = new JLabel("Article's Reviews");
+		JLabel lblArticlesReview = new JLabel("Article's Reviews (To respond to one, click on an entry)");
 		panelArticleReviews.add(lblArticlesReview, BorderLayout.NORTH);
 		lblArticlesReview.setToolTipText("");
 		lblArticlesReview.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -258,8 +262,10 @@ public class AuthorMainWindow {
 				System.out.println(row);
 				ReviewerOfSubmission ros = reviewersOfSubmission.get(row);
 			
-				if(!RetrieveDatabase.checkIfAllAnswered(ros))
-					new CriticismResponse(amw, ros);
+				if(!ros.getReview().responsesRecieved()) {
+					frmAuthorsDashboard.setEnabled(false);
+					new CriticismResponse(amw, ros, row+1);
+				}
 			}
 		});
 
@@ -271,10 +277,14 @@ public class AuthorMainWindow {
 				AuthorOfArticle aoa = authorOfArticles.get(row);
 				
 				if(aoa.isMainAuthor()) {
-					panelArticleReviews.setVisible(true);
 					RetrieveDatabase.checkReviewsForAuthor(aoa);
 					reviewersOfSubmission = aoa.getArticle().getSubmission().getReviewersOfSubmission();
-					refreshReviewTable();
+					if(reviewersOfSubmission.size() > 0) {
+						panelArticleReviews.setVisible(true);
+						refreshReviewTable();
+					}
+					else
+						JOptionPane.showMessageDialog(null, "No reviews recieved yet.");
 				}else {
 					panelArticleReviews.setVisible(false);
 				}

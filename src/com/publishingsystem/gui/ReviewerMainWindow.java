@@ -74,6 +74,8 @@ public class ReviewerMainWindow {
 	private Reviewer reviewer;
 	private JPanel panel;
 	private JPanel panel_review;
+	private JPanel panelMainReview;
+	private JPanel panelChosenToReview;
 	private int submissionRowSelectedToReview = -1;
 
 	/**
@@ -111,19 +113,19 @@ public class ReviewerMainWindow {
 		DefaultTableModel str_model = (DefaultTableModel)tblChooseToReview.getModel();
 		str_model.setRowCount(0);
 		str_model.setColumnCount(0);
-		str_model.addColumn("Submission ID");
+		str_model.addColumn("No.");
 		str_model.addColumn("Title");
 		str_model.addColumn("Reviewed");
-		str_model.addColumn("Respondes Recieved");
-		str_model.addColumn("Final Verdict Given");
+		str_model.addColumn("Responses Recieved");
+		int counter = 1;
 		for(ReviewerOfSubmission ros : submissionsChosenToReview) {
 			Submission s = ros.getSubmission();
-			Object[] submissionString = new Object[5];
-			submissionString[0] = s.getSubmissionId();
+			Review r = ros.getReview();
+			Object[] submissionString = new Object[4];
+			submissionString[0] = counter;
 			submissionString[1] = s.getArticle().getTitle();
-			submissionString[2] = ros.getReview() == null ? "No" : "Yes";
-			submissionString[3] = ros.getReview().responsesRecieved() ? "Yes" : "No";
-			submissionString[4] = ros.getReview().getFinalVerdict() == null ? "No" : "Yes";
+			submissionString[2] = r == null ? "No" : "Yes";
+			submissionString[3] = r == null ? "" : (r.responsesRecieved() ? "Yes" : "No");
 			str_model.addRow(submissionString);
 		}
 	}
@@ -133,25 +135,33 @@ public class ReviewerMainWindow {
 		DefaultTableModel str_model = (DefaultTableModel)tblToReview.getModel();
 		str_model.setRowCount(0);
 		str_model.setColumnCount(0);
-		str_model.addColumn("Article ID");
+		str_model.addColumn("No.");
 		str_model.addColumn("Title");
 		str_model.addColumn("No. of reviews selected by co-authors");
+		int counter = 1;
 		for(Article a : articlesSubmitted) {
 			Object[] submissionString = new Object[3];
-			submissionString[0] = a.getArticleId();
+			submissionString[0] = counter;
 			submissionString[1] = a.getTitle();
 			submissionString[2] = a.getNumReviews();
 			str_model.addRow(submissionString);
+			counter++;
 		}
 	}
 	
 	public void refreshTables() {
+		if(submissionsChosenToReview.size() > 0) {
+			panelChosenToReview.setVisible(true);
+			this.refreshChooseToReviewTable();
+		}
+		else
+			panelChosenToReview.setVisible(false);
 		numReviewsToBeDone = RetrieveDatabase.getNumberOfReviewsToBeDone(reviewer.getReviewerId());
 		if(numReviewsToBeDone == 0)
 			panel.setVisible(false);
 		else
 			lblArticleListToChoose.setText("Number of articles to review remaining : "+numReviewsToBeDone);
-		this.refreshChooseToReviewTable();
+		
 		if(this.tblToReview != null)
 			this.refreshToReviewTable();
 	}
@@ -179,11 +189,55 @@ public class ReviewerMainWindow {
 		
 		numReviewsToBeDone = RetrieveDatabase.getNumberOfReviewsToBeDone(reviewer.getReviewerId());
 		
-		JLabel lblArticlesReview = new JLabel("Article's Review:");
-		lblArticlesReview.setToolTipText("");
-		lblArticlesReview.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		panel = new JPanel();
+		
+		panelChosenToReview = new JPanel();
+		
+		panelMainReview = new JPanel();
+        panelMainReview.setVisible(false);
+		
+		JPanel panel_2 = new JPanel();
+		GroupLayout groupLayout = new GroupLayout(frmReviewDashboard.getContentPane());
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(panel, GroupLayout.DEFAULT_SIZE, 659, Short.MAX_VALUE)
+						.addComponent(panelChosenToReview, GroupLayout.DEFAULT_SIZE, 659, Short.MAX_VALUE))
+					.addGap(18)
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(panelMainReview, GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+						.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE))
+					.addContainerGap())
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(panelChosenToReview, GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(panel, GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 256, GroupLayout.PREFERRED_SIZE)
+							.addGap(18)
+							.addComponent(panelMainReview, GroupLayout.PREFERRED_SIZE, 376, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap())
+		);
+		panel_2.setLayout(new BorderLayout(0, 0));
+		
+		JLabel lblArticle = new JLabel("Article:");
+		panel_2.add(lblArticle, BorderLayout.NORTH);
+		lblArticle.setToolTipText("");
+		lblArticle.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JPanel panel_5 = new JPanel();
+		panel_2.add(panel_5, BorderLayout.SOUTH);
 		
 		JButton btnNewButton = new JButton("Download PDF");
+		panel_5.add(btnNewButton);
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -214,87 +268,79 @@ public class ReviewerMainWindow {
 		});
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JLabel lblArticlesYouHave = new JLabel("Articles You Have Chosen to Review:");
-		lblArticlesYouHave.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		
-		JScrollPane scrChosenToReview = new JScrollPane();
-		scrChosenToReview.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		
-		panel = new JPanel();
-		
-		JScrollPane scrollPane_2 = new JScrollPane();
-		scrollPane_2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		
-		JLabel lblArticle = new JLabel("Article:");
-		lblArticle.setToolTipText("");
-		lblArticle.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		
 		JButton btnReviewArticle = new JButton("Review Article");
+		panel_5.add(btnReviewArticle);
 		btnReviewArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JScrollPane scrollPane = new JScrollPane();
+		JScrollPane scrollPane_2 = new JScrollPane();
+		panel_2.add(scrollPane_2, BorderLayout.CENTER);
+		scrollPane_2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		
+		JPanel panel_4 = new JPanel();
+		scrollPane_2.setViewportView(panel_4);
+		GridBagLayout gbl_panel_4 = new GridBagLayout();
+		gbl_panel_4.columnWidths = new int[] {0};
+		gbl_panel_4.rowHeights = new int[]{20, 0, 0, 40, 40};
+		gbl_panel_4.columnWeights = new double[]{1.0};
+		gbl_panel_4.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		panel_4.setLayout(gbl_panel_4);
+		
+		JLabel lblTitle = new JLabel("Title");
+		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		GridBagConstraints gbc_lblTitle = new GridBagConstraints();
+		gbc_lblTitle.fill = GridBagConstraints.BOTH;
+		gbc_lblTitle.insets = new Insets(0, 0, 5, 0);
+		gbc_lblTitle.gridx = 0;
+		gbc_lblTitle.gridy = 0;
+		panel_4.add(lblTitle, gbc_lblTitle);
+		
+		JTextArea textAreaArticleTitle = new JTextArea();
+		textAreaArticleTitle.setEditable(false);
+		textAreaArticleTitle.setLineWrap(true);
+		GridBagConstraints gbc_textAreaArticleTitle = new GridBagConstraints();
+		gbc_textAreaArticleTitle.insets = new Insets(0, 0, 5, 0);
+		gbc_textAreaArticleTitle.fill = GridBagConstraints.BOTH;
+		gbc_textAreaArticleTitle.gridx = 0;
+		gbc_textAreaArticleTitle.gridy = 1;
+		panel_4.add(textAreaArticleTitle, gbc_textAreaArticleTitle);
+		
+		JLabel lblArticleSummary = new JLabel("Summary");
+		lblArticleSummary.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		GridBagConstraints gbc_lblArticleSummary = new GridBagConstraints();
+		gbc_lblArticleSummary.fill = GridBagConstraints.BOTH;
+		gbc_lblArticleSummary.insets = new Insets(0, 0, 5, 0);
+		gbc_lblArticleSummary.gridx = 0;
+		gbc_lblArticleSummary.gridy = 2;
+		panel_4.add(lblArticleSummary, gbc_lblArticleSummary);
+		
+		JTextArea textAreaArticleSummary = new JTextArea();
+		textAreaArticleSummary.setEditable(false);
+		textAreaArticleSummary.setLineWrap(true);
+		GridBagConstraints gbc_textAreaArticleSummary = new GridBagConstraints();
+		gbc_textAreaArticleSummary.gridheight = 2;
+		gbc_textAreaArticleSummary.fill = GridBagConstraints.BOTH;
+		gbc_textAreaArticleSummary.gridx = 0;
+		gbc_textAreaArticleSummary.gridy = 3;
+		panel_4.add(textAreaArticleSummary, gbc_textAreaArticleSummary);
+		
+		ReviewerMainWindow rmw = this;
+		btnReviewArticle.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				ReviewerOfSubmission ros = submissionsChosenToReview.get(submissionRowSelectedToReview);
+				if(ros.getReview() == null)
+					new ReviewArticle(submissionsChosenToReview.get(submissionRowSelectedToReview), rmw);
+			}
+		});
+		panelMainReview.setLayout(new BorderLayout(0, 0));
+		
+		JLabel lblArticlesReview = new JLabel("Article's Review:");
+		panelMainReview.add(lblArticlesReview, BorderLayout.NORTH);
+		lblArticlesReview.setToolTipText("");
+		lblArticlesReview.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JPanel pnlVerdict = new JPanel();
-        
-		GroupLayout groupLayout = new GroupLayout(frmReviewDashboard.getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-							.addComponent(scrChosenToReview, GroupLayout.DEFAULT_SIZE, 557, Short.MAX_VALUE)
-							.addComponent(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-						.addComponent(lblArticlesYouHave))
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(30)
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 171, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnReviewArticle, GroupLayout.PREFERRED_SIZE, 176, GroupLayout.PREFERRED_SIZE))
-								.addComponent(pnlVerdict, GroupLayout.PREFERRED_SIZE, 490, GroupLayout.PREFERRED_SIZE)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(15)
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addComponent(lblArticle, GroupLayout.PREFERRED_SIZE, 186, GroupLayout.PREFERRED_SIZE)
-										.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE)))))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(47)
-							.addComponent(lblArticlesReview, GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(47)
-							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)))
-					.addContainerGap())
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblArticlesYouHave)
-						.addComponent(lblArticlesReview, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(pnlVerdict, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
-							.addGap(50)
-							.addComponent(lblArticle, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 188, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnReviewArticle)
-								.addComponent(btnNewButton)))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrChosenToReview, GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
-							.addGap(29)
-							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 436, GroupLayout.PREFERRED_SIZE)))
-					.addGap(31))
-		);
+		panelMainReview.add(pnlVerdict, BorderLayout.SOUTH);
 		
 		JComboBox cmbVerdict = new JComboBox();
 		cmbVerdict.setModel(new DefaultComboBoxModel(new String[] {"SELECT", "STRONG ACCEPT", "WEAK ACCEPT", "WEAK REJECT", "STRONG REJECT"}));
@@ -322,15 +368,18 @@ public class ReviewerMainWindow {
 		);
 		pnlVerdict.setLayout(gl_pnlVerdict);
 		
+		JScrollPane scrollPane = new JScrollPane();
+		panelMainReview.add(scrollPane, BorderLayout.CENTER);
+		
 		panel_review = new JPanel();
 		panel_review.setVisible(false);
 		scrollPane.setViewportView(panel_review);
-		GridBagLayout gbl_panel_2 = new GridBagLayout();
-		gbl_panel_2.columnWidths = new int[]{287, 0};
-		gbl_panel_2.rowHeights = new int[]{44, 44, 44, 44, 44, 0, 0, 0};
-		gbl_panel_2.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_panel_2.rowWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		panel_review.setLayout(gbl_panel_2);
+		GridBagLayout gbl_panelChosenToReview = new GridBagLayout();
+		gbl_panelChosenToReview.columnWidths = new int[]{0, 0};
+		gbl_panelChosenToReview.rowHeights = new int[]{44, 44, 44, 44, 44, 0, 0, 0};
+		gbl_panelChosenToReview.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gbl_panelChosenToReview.rowWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		panel_review.setLayout(gbl_panelChosenToReview);
 		
 		JLabel lblSummary = new JLabel("Summary");
 		GridBagConstraints gbc_lblSummary = new GridBagConstraints();
@@ -341,6 +390,7 @@ public class ReviewerMainWindow {
 		panel_review.add(lblSummary, gbc_lblSummary);
 		
 		JTextArea textAreaReviewSummary = new JTextArea();
+		textAreaReviewSummary.setEditable(false);
 		GridBagConstraints gbc_textArea_2 = new GridBagConstraints();
 		gbc_textArea_2.insets = new Insets(0, 0, 5, 0);
 		gbc_textArea_2.fill = GridBagConstraints.BOTH;
@@ -373,78 +423,11 @@ public class ReviewerMainWindow {
 		gbc_panel_3.gridy = 4;
 		panel_review.add(panel_3, gbc_panel_3);
 		GridBagLayout gbl_panel_3 = new GridBagLayout();
-		gbl_panel_3.columnWidths = new int[]{287, 0};
+		gbl_panel_3.columnWidths = new int[]{0, 0};
 		gbl_panel_3.rowHeights = new int[]{27, 27, 27, 27, 0};
 		gbl_panel_3.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		gbl_panel_3.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		panel_3.setLayout(gbl_panel_3);
-		
-		JPanel panel_4 = new JPanel();
-		scrollPane_2.setViewportView(panel_4);
-		GridBagLayout gbl_panel_4 = new GridBagLayout();
-		gbl_panel_4.columnWidths = new int[] {220, 0};
-		gbl_panel_4.rowHeights = new int[]{40, 0, 0, 40, 40, 40, 40, 0};
-		gbl_panel_4.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_panel_4.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
-		panel_4.setLayout(gbl_panel_4);
-		
-		JLabel lblTitle = new JLabel("Title");
-		GridBagConstraints gbc_lblTitle = new GridBagConstraints();
-		gbc_lblTitle.fill = GridBagConstraints.BOTH;
-		gbc_lblTitle.insets = new Insets(0, 0, 5, 0);
-		gbc_lblTitle.gridx = 0;
-		gbc_lblTitle.gridy = 0;
-		panel_4.add(lblTitle, gbc_lblTitle);
-		
-		JTextArea textAreaArticleTitle = new JTextArea();
-		textAreaArticleTitle.setEditable(false);
-		textAreaArticleTitle.setLineWrap(true);
-		GridBagConstraints gbc_textAreaArticleTitle = new GridBagConstraints();
-		gbc_textAreaArticleTitle.insets = new Insets(0, 0, 5, 0);
-		gbc_textAreaArticleTitle.fill = GridBagConstraints.BOTH;
-		gbc_textAreaArticleTitle.gridx = 0;
-		gbc_textAreaArticleTitle.gridy = 1;
-		panel_4.add(textAreaArticleTitle, gbc_textAreaArticleTitle);
-		
-		JLabel lblArticleSummary = new JLabel("Summary");
-		GridBagConstraints gbc_lblArticleSummary = new GridBagConstraints();
-		gbc_lblArticleSummary.fill = GridBagConstraints.BOTH;
-		gbc_lblArticleSummary.insets = new Insets(0, 0, 5, 0);
-		gbc_lblArticleSummary.gridx = 0;
-		gbc_lblArticleSummary.gridy = 2;
-		panel_4.add(lblArticleSummary, gbc_lblArticleSummary);
-		
-		JTextArea textAreaArticleSummary = new JTextArea();
-		textAreaArticleSummary.setEditable(false);
-		textAreaArticleSummary.setLineWrap(true);
-		GridBagConstraints gbc_textAreaArticleSummary = new GridBagConstraints();
-		gbc_textAreaArticleSummary.gridheight = 2;
-		gbc_textAreaArticleSummary.fill = GridBagConstraints.BOTH;
-		gbc_textAreaArticleSummary.gridx = 0;
-		gbc_textAreaArticleSummary.gridy = 3;
-		panel_4.add(textAreaArticleSummary, gbc_textAreaArticleSummary);
-		panel.setLayout(new BorderLayout(0, 0));
-		
-		lblArticleListToChoose = new JLabel("Number of articles to review remaining : "+numReviewsToBeDone);
-		panel.add(lblArticleListToChoose, BorderLayout.NORTH);
-		lblArticleListToChoose.setToolTipText("");
-		lblArticleListToChoose.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		
-		JScrollPane scrSubmitted = new JScrollPane();
-		panel.add(scrSubmitted, BorderLayout.CENTER);
-		scrSubmitted.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		frmReviewDashboard.getContentPane().setLayout(groupLayout);
-		
-		ReviewerMainWindow rmw = this;
-		
-		btnReviewArticle.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				ReviewerOfSubmission ros = submissionsChosenToReview.get(submissionRowSelectedToReview);
-				if(ros.getReview() == null)
-					new ReviewArticle(submissionsChosenToReview.get(submissionRowSelectedToReview), rmw);
-			}
-		});
 		
 		btnVerdict.addMouseListener(new MouseAdapter() {
 			@Override
@@ -460,7 +443,11 @@ public class ReviewerMainWindow {
 					refreshChooseToReviewTable();
 					pnlVerdict.setVisible(false);
 					panel_review.setVisible(false);
-					if(submissionsChosenToReview.size() == 0 && numReviewsToBeDone == 0) {
+					panelMainReview.setVisible(false);
+					textAreaArticleTitle.setText("");
+					textAreaArticleSummary.setText("");
+					lblArticle.setText("Article: ");
+					if(RetrieveDatabase.getNumberOfReviewsToBeDone(reviewer.getReviewerId()) == 0 && submissionsChosenToReview.size() == 0) {
 						Database.deleteReviewer(reviewer.getReviewerId());
 						frmReviewDashboard.dispose();
 						roles[2] = null;
@@ -472,14 +459,38 @@ public class ReviewerMainWindow {
 		});
 		
 		pnlVerdict.setVisible(false);
+		panelChosenToReview.setLayout(new BorderLayout(0, 0));
+		
+		JLabel lblArticlesYouHave = new JLabel("Articles You Have Chosen to Review:");
+		panelChosenToReview.add(lblArticlesYouHave, BorderLayout.NORTH);
+		lblArticlesYouHave.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JScrollPane scrChosenToReview = new JScrollPane();
+		panelChosenToReview.add(scrChosenToReview, BorderLayout.CENTER);
+		scrChosenToReview.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		panel.setLayout(new BorderLayout(0, 0));
+		
+		lblArticleListToChoose = new JLabel("Number of articles to review remaining : "+numReviewsToBeDone);
+		panel.add(lblArticleListToChoose, BorderLayout.NORTH);
+		lblArticleListToChoose.setToolTipText("");
+		lblArticleListToChoose.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JScrollPane scrSubmitted = new JScrollPane();
+		panel.add(scrSubmitted, BorderLayout.CENTER);
+		scrSubmitted.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		frmReviewDashboard.getContentPane().setLayout(groupLayout);
+		
+		if(submissionsChosenToReview.size() == 0)
+			panelChosenToReview.setVisible(false);
 		
 		DefaultTableModel str_model1 = new DefaultTableModel();
 		tblChooseToReview = new JTable(str_model1);
 		refreshChooseToReviewTable();
 		tblChooseToReview.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
-		tblChooseToReview.getColumnModel().getColumn(0).setPreferredWidth(10);
-		tblChooseToReview.getColumnModel().getColumn(1).setPreferredWidth(40);
-		tblChooseToReview.getColumnModel().getColumn(2).setPreferredWidth(50);
+		tblChooseToReview.getColumnModel().getColumn(0).setPreferredWidth(1);
+		tblChooseToReview.getColumnModel().getColumn(1).setPreferredWidth(200);
+		tblChooseToReview.getColumnModel().getColumn(2).setPreferredWidth(10);
+		tblChooseToReview.getColumnModel().getColumn(3).setPreferredWidth(200);
 		tblChooseToReview.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		tblChooseToReview.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tblChooseToReview.setEnabled(false);
@@ -497,6 +508,7 @@ public class ReviewerMainWindow {
 				Review review =  ros.getReview();
 				if(review != null) {
 					panel_review.setVisible(true);
+					panelMainReview.setVisible(true);
 					textAreaReviewSummary.setText(review.getSummary());
 					textAreaTypoErrors.setText(review.getTypingErrors());
 					int criticisms = 1;
@@ -545,19 +557,22 @@ public class ReviewerMainWindow {
 						criticisms++;
 					}
 					if(answered){
+						lblArticle.setText("Revised Article: ");
 						pnlVerdict.setVisible(true);
 					}else {
+						lblArticle.setText("Article: ");
 						pnlVerdict.setVisible(false);
 					}
 				}else {
 					panel_review.setVisible(false);
+					panelMainReview.setVisible(false);
 				}
 				textAreaArticleSummary.setText(ros.getSubmission().getArticle().getSummary());
 				textAreaArticleTitle.setText(ros.getSubmission().getArticle().getTitle());
 				System.out.println(row);
 			} 
 		});
-			
+
 		articlesSubmitted = RetrieveDatabase.getArticlesSubmittedByReviewer(reviewer.getReviewerId());
 		if(articlesSubmitted.size() > 0) {
 			JPanel panel_1 = new JPanel();
@@ -568,9 +583,9 @@ public class ReviewerMainWindow {
 			tblToReview = new JTable(str_model);
 			refreshToReviewTable();
 			tblToReview.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
-			tblToReview.getColumnModel().getColumn(0).setPreferredWidth(2);
-			tblToReview.getColumnModel().getColumn(1).setPreferredWidth(40);
-			tblToReview.getColumnModel().getColumn(2).setPreferredWidth(50);
+			tblToReview.getColumnModel().getColumn(0).setPreferredWidth(1);
+			tblToReview.getColumnModel().getColumn(1).setPreferredWidth(100);
+			tblToReview.getColumnModel().getColumn(2).setPreferredWidth(200);
 			tblToReview.setFont(new Font("Tahoma", Font.PLAIN, 16));
 			tblToReview.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			tblToReview.setEnabled(false);
@@ -578,8 +593,8 @@ public class ReviewerMainWindow {
 				@Override
 				public void mouseClicked(MouseEvent arg0) {
 				    // Open new window displaying the articles in the selected article
-					int selectedArticle = (int)tblToReview.getValueAt(tblToReview.rowAtPoint(arg0.getPoint()), 0);
-					System.out.println(selectedArticle);
+					int row = tblToReview.rowAtPoint(arg0.getPoint());
+					int selectedArticle = articlesSubmitted.get(row).getArticleId();
 					new ChooseArticlesToReview(reviewer, selectedArticle, rmw);
 				} 
 			});

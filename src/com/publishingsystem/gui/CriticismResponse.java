@@ -18,6 +18,8 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,7 +60,7 @@ public class CriticismResponse {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					CriticismResponse window = new CriticismResponse(null, null);
+					CriticismResponse window = new CriticismResponse(null, null, 0);
 					window.frmRespondToCriticism.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -70,25 +72,33 @@ public class CriticismResponse {
 	/**
 	 * Create the application.
 	 */
-	public CriticismResponse(AuthorMainWindow amw, ReviewerOfSubmission ros) {
+	public CriticismResponse(AuthorMainWindow amw, ReviewerOfSubmission ros, int reviewer) {
 		textAreaAnswers= new ArrayList<JTextArea>();
 		criticisms = ros.getReview().getCriticisms();
-		initialize(amw, ros);
+		initialize(amw, ros, reviewer);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(AuthorMainWindow amw, ReviewerOfSubmission ros) {
+	private void initialize(AuthorMainWindow amw, ReviewerOfSubmission ros, int reviewer) {
 		frmRespondToCriticism = new JFrame();
-		frmRespondToCriticism.setTitle("Respond to Criticism");
+		frmRespondToCriticism.setTitle("Respond to Criticisms");
 		frmRespondToCriticism.setBounds(100, 100, 534, 604);
 		frmRespondToCriticism.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmRespondToCriticism.setVisible(true);
 		
-		JLabel lblYourArticleReviews = new JLabel("Your Article's Reviews");
+		frmRespondToCriticism.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+            	amw.enable();
+            	frmRespondToCriticism.dispose();
+            }
+        });
+		
+		JLabel lblYourArticleReviews = new JLabel("Reviewer "+reviewer+"'s review");
 		lblYourArticleReviews.setHorizontalAlignment(SwingConstants.CENTER);
-		lblYourArticleReviews.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblYourArticleReviews.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JLabel lblReview = new JLabel("Summary");
 		lblReview.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -109,12 +119,12 @@ public class CriticismResponse {
 				if(!allAnswered)
 					JOptionPane.showMessageDialog(null, "Please answer all criticisms", "Error in response", 0);
 				else {
-					
 					Calendar calendar = Calendar.getInstance();
 					PDF revisedPDF = new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), ros.getSubmission());
 					ros.getReview().answer(answers);
 					Database.addResponse(ros);
 					Database.addRevisedSubmission(revisedPDF, PDFConverter.getByteArrayFromFile(pdfPath));
+					amw.enable();
 					amw.refreshReviewTable();
 					frmRespondToCriticism.dispose();
 				}
