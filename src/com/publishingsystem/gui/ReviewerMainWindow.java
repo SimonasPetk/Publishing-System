@@ -52,6 +52,8 @@ import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.Toolkit;
+
 import javax.swing.JTextArea;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
@@ -112,12 +114,16 @@ public class ReviewerMainWindow {
 		str_model.addColumn("Submission ID");
 		str_model.addColumn("Title");
 		str_model.addColumn("Reviewed");
+		str_model.addColumn("Respondes Recieved");
+		str_model.addColumn("Final Verdict Given");
 		for(ReviewerOfSubmission ros : submissionsChosenToReview) {
 			Submission s = ros.getSubmission();
-			Object[] submissionString = new Object[3];
+			Object[] submissionString = new Object[5];
 			submissionString[0] = s.getSubmissionId();
 			submissionString[1] = s.getArticle().getTitle();
 			submissionString[2] = ros.getReview() == null ? "No" : "Yes";
+			submissionString[3] = ros.getReview().responsesRecieved() ? "Yes" : "No";
+			submissionString[4] = ros.getReview().getFinalVerdict() == null ? "No" : "Yes";
 			str_model.addRow(submissionString);
 		}
 	}
@@ -146,7 +152,8 @@ public class ReviewerMainWindow {
 		else
 			lblArticleListToChoose.setText("Number of articles to review remaining : "+numReviewsToBeDone);
 		this.refreshChooseToReviewTable();
-		this.refreshToReviewTable();
+		if(this.tblToReview != null)
+			this.refreshToReviewTable();
 	}
 	
 	public void addReview(Review r) {
@@ -158,11 +165,17 @@ public class ReviewerMainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Academic[] roles) {
+		int width = 1080;
+		int height = 740;
 		submissionsChosenToReview = reviewer.getReviewerOfSubmissions();
 		frmReviewDashboard = new JFrame();
-		frmReviewDashboard.setBounds(100, 100, 1089, 740);
+		frmReviewDashboard.setBounds(100, 100, width, height);
 		frmReviewDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmReviewDashboard.setVisible(true);
+		
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Dimension screenSize = toolkit.getScreenSize();
+		frmReviewDashboard.setLocation(screenSize.width/2-width/2, screenSize.height/2-height/2);
 		
 		numReviewsToBeDone = RetrieveDatabase.getNumberOfReviewsToBeDone(reviewer.getReviewerId());
 		
@@ -440,13 +453,20 @@ public class ReviewerMainWindow {
 				if(v.equals("SELECT")) {
 					JOptionPane.showMessageDialog(null, "Please select a final verdict", "Error in submission", 0);
 				}else {
-					Review review = submissionsChosenToReview.get(submissionRowSelectedToReview).getReview();
-					review.setFinalVerdict(Verdict.valueOf(v));
-					Database.setVerdict(submissionsChosenToReview.get(submissionRowSelectedToReview).getReview());
+					ReviewerOfSubmission ros = submissionsChosenToReview.get(submissionRowSelectedToReview);
+					ros.getReview().setFinalVerdict(Verdict.valueOf(v));
+					Database.setVerdict(ros);
 					submissionsChosenToReview.remove(submissionRowSelectedToReview);
 					refreshChooseToReviewTable();
 					pnlVerdict.setVisible(false);
 					panel_review.setVisible(false);
+					if(submissionsChosenToReview.size() == 0 && numReviewsToBeDone == 0) {
+						Database.deleteReviewer(reviewer.getReviewerId());
+						frmReviewDashboard.dispose();
+						roles[2] = null;
+						JOptionPane.showMessageDialog(null, "Thank you for completing all your Reviewer responsibilities.");
+						new JournalWindow(roles);
+					}
 				}
 			}
 		});

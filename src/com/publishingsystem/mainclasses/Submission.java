@@ -3,7 +3,6 @@ import java.util.ArrayList;
 
 public class Submission{
 	private ArrayList<ReviewerOfSubmission> reviewersOfSubmission;
-	private Decision decision;
 	private SubmissionStatus status;
 	private int submissionId;
 	private Article article;
@@ -52,15 +51,6 @@ public class Submission{
 	
 	public SubmissionStatus getStatus() {
 		return this.status;
-	}
-	
-	public Decision getDecision() {
-		return this.decision;
-	}
-	
-	public void setDecision(Decision d) {
-		this.decision = d;
-		this.status = SubmissionStatus.COMPLETED;
 	}
 	
 	public String toString() {

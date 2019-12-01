@@ -42,7 +42,8 @@ public class TestRun {
 //		//Adding to DB
 		Database.registerAuthors(authors);
 		ArrayList<Reviewer> authorsReviewers1 = new ArrayList<Reviewer>();
-		authorsReviewers1.add(new Reviewer(a1));
+		Reviewer ar1 = new Reviewer(a1);
+		authorsReviewers1.add(ar1);
 		authorsReviewers1.add(new Reviewer(a2));
 		Database.registerReviewers(authorsReviewers1);
 		Database.addSubmission(article, new byte[] {});
@@ -67,7 +68,7 @@ public class TestRun {
 		Database.addSubmission(tempS, new byte[] {});
 
 		ArrayList<Reviewer> reviewers = new ArrayList<Reviewer>();
-		reviewers.add(new Reviewer(a1));
+		reviewers.add(ar1);
 		reviewers.add(new Reviewer(a4));
 		reviewers.add(new Reviewer(a5));
 		

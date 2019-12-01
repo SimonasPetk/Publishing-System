@@ -7,6 +7,8 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.awt.Font;
+import java.awt.Toolkit;
+
 import javax.swing.JList;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.AbstractListModel;
@@ -34,6 +36,7 @@ import javax.swing.JTree;
 import javax.swing.JButton;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Date;
@@ -80,16 +83,22 @@ public class JournalWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Academic[] roles) {
+		int width = 1080;
+		int height = 740;
 	    // Define the frame
 		frmJournalWindow = new JFrame();
 		frmJournalWindow.setTitle("View Journals");
-		frmJournalWindow.setBounds(100, 100, 540, 331);
+		frmJournalWindow.setBounds(100, 100, width, height);
 		frmJournalWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmJournalWindow.setVisible(true);
 		
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Dimension screenSize = toolkit.getScreenSize();
+		frmJournalWindow.setLocation(screenSize.width/2-width/2, screenSize.height/2-height/2);
+		
 		// Window description
 		JLabel lblAvailabeJournals = new JLabel("Choose a journal to view");
-		lblAvailabeJournals.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblAvailabeJournals.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		// 
 		JScrollPane scrollPanelJournal = new JScrollPane();
@@ -150,7 +159,7 @@ public class JournalWindow {
 				return columnEditables[column];
 			}
 		});
-		
+		tblJournal.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
 		scrollPanelJournal.setViewportView(tblJournal);
 		frmJournalWindow.getContentPane().setLayout(groupLayout);
 		

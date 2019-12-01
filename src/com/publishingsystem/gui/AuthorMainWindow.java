@@ -24,11 +24,16 @@ import javax.swing.JEditorPane;
 import javax.swing.ScrollPaneConstants;
 import com.publishingsystem.mainclasses.*;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.BoxLayout;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Toolkit;
+
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -106,12 +111,18 @@ public class AuthorMainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Academic[] roles) {
+		int width = 1080;
+		int height = 740;
 		// Configure frame
 		frmAuthorsDashboard = new JFrame();
 		frmAuthorsDashboard.setTitle("Author's Dashboard");
-		frmAuthorsDashboard.setBounds(100, 100, 757, 740);
+		frmAuthorsDashboard.setBounds(100, 100, width, height);
 		frmAuthorsDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAuthorsDashboard.setVisible(true);
+		
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Dimension screenSize = toolkit.getScreenSize();
+		frmAuthorsDashboard.setLocation(screenSize.width/2-width/2, screenSize.height/2-height/2);
 
 
 		// Window title
@@ -126,25 +137,45 @@ public class AuthorMainWindow {
 		ArrayList<AuthorOfArticle> authorOfArticles = author.getAuthorOfArticles();
 		tblSubmittedModel = new DefaultTableModel();
 		tblSubmittedModel.addColumn("Article ID");
+		tblSubmittedModel.addColumn("Main Author");
 		tblSubmittedModel.addColumn("Title");
 		tblSubmittedModel.addColumn("Status");
 
 		for(int i = 0; i < authorOfArticles.size(); i++) {
-			Article article = authorOfArticles.get(i).getArticle();
-			String[] articles = new String[3];
+			AuthorOfArticle aoa =authorOfArticles.get(i);
+			Article article = aoa.getArticle();
+			String[] articles = new String[4];
 			articles[0] = "  "+String.valueOf(article.getArticleId());
-			articles[1] = article.getTitle();
-			articles[2] = article.getSubmission().getStatus().getStatus();
+			articles[1] = aoa.isMainAuthor() ? "Yes" : "No";
+			articles[2] = article.getTitle();
+			articles[3] = article.getSubmission().getStatus().getStatus();
 			tblSubmittedModel.addRow(articles);
 		}
 		tblSubmitted = new JTable(tblSubmittedModel);
 		tblSubmitted.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
-		tblSubmitted.getColumnModel().getColumn(0).setPreferredWidth(2);
-		tblSubmitted.getColumnModel().getColumn(1).setPreferredWidth(50);
-		tblSubmitted.getColumnModel().getColumn(2).setPreferredWidth(300);
+		tblSubmitted.getColumnModel().getColumn(0).setPreferredWidth(1);
+		tblSubmitted.getColumnModel().getColumn(1).setPreferredWidth(10);
+		tblSubmitted.getColumnModel().getColumn(2).setPreferredWidth(200);
+		tblSubmitted.getColumnModel().getColumn(3).setPreferredWidth(500);
 		tblSubmitted.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		tblSubmitted.setEnabled(false);
 		scrSubmitted.setViewportView(tblSubmitted);
+		
+		tblSubmitted.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseReleased(MouseEvent e) {
+		        int r = tblSubmitted.rowAtPoint(e.getPoint());
+		        if (r >= 0 && r < tblSubmitted.getRowCount()) {
+		        	tblSubmitted.setRowSelectionInterval(r, r);
+		        } else {
+		        	tblSubmitted.clearSelection();
+		        }
+
+		        int rowindex = tblSubmitted.getSelectedRow();
+		        if (rowindex < 0)
+		            return;
+		    }
+		});
 
 		JPanel panelArticleReviews = new JPanel();
 		panelArticleReviews.setVisible(false);
@@ -155,12 +186,11 @@ public class AuthorMainWindow {
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(19)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addComponent(panelArticleReviews, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addGroup(Alignment.LEADING, groupLayout.createParallelGroup(Alignment.LEADING, false)
-							.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)
-							.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 701, Short.MAX_VALUE)))
-					.addContainerGap(252, Short.MAX_VALUE))
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(panelArticleReviews, GroupLayout.DEFAULT_SIZE, 701, Short.MAX_VALUE)
+						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)
+						.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 1053, Short.MAX_VALUE))
+					.addGap(19))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -204,6 +234,23 @@ public class AuthorMainWindow {
 		reviewTable.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		reviewTable.setEnabled(false);
 		scrollPane_2.setViewportView(reviewTable);
+		
+		reviewTable.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mouseReleased(MouseEvent e) {
+		        int r = reviewTable.rowAtPoint(e.getPoint());
+		        if (r >= 0 && r < reviewTable.getRowCount()) {
+		        	reviewTable.setRowSelectionInterval(r, r);
+		        } else {
+		        	reviewTable.clearSelection();
+		        }
+
+		        int rowindex = reviewTable.getSelectedRow();
+		        if (rowindex < 0)
+		            return;
+		    }
+		});
+		
 		reviewTable.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -228,6 +275,8 @@ public class AuthorMainWindow {
 					RetrieveDatabase.checkReviewsForAuthor(aoa);
 					reviewersOfSubmission = aoa.getArticle().getSubmission().getReviewersOfSubmission();
 					refreshReviewTable();
+				}else {
+					panelArticleReviews.setVisible(false);
 				}
 			}
 		});
