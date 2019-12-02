@@ -26,7 +26,12 @@ public class Volume {
 		this.volumeNumber = volumeNumber;
 	}
 	
-	
+	public void setPublished(boolean set) {
+		this.published = set;
+	}
+	public void setJournal(Journal j) {
+		this.journal = j;
+	}
 	public ArrayList<Edition> getEditions() {
 		return editions;
 	}
@@ -37,6 +42,13 @@ public class Volume {
 	
 	public int getVolumeNumber() {
 		return volumeNumber;
+	}
+	public Journal getJournal() {
+		return journal;
+	}
+	
+	public boolean isPublished() {
+		return published;
 	}
 	
 	public boolean maxEditionsReached() {

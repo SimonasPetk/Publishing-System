@@ -106,25 +106,6 @@ public class ArticlesWindow {
 			}
 		});
 		
-		/*
-		 * Template for getting contents of table
-		 * Taken from JournalWindow.java
-		 
-        ArrayList<Article> allArticles= RetrieveDatabase.getJournals();
-        Object[][] tableContents = new Object[allJournals.size()][3];
-        for (int i=0; i<allJournals.size(); i++) {
-            Journal currentJournal = allJournals.get(i);
-            tableContents[i][0] = currentJournal.getJournalName();
-            tableContents[i][1] = currentJournal.getDateOfPublication().toString();
-            tableContents[i][2] = currentJournal.getISSN();
-        }
-        tblJournal.setModel(new DefaultTableModel(
-            tableContents,
-            new String[] {
-                "Title", "Date of Publication", "ISSN"
-            }
-            */
-		
 		ArrayList<PublishedArticle> allArticles = RetrieveDatabase.getArticles(journalID);
 		Object[][] tableContents = new Object[allArticles.size()][5];
 		for (int i=0; i<allArticles.size(); i++) {
