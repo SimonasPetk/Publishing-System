@@ -10,12 +10,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
 public class Database {
-	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-	protected static final String DATABASE = "team022";
+//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+//	protected static final String DATABASE = "team022";
 	
 	//localhost
-//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-//	protected static final String DATABASE = "publishing_system";
+	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=simonass";
+	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -786,7 +786,7 @@ public class Database {
 			printStatements.executeQuery("SELECT * FROM ACADEMICS");
 			printStatements.close();
 			
-			addAcademicToEditors(69, "FakeEditor@gmail.com", 16942069);
+			//addAcademicToEditors(69, "FakeEditor@gmail.com", 16942069);
 			System.out.println("Done");
 			//removeChiefEditor(4);
 		}catch (SQLException ex) {

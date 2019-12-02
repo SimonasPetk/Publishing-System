@@ -27,9 +27,12 @@ import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JMenu;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.ScrollPaneConstants;
@@ -106,26 +109,21 @@ public class ArticlesWindow {
 			}
 		});
 		
-		ArrayList<PublishedArticle> allArticles = RetrieveDatabase.getArticles(journalID);
+		ArrayList<PublishedArticle> allArticles = RetrieveDatabase.getArticles(1234568);
 		Object[][] tableContents = new Object[allArticles.size()][5];
-		for (int i=0; i<allArticles.size(); i++) {
-		    PublishedArticle currentArticle = allArticles.get(i);
-		    tableContents[i][0] = currentArticle.getTitle();
-		    tableContents[i][1] = currentArticle.getAuthorsOfArticle().toString();
-		    tableContents[i][2] = "some volume?";
-		    tableContents[i][3] = currentArticle.getPdf().getDate();
-		    tableContents[i][4] = currentArticle.getPageRange();
+		for (int i = 0; i < allArticles.size(); i++) {
+			PublishedArticle currentArticle = allArticles.get(i);
+			tableContents[i][0] = currentArticle.getTitle();
+			tableContents[i][1] = currentArticle.getAuthorsOfArticle().toString();
+			tableContents[i][2] = "some volume and edition?";
+			tableContents[i][3] = currentArticle.getPdf().getDate();
+			tableContents[i][4] = currentArticle.getPageRange();
 		}
-		
-		tblArticles.setModel(new DefaultTableModel(
-		    tableContents,
-			new String[] {
-                "Title ", "Authors", "Volume", "Date Published", "Page Range"
-			}
-		) {
-			boolean[] columnEditables = new boolean[] {
-				false, false, false, false, false
-			};
+
+		tblArticles.setModel(new DefaultTableModel(tableContents,
+				new String[] { "Title ", "Authors", "Volume", "Date Published", "Page Range" }) {
+			boolean[] columnEditables = new boolean[] { false, false, false, false, false };
+
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
 			}
@@ -136,6 +134,7 @@ public class ArticlesWindow {
 		tblArticles.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
 		tblArticles.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		scrollPane.setViewportView(tblArticles);
+		
 		
 		JLabel lblJournalName = new JLabel(selJournal.getJournalName());
 		lblJournalName.setFont(new Font("Tahoma", Font.PLAIN, 20));

@@ -489,28 +489,55 @@ public class RetrieveDatabase extends Database{
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
-            String query = "SELECT V.VOLNUM, V.YEAR, E.EDNUM, E.MONTH, P.ARTICLEID, P.PAGERANGE, A.TITLE, A.SUMMARY, PDF.PDFID" +
-            			   "FROM VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, PDF" +
-            			   "WHERE V.ISSN = ? AND V.VOLNUM = E.VOLNUM AND E.EDNUM = P.EDNUM AND P.ARTICLEID = A.ARTICLEID" +
-            			   "AND A.PDFID = PDF.PDFID;";
+            String query = "SELECT V.VOLNUM, V.YEAR, E.EDNUM, E.MONTH, P.ARTICLEID, P.PAGERANGE, A.TITLE, A.SUMMARY, PDF.PDFID " +
+            			   "FROM VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, PDF " +
+            			   "WHERE V.ISSN = " + issn + " AND V.VOLNUM = E.VOLNUM AND E.EDNUM = P.EDNUM AND P.ARTICLEID = A.ARTICLEID AND A.PDFID = PDF.PDFID;";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, issn);
+				//preparedStmt.setInt(1, issn);
 				System.out.println(preparedStmt);
 				ResultSet res = preparedStmt.executeQuery();
-				
+
 				ArrayList<Volume> vols = new ArrayList<Volume>();
 				ArrayList<Edition> eds = new ArrayList<Edition>();
 				ArrayList<PublishedArticle> articlesPublished = new ArrayList<PublishedArticle>();
+				Volume vol = null;
+				Edition ed = null; 
 				
-
-			
+				System.out.print(res);
 				while(res.next()) {
+					if (vol == null || vol.getVolumeNumber() != res.getInt("VOLNUM")) {
 						
-					Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
-					PublishedArticle PublishedArticle = new PublishedArticle(article, res.getString("PAGERANGE"), res.getInt("EDNUM"));
+						vol = new Volume(res.getString("YEAR"), res.getInt("VOLNUM"), eds, getJournal(issn));
+						
+						if (ed == null || ed.getEditionNumber() != res.getInt("EDNUM")) {
 							
+							ed = new Edition(res.getString("MONTH"), res.getInt("EDNUM"), articlesPublished, vol);
+							
+							Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), getJournal(issn));
+							PublishedArticle PublishedArticle = new PublishedArticle(article, res.getString("PAGERANGE"), ed);
+							articlesPublished.add(PublishedArticle);
+						} else {
+							
+							Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), getJournal(issn));
+							PublishedArticle PublishedArticle = new PublishedArticle(article, res.getString("PAGERANGE"), ed);
+							articlesPublished.add(PublishedArticle);
+						}
+					} else {
+						if (ed == null || ed.getEditionNumber() != res.getInt("EDNUM")) {
+							
+							ed = new Edition(res.getString("MONTH"), res.getInt("EDNUM"), articlesPublished, vol);
+							
+							Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), getJournal(issn));
+							PublishedArticle PublishedArticle = new PublishedArticle(article, res.getString("PAGERANGE"), ed);
+							articlesPublished.add(PublishedArticle);
+						} else {
+							
+							Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), getJournal(issn));
+							PublishedArticle PublishedArticle = new PublishedArticle(article, res.getString("PAGERANGE"), ed);
+							articlesPublished.add(PublishedArticle);
+						}
+					}
 					eds.add(ed);
-					articlesPublished.add(PublishedArticle);
 				}
 				
 				
