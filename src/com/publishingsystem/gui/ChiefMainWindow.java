@@ -14,6 +14,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.publishingsystem.mainclasses.Role;
 import com.publishingsystem.mainclasses.Academic;
+import com.publishingsystem.mainclasses.Database;
 import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
 import com.publishingsystem.mainclasses.Hash;
@@ -34,6 +35,7 @@ public class ChiefMainWindow {
 
 	private JFrame frmChiefEditorsDashboard;
 	private Editor editor;
+	private Journal journal;
 	private JTable table;
 
 	/**
@@ -57,6 +59,7 @@ public class ChiefMainWindow {
 	 */
 	public ChiefMainWindow(Academic[] roles) {
 		this.editor = (Editor)roles[0];
+		this.journal = editor.getJournal();
 		initialize(roles);
 	}
 
@@ -203,12 +206,11 @@ public class ChiefMainWindow {
 		transferChiefEditor.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				if (editor.getJournal().getBoardOfEditors().size() <= 1) {
+				if (journal.getBoardOfEditors().size() <= 1) {
 					JOptionPane.showMessageDialog(null, "You have no editors to transfer your role too", "Error", 1);
 				}
 				else {
-					new TransferChiefEditorRole(editor.getJournal(),editor);
-					frmChiefEditorsDashboard.dispose();
+					new TransferChiefEditorRole(journal,editor);
 				}
 			}
 		});
@@ -219,16 +221,16 @@ public class ChiefMainWindow {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				System.out.println("Should have started doneing that");
-				for (EditorOfJournal e: editor.getJournal().getBoardOfEditors()) {
+				for (EditorOfJournal e: journal.getBoardOfEditors()) {
 					System.out.println(e.getEditor().getFullName());
 				}
 				System.out.println("Should have done that");
-				if (editor.getJournal().getBoardOfEditors().size() <= 1) {
+				if (journal.getBoardOfEditors().size() <= 1) {
 					JOptionPane.showMessageDialog(null, "You don't have enough editors to retire ", "Error", 1);
 				}
 				else {
 					ArrayList<EditorOfJournal> newBoardOfEditors = new ArrayList<EditorOfJournal>(); 
-					for(EditorOfJournal e:editor.getJournal().getBoardOfEditors()) {
+					for(EditorOfJournal e:journal.getBoardOfEditors()) {
 						System.out.println(e.getEditor().getFullName());
 						System.out.println(e.getEditor().getEditorId());
 						System.out.println(editor.getEditorId());
@@ -236,7 +238,7 @@ public class ChiefMainWindow {
 							newBoardOfEditors.add(e);
 						}
 						else {
-							e.retire(editor.getJournal().getISSN(), editor.getEmailId());
+							e.retire(journal.getISSN(), editor.getEmailId());
 						}
 					}
 					if (newBoardOfEditors.get(0).getEditor().getEditorId() != editor.getEditorId()) {
@@ -245,7 +247,7 @@ public class ChiefMainWindow {
 					else {
 						newBoardOfEditors.get(1).setChiefEditor();
 					}
-					editor.getJournal().setBoardOfEditors(newBoardOfEditors);
+					journal.setBoardOfEditors(newBoardOfEditors);
 					new LoginScreen();
 					JOptionPane.showMessageDialog(null, "You have retired", "Retirement", 1);
 					frmChiefEditorsDashboard.dispose();
@@ -285,20 +287,21 @@ public class ChiefMainWindow {
 				EditorOfJournal oneEditor = editorOfJournals.get(0);
 				Journal currentJournal = oneEditor.getJournal();
 				EditorOfJournal add = new EditorOfJournal(currentJournal);
-				new RegistrationWindow (Role.EDITOR, add);
+				new RegistrationWindow (Role.EDITOR, add,currentJournal);
+				journal.setBoardOfEditors(RetrieveDatabase.getEditorsOfJournal(journal.getISSN(), journal));
 			}
 		});
 		mnMenu.add(mntmAppointNewEditors);
 		mnMenu.add(mntmLogOut);
 		
-		JMenuItem appointAcademic = new JMenuItem("Appoint Academic as editor");
+		/*JMenuItem appointAcademic = new JMenuItem("Appoint Academic as editor");
 		appointAcademic.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				new RegisterAcademicAsEditor(editor.getJournal());
 			}
 		});
-		mnMenu.add(appointAcademic);
+		mnMenu.add(appointAcademic);*/
 		
 		JMenu mnChangeRole = new JMenu("Change My Role");
 		menuBar.add(mnChangeRole);

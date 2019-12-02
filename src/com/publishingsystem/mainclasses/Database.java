@@ -785,9 +785,7 @@ public class Database {
 			printStatements.execute("USE "+DATABASE+";");
 			printStatements.executeQuery("SELECT * FROM ACADEMICS");
 			printStatements.close();
-			
-			addAcademicToEditors(69, "FakeEditor@gmail.com", 16942069);
-			System.out.println("Done");
+
 			//removeChiefEditor(4);
 		}catch (SQLException ex) {
 			ex.printStackTrace();
