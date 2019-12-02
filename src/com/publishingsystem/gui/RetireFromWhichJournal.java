@@ -180,6 +180,10 @@ public class RetireFromWhichJournal {
 		}
 		
 		journalTable = new JTable(journalTableModel);
+		journalTable.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
+		journalTable.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		journalTable.getColumnModel().getColumn(0).setPreferredWidth(5);
+		journalTable.getColumnModel().getColumn(1).setPreferredWidth(350);
 		journalTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		journalTable.addMouseListener(new MouseAdapter() {
 			@Override

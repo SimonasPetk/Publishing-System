@@ -24,6 +24,14 @@ public class EditorOfJournal {
 		this.tempRetired = true;
 	}
 	
+	public void reInitiate() {
+		this.tempRetired = false;
+	}
+	
+	public void setTempRetired(boolean t) {
+		this.tempRetired = t;
+	}
+	
 	public boolean isTempRetired() {
 		return tempRetired;
 	}
