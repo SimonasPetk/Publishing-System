@@ -59,7 +59,7 @@ public class RetrieveDatabase extends Database{
 					String name = res.getString("name");
 					Date date = res.getDate("dateOfPublication");
 					Journal j = new Journal(issn,name,date);
-					j.setBoardOfEditors(RetrieveDatabase.getEditorsOfJournal(issn, j));
+					j.setBoardOfEditors(RetrieveDatabase.getEditorsOfJournal(j));
 					journals.add(j);
 				}
 				return journals;
@@ -72,6 +72,29 @@ public class RetrieveDatabase extends Database{
 			ex.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static boolean editorOfJournalHasClash(EditorOfJournal eoj) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query = "SELECT Eoj.ISSN FROM AUTHOROFARTICLE Aoa, AUTHORS A, ARTICLES Art, SUBMISSIONS S, JOURNALS J, EDITOROFJOURNAL Eoj WHERE A.AUTHORID = Aoa.AUTHORID AND Aoa.ARTICLEID = Art.ARTICLEID AND Art.ARTICLEID = S.ARTICLEID AND Art.ISSN = J.ISSN AND J.ISSN = Eoj.ISSN AND Eoj.EDITORID = ? AND Eoj.ISSN = ? AND A.UNIVERSITY = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, eoj.getEditor().getEditorId());
+				preparedStmt.setInt(2, eoj.getJournal().getISSN());
+				preparedStmt.setString(3, eoj.getEditor().getUniversity());
+				ResultSet rs = preparedStmt.executeQuery();
+				if(rs.next()) {
+					return true;
+				}
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return false;
 	}
 
 	/** 
@@ -110,7 +133,7 @@ public class RetrieveDatabase extends Database{
 				ex.printStackTrace();
 			}
 
-			query = "SELECT E.EDITORID, CHIEFEDITOR, J.ISSN, NAME, DATEOFPUBLICATION "
+			query = "SELECT E.EDITORID, CHIEFEDITOR, RETIRED, J.ISSN, NAME, DATEOFPUBLICATION "
 					+ "FROM EDITORS E, EDITOROFJOURNAL EJ, JOURNALS J "
 					+ "WHERE J.ISSN = EJ.ISSN AND E.EDITORID = EJ.EDITORID AND E.ACADEMICID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
@@ -123,9 +146,11 @@ public class RetrieveDatabase extends Database{
 						editor.setAcademicId(academicId);
 					}
 					Journal journal = new Journal(res.getInt("ISSN"), res.getString("NAME"), res.getDate("dateOfPublication"));
-					journal.setBoardOfEditors(RetrieveDatabase.getEditorsOfJournal(journal.getISSN(), journal));
+					journal.setBoardOfEditors(RetrieveDatabase.getEditorsOfJournal(journal));
 					boolean chiefEditor = res.getBoolean("chiefEditor");
 					EditorOfJournal editorOfJournal = new EditorOfJournal(journal, editor, chiefEditor);
+					if(res.getBoolean("RETIRED"))
+						editorOfJournal.temporaryRetire();
 					editor.addEditorOfJournal(editorOfJournal);
 				}
 				roles[0] = editor;
@@ -476,7 +501,7 @@ public class RetrieveDatabase extends Database{
 				String resName = res.getString(2);
 				Date resDate = res.getDate(3);
 				result = new Journal(resISSN, resName, resDate);
-				ArrayList<EditorOfJournal> editors = getEditorsOfJournal(resISSN,result);
+				ArrayList<EditorOfJournal> editors = getEditorsOfJournal(result);
 				result.setBoardOfEditors(editors);
 			}
 		} catch (SQLException ex) {
@@ -553,26 +578,21 @@ public class RetrieveDatabase extends Database{
 	
 	
 	
-	public static ArrayList<EditorOfJournal> getEditorsOfJournal(int issn,Journal j) {
+	public static ArrayList<EditorOfJournal> getEditorsOfJournal(Journal j) {
 		ArrayList<EditorOfJournal> editorsOfJournal = new ArrayList<EditorOfJournal>();
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			String query = "SELECT Aca.ACADEMICID, Aca.TITLE, Aca.FORENAME, Aca.SURNAME, Aca.UNIVERSITY, Aca.EMAILADDRESS, "
-					+ "E.EDITORID FROM ACADEMICS Aca, EDITORS E, EDITOROFJOURNAL Eoj WHERE Aca.ACADEMICID = E.ACADEMICID "
-					+ "AND E.EDITORID = Eoj.EDITORID AND Eoj.ISSN = " + issn +";";
+					+ "E.EDITORID, Eoj.CHIEFEDITOR FROM ACADEMICS Aca, EDITORS E, EDITOROFJOURNAL Eoj WHERE Aca.ACADEMICID = E.ACADEMICID "
+					+ "AND E.EDITORID = Eoj.EDITORID AND Eoj.RETIRED = 0 AND Eoj.ISSN = " + j.getISSN() +";";
 			ResultSet res = statement.executeQuery(query);
-			ArrayList<Editor> editors = new ArrayList<Editor>();
-			Editor tempEditor = null;
+
 			while (res.next()) {
-				tempEditor = new Editor(res.getInt(7),res.getString(2),res.getString(3),res.getString(4),res.getString(5), res.getString(6),null);
-				tempEditor.setAcademicId(res.getInt(1));
-			    editors.add(tempEditor);
-			}
-			for (Editor e: editors) {
-				if (!isRetiredByEditorId(e.getEditorId())) {
-					editorsOfJournal.add(new EditorOfJournal(j,e,isChiefEditorByEditorId(e.getEditorId())));
-				}
+				Editor editor = new Editor(res.getInt("EDITORID"),res.getString("TITLE"),res.getString("FORENAME"),res.getString("SURNAME"),res.getString("UNIVERSITY"), res.getString("EMAILADDRESS"),null);
+				editor.setAcademicId(res.getInt("ACADEMICID"));
+				
+			    editorsOfJournal.add(new EditorOfJournal(j, editor, res.getBoolean("CHIEFEDITOR")));
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -739,6 +759,16 @@ public class RetrieveDatabase extends Database{
 	}
 
 	public static void main(String[] args) {
+		System.out.println("SELECT Eoj.ISSN FROM AUTHOROFARTICLE Aoa, AUTHORS A, ARTICLES Art, "
+					+ "SUBMISSIONS S, JOURNALS J, EDITOROFJOURNAL Eoj, EDITORS E "
+					+ "WHERE A.AUTHORID = Aoa.AUTHORID "
+					+ "AND Aoa.ARTICLEID = Art.ARTICLEID "
+					+ "AND Art.ARTICLEID = S.ARTICLEID "
+					+ "AND Art.ISSN = J.ISSN "
+					+ "AND J.ISSN = Eoj.ISSN "
+					+ "AND Eoj.EDITORID = ?"
+					+ "AND Eoj.ISSN = ?"
+					+ "AND A.UNIVERSITY = ?");
 		for(Article a : RetrieveDatabase.getArticlesSubmittedByReviewer(5)) {
 			System.out.println(a.getNumReviews());
 		};

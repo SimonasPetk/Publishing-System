@@ -24,6 +24,14 @@ public class EditorOfJournal {
 		this.tempRetired = true;
 	}
 	
+	public void reInitiate() {
+		this.tempRetired = false;
+	}
+	
+	public void setTempRetired(boolean t) {
+		this.tempRetired = t;
+	}
+	
 	public boolean isTempRetired() {
 		return tempRetired;
 	}
@@ -52,11 +60,6 @@ public class EditorOfJournal {
 	public void removeChiefEditor() {
 		chiefEditor = false;
 		Database.removeChiefEditor(editor.getEditorId());
-	}
-	public void retire(int issn, String email) {
-		chiefEditor = false;
-		Database.removeChiefEditor(editor.getEditorId());
-		Database.retireEditor(editor, issn, email);
 	}
 	
 	public void addEditorAsChiefEditor() {

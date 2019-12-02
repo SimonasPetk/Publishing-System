@@ -22,6 +22,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.AuthorOfArticle;
+import com.publishingsystem.mainclasses.Database;
 import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
 import com.publishingsystem.mainclasses.Hash;
@@ -81,6 +82,28 @@ public class EditorMainWindow {
 		frmDashboard.setBounds(100, 100, 1000, 795);
 		frmDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmDashboard.setVisible(true);
+		
+		
+		for(EditorOfJournal eoj : this.editor.getEditorOfJournals()) {
+			boolean hasClash = RetrieveDatabase.editorOfJournalHasClash(eoj);
+			
+			if(hasClash && !eoj.isTempRetired()) {
+				if(eoj.isChiefEditor() && RetrieveDatabase.getEditorsOfJournal(eoj.getJournal()).size() == 1) {
+					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName()+"\nPlease add a new editor for this Journal who will be the Chief Editor.");
+				}else if(eoj.isChiefEditor()) {
+					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName()+"\nPlease select a new Chief Editor for this Journal.");
+				}else {
+					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName());	
+				}
+				Database.tempRetireEditor(eoj);
+				eoj.temporaryRetire();
+			}else if(!hasClash && eoj.isTempRetired()){
+				JOptionPane.showMessageDialog(null, "Your temporary retirement from "+eoj.getJournal().getJournalName()+" has been suspended.");
+				Database.reInitiateEditor(eoj);
+				eoj.reInitiate();
+			}
+				
+		}
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
@@ -212,40 +235,15 @@ public class EditorMainWindow {
 		JMenu mnEditorsMenu = new JMenu("Menu");
 		menuBar.add(mnEditorsMenu);
 		
-		JMenuItem mntmRetireFromEditors = new JMenuItem("Retire From Editors");
+		JMenuItem mntmRetireFromEditors = new JMenuItem("Retire From Board Of Editors");
 		mnEditorsMenu.add(mntmRetireFromEditors);
 		mntmRetireFromEditors.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				if (RetrieveDatabase.isChiefEditorByEditorId(editor.getEditorId())) {
-					JOptionPane.showMessageDialog(null, "Please retire as chief editor first", "Error", 0);
-				}
-				else {
-					ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
-					ArrayList<Journal> journalsEIsMemberOf = new ArrayList<Journal>();
-					for (Journal j: allJournals) {
-						for (EditorOfJournal e: j.getBoardOfEditors()) {
-							if (e.getEditor().getEditorId() == editor.getEditorId()) {
-								journalsEIsMemberOf.add(j);
-								System.out.println(j.toString());
-							}
-						}
-					}
-					if (journalsEIsMemberOf.size() > 1) {
-						new RetireFromWhichJournal(journalsEIsMemberOf, editor);
-					}
-					else {
-						for (EditorOfJournal e: editor.getEditorOfJournals()) {
-							if  ((e.getEditor().getEditorId()) == (editor.getEditorId())) {
-								e.retire(e.getJournal().getISSN(), editor.getEmailId());
-							}
-						}
-						new LoginScreen();
-					}
-				}
-				//frmDashboard.dispose();
+				new RetireFromWhichJournal(editor.getEditorOfJournals(), frmDashboard);
 			}
 		});
+		
 		JMenuItem mntmChangePassword = new JMenuItem("Change Password");
 		mntmChangePassword.addMouseListener(new MouseAdapter() {
 			@Override
