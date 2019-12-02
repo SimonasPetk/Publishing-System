@@ -66,16 +66,16 @@ public class ChiefMainWindow {
 	private void initialize(Academic[] roles) {
 		frmChiefEditorsDashboard = new JFrame();
 		frmChiefEditorsDashboard.setTitle("Chief Editor's Dashboard");
-		frmChiefEditorsDashboard.setBounds(100, 100, 950, 792);
+		frmChiefEditorsDashboard.setBounds(100, 100, 948, 499);
 		frmChiefEditorsDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmChiefEditorsDashboard.setVisible(true);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
-		JLabel lblJournals = new JLabel("Journals");
+		JLabel lblJournals = new JLabel("Journals:");
 		lblJournals.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JButton btnPublishJournal = new JButton("Publish Journal");
+		JButton btnPublishJournal = new JButton("Publish Editions");
 		btnPublishJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(frmChiefEditorsDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
@@ -85,23 +85,21 @@ public class ChiefMainWindow {
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 533, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 292, Short.MAX_VALUE)
+							.addGap(256)
 							.addComponent(btnPublishJournal))
 						.addComponent(lblJournals))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+			groupLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(btnPublishJournal)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(btnPublishJournal))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(10)
 							.addComponent(lblJournals)
 							.addGap(10)
-							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 681, Short.MAX_VALUE)))
+							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 390, GroupLayout.PREFERRED_SIZE)))
 					.addGap(10))
 		);
 		
@@ -180,7 +178,7 @@ public class ChiefMainWindow {
 				{null, null, null, null},
 			},
 			new String[] {
-				"Journals", "Edition", "Volume", "Date"
+				"Journal Name", "Edition Number", "Volume", "Number of Articles"
 			}
 		) {
 			boolean[] columnEditables = new boolean[] {
