@@ -75,8 +75,8 @@ public class ChiefMainWindow {
 		JLabel lblJournals = new JLabel("Journals:");
 		lblJournals.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JButton btnPublishJournal = new JButton("Publish Editions");
-		btnPublishJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		JButton btnPublish = new JButton("Publish");
+		btnPublish.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(frmChiefEditorsDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -85,8 +85,8 @@ public class ChiefMainWindow {
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 533, GroupLayout.PREFERRED_SIZE)
-							.addGap(256)
-							.addComponent(btnPublishJournal))
+							.addGap(304)
+							.addComponent(btnPublish))
 						.addComponent(lblJournals))
 					.addContainerGap())
 		);
@@ -95,7 +95,7 @@ public class ChiefMainWindow {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
 					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addComponent(btnPublishJournal)
+						.addComponent(btnPublish)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(lblJournals)
 							.addGap(10)

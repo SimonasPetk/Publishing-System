@@ -38,6 +38,8 @@ import javax.swing.JTextPane;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import javax.swing.JList;
+import javax.swing.AbstractListModel;
 
 public class EditorMainWindow {
 
@@ -86,21 +88,29 @@ public class EditorMainWindow {
 		lblArticlesList.setToolTipText("");
 		lblArticlesList.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
-		JTextArea txtrAbstract = new JTextArea();
-		txtrAbstract.setLineWrap(true);
-		txtrAbstract.setEditable(false);
+		JLabel lblFinalVerdicts = new JLabel("Final Verdicts:");
+		lblFinalVerdicts.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
-		JLabel lblAbstract = new JLabel("Abstract:");
-		lblAbstract.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		
-		JButton btnPublishArticle = new JButton("Publish Article");
-		btnPublishArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		JButton btnAcceptArticle = new JButton("Accept Article");
+		btnAcceptArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JButton btnRejectArticle = new JButton("Reject Article");
 		btnRejectArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JButton btnDelayPublishing = new JButton("Delay Publishing");
-		btnDelayPublishing.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		JList list = new JList();
+		list.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		list.setModel(new AbstractListModel() {
+			String[] values = new String[] {"Verdict1", "Verdict2", "Verdict3"};
+			public int getSize() {
+				return values.length;
+			}
+			public Object getElementAt(int index) {
+				return values[index];
+			}
+		});
+		
+		JButton btnDownloadPdf = new JButton("Download PDF");
+		btnDownloadPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(frmDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -113,38 +123,39 @@ public class EditorMainWindow {
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(lblArticlesList)
 							.addGap(509)))
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-							.addComponent(lblAbstract, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
-							.addComponent(txtrAbstract, GroupLayout.PREFERRED_SIZE, 342, GroupLayout.PREFERRED_SIZE))
+							.addComponent(lblFinalVerdicts, GroupLayout.PREFERRED_SIZE, 179, GroupLayout.PREFERRED_SIZE)
+							.addComponent(list, GroupLayout.PREFERRED_SIZE, 342, GroupLayout.PREFERRED_SIZE))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(btnRejectArticle)
-							.addGap(65)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(btnPublishArticle, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(btnDelayPublishing, GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))))
+							.addPreferredGap(ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+								.addComponent(btnAcceptArticle, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(btnDownloadPdf, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(10)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblArticlesList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblAbstract, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
+						.addComponent(lblFinalVerdicts, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(txtrAbstract, GroupLayout.PREFERRED_SIZE, 369, GroupLayout.PREFERRED_SIZE)
-							.addGap(10)
+							.addComponent(list, GroupLayout.PREFERRED_SIZE, 64, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
 							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnPublishArticle)
+								.addComponent(btnAcceptArticle)
 								.addComponent(btnRejectArticle))
-							.addGap(10)
-							.addComponent(btnDelayPublishing)
-							.addContainerGap())
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnDownloadPdf)
+							.addGap(563))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 673, Short.MAX_VALUE)
+							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
 							.addGap(20))))
 		);
 		
@@ -154,7 +165,7 @@ public class EditorMainWindow {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				if (arg0.getClickCount() == 2 && tblEditor.rowAtPoint(arg0.getPoint()) == 0) {
-			        txtrAbstract.append("This is the abstract of the article you pressed on");
+			      //  txtrAbstract.append("This is the abstract of the article you pressed on");
 				}
 			}
 		});
