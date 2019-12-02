@@ -60,6 +60,7 @@ public class AddJournal {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Academic[] roles) {
+		final JPanel panel = new JPanel();
 		frmAddJournal = new JFrame();
 		frmAddJournal.setTitle("Add Journal");
 		frmAddJournal.setBounds(100, 100, 591, 283);
@@ -93,7 +94,33 @@ public class AddJournal {
 				String journalName = textField.getText();
 				String JournalISSN = textField_1.getText();
 				
-				try {
+				//validating ISSN and Journal
+				int issn = 0;
+				boolean validCredentials = true;
+				if (journalName.length() == 0 && JournalISSN.length() == 0) {
+					JOptionPane.showMessageDialog(panel, "Please enter a journal name and a journal ISSN", "Error", JOptionPane.WARNING_MESSAGE);
+					validCredentials = false;
+				}
+				else if (journalName.length() == 0) {
+					JOptionPane.showMessageDialog(panel, "Please enter a journal name", "Error", JOptionPane.WARNING_MESSAGE);
+					validCredentials = false;
+				}
+				else if (JournalISSN.length() == 0) {
+					JOptionPane.showMessageDialog(panel, "Please enter an ISSN", "Error", JOptionPane.WARNING_MESSAGE);
+					validCredentials = false;
+				}
+				else if (JournalISSN.length() != 8) {
+					JOptionPane.showMessageDialog(panel, "Please enter an ISSN of the correct length", "Error", JOptionPane.WARNING_MESSAGE);
+					validCredentials = false;
+				}
+				else {
+					try {
+						issn = Integer.parseInt(JournalISSN);
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(panel, "Please only enter 8 digits of ISSN code, No other characters are needed.", "Warning", JOptionPane.WARNING_MESSAGE);
+				    }
+				}
+				if (validCredentials) {
 					Date now = new Date(System.currentTimeMillis());
 					Journal newJournal = new Journal(Integer.parseInt(JournalISSN), journalName, now);
 					// Register the chief editor as a chief editor
@@ -116,15 +143,7 @@ public class AddJournal {
 					// Open ChiefMainWindow
 					frmAddJournal.dispose();
 					new ChiefMainWindow(roles);
-					System.out.println("Should be on that menu now boya");
-			      }
-			      catch (Exception e) {
-			         System.out.println("Exception occurred ISSN contains non-digit characters");
-			         
-			         final JPanel panel = new JPanel();
-
-			         JOptionPane.showMessageDialog(panel, "Please only enter 8 digits of ISSN code, No other characters are needed.", "Warning", JOptionPane.WARNING_MESSAGE);
-			      }
+				}
 			}
 		});
 		btnAddJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));
