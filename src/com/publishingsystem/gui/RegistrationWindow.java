@@ -55,25 +55,33 @@ public class RegistrationWindow {
 	 * Create the application.
 	 */
 	public RegistrationWindow(Role r) {
-		initialize(r, null, null,null);
+		initialize(r, null, null,null,null);
 	}
 	
 	public RegistrationWindow(Role r, SubmitArticle submitArticleGUI) {
-		initialize(r, submitArticleGUI, null, null);
+		initialize(r, submitArticleGUI, null, null, null);
 	}
 	
 	public RegistrationWindow(Role r, AddJournal addJournalGUI) {
-		initialize(r, null, addJournalGUI,null);
+		initialize(r, null, addJournalGUI,null, null);
 	}
 	
 	public RegistrationWindow(Role r, EditorOfJournal e) {
-		initialize(r,null,null,e);
+		initialize(r,null,null,e, null);
+	}
+	
+	public RegistrationWindow(Role r, Journal j) {
+		initialize(r,null,null,null, j);
+	}
+	
+	public RegistrationWindow(Role r, EditorOfJournal e, Journal j) {
+		initialize(r,null,null,e,j);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Role r, SubmitArticle submitArticleGUI, AddJournal addJournalGUI, EditorOfJournal addition ) {
+	private void initialize(Role r, SubmitArticle submitArticleGUI, AddJournal addJournalGUI, EditorOfJournal addition, Journal editorsJournal) {
 		frmRegistrationForm = new JFrame();
 		frmRegistrationForm.setTitle("Registration Form");
 		frmRegistrationForm.setBounds(500, 100, 653, 559);
@@ -161,17 +169,22 @@ public class RegistrationWindow {
                         JOptionPane.showMessageDialog(null, "Names must only contain letters", "Registration Form", 0);
                     } else {
                         if (Database.academicExists(email)) {
-                            if (r != Role.COAUTHOR) {
+                            if (r != Role.COAUTHOR && r != Role.EDITOR) {
                                 // Email taken so cannot be used
                                 validCredentials = false;
                                 JOptionPane.showMessageDialog(null, "Email is already in use", "Registration Form", 0);
                             } else {
-                                // Co-author already registered, add the registered account
-                                Academic[] roles = RetrieveDatabase.getRoles(email);
-                                submitArticleGUI.addCoAuthor((Author)roles[1], 0);
-                                validCredentials = false;
-                                JOptionPane.showMessageDialog(null, "Email is already in use. They will be added as a co-author.");
-                                frmRegistrationForm.dispose();
+                            	if (r == Role.COAUTHOR) {
+                            		// Co-author already registered, add the registered account
+                            		Academic[] roles = RetrieveDatabase.getRoles(email);
+                            		submitArticleGUI.addCoAuthor((Author)roles[1], 0);
+                            		validCredentials = false;
+                            		JOptionPane.showMessageDialog(null, "Email is already in use. They will be added as a co-author.");
+                            	}
+                            	else if (r == Role.EDITOR) {
+                            		validCredentials = true;
+                            	}
+                            frmRegistrationForm.dispose();
                             }
                         }
                     }
@@ -196,12 +209,17 @@ public class RegistrationWindow {
 		    				new AddJournal(roles);
 		    				break;
 		    			case EDITOR:
-		    				Editor editor = new Editor(academicID, title, forenames, surname, email, university, pwdHash);
-		    				ArrayList<Editor> editors = new ArrayList<Editor>();
-		    				editors.add(editor);
-		    				addition.setEditor(editor);
-		    				addition.addEditorAsChiefEditor();
-		    				System.out.println("Editor path followed");
+		    				if(Database.academicExists(email)) {
+		    					Database.addAcademicToEditors(academicID, editorsJournal.getISSN());
+		    				}
+		    				else {
+		    					Editor editor = new Editor(academicID, title, forenames, surname, email, university, pwdHash);
+		    					ArrayList<Editor> editors = new ArrayList<Editor>();
+		    					editors.add(editor);
+		    					addition.setEditor(editor);
+		    					addition.addEditorAsChiefEditor();
+		    					System.out.println("Editor path followed");
+		    				}
 		    				break;
 		    			default:
 			        }

@@ -217,28 +217,33 @@ public class EditorMainWindow {
 		mntmRetireFromEditors.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
-				ArrayList<Journal> journalsEIsMemberOf = new ArrayList<Journal>();
-				for (Journal j: allJournals) {
-					for (EditorOfJournal e: j.getBoardOfEditors()) {
-						if (e.getEditor().getEditorId() == editor.getEditorId()) {
-							journalsEIsMemberOf.add(j);
-							System.out.println(j.toString());
-						}
-					}
-				}
-				if (journalsEIsMemberOf.size() > 1) {
-					new RetireFromWhichJournal(journalsEIsMemberOf, editor);
+				if (RetrieveDatabase.isChiefEditorByEditorId(editor.getEditorId())) {
+					JOptionPane.showMessageDialog(null, "Please retire as chief editor first", "Error", 0);
 				}
 				else {
-					for (EditorOfJournal e: editor.getEditorOfJournals()) {
-						if  ((e.getEditor().getEditorId()) == (editor.getEditorId())) {
-							e.retire(e.getJournal().getISSN(), editor.getEmailId());
+					ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
+					ArrayList<Journal> journalsEIsMemberOf = new ArrayList<Journal>();
+					for (Journal j: allJournals) {
+						for (EditorOfJournal e: j.getBoardOfEditors()) {
+							if (e.getEditor().getEditorId() == editor.getEditorId()) {
+								journalsEIsMemberOf.add(j);
+								System.out.println(j.toString());
+							}
 						}
 					}
-					new LoginScreen();
+					if (journalsEIsMemberOf.size() > 1) {
+						new RetireFromWhichJournal(journalsEIsMemberOf, editor);
+					}
+					else {
+						for (EditorOfJournal e: editor.getEditorOfJournals()) {
+							if  ((e.getEditor().getEditorId()) == (editor.getEditorId())) {
+								e.retire(e.getJournal().getISSN(), editor.getEmailId());
+							}
+						}
+						new LoginScreen();
+					}
 				}
-				frmDashboard.dispose();
+				//frmDashboard.dispose();
 			}
 		});
 		JMenuItem mntmChangePassword = new JMenuItem("Change Password");
