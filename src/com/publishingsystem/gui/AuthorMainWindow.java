@@ -130,7 +130,7 @@ public class AuthorMainWindow {
 
 
 		// Window title
-		JLabel lblArticleList = new JLabel("Your articles: (To check for reviews, click on an entry)");
+		JLabel lblArticleList = new JLabel("Your articles:");
 		lblArticleList.setToolTipText("");
 		lblArticleList.setFont(new Font("Tahoma", Font.PLAIN, 20));
 
@@ -183,26 +183,35 @@ public class AuthorMainWindow {
 
 		JPanel panelArticleReviews = new JPanel();
 		panelArticleReviews.setVisible(false);
+		
+		JLabel lblSmthsadas = new JLabel("To check for reviews, click on an entry");
 
 		// Configure layout
 		GroupLayout groupLayout = new GroupLayout(frmAuthorsDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+			groupLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
 					.addGap(19)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addComponent(scrSubmitted, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 1042, Short.MAX_VALUE)
-						.addComponent(panelArticleReviews, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 1042, Short.MAX_VALUE)
-						.addComponent(lblArticleList, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 800, GroupLayout.PREFERRED_SIZE))
-					.addGap(19))
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 1026, Short.MAX_VALUE)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(lblSmthsadas)
+							.addContainerGap())
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+								.addComponent(panelArticleReviews, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 1026, Short.MAX_VALUE)
+								.addComponent(lblArticleList, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 800, GroupLayout.PREFERRED_SIZE))
+							.addGap(19))))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(20)
 					.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+					.addGap(1)
+					.addComponent(lblSmthsadas)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 496, Short.MAX_VALUE)
+					.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(panelArticleReviews, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
 					.addGap(29))
@@ -214,6 +223,9 @@ public class AuthorMainWindow {
 		panelArticleReviews.add(lblArticlesReview, BorderLayout.NORTH);
 		lblArticlesReview.setToolTipText("");
 		lblArticlesReview.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JPanel panel = new JPanel();
+		panelArticleReviews.add(panel, BorderLayout.SOUTH);
 
 		JScrollPane scrollPane_2 = new JScrollPane();
 		panelArticleReviews.add(scrollPane_2, BorderLayout.CENTER);
