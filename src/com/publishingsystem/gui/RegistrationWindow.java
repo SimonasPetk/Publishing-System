@@ -169,29 +169,37 @@ public class RegistrationWindow {
                     }
                     char[] emailCharacters = email.toCharArray();
                     int x = 0;
+                    //must be exactly one @
                     int aCount = 0;
+                    //there cannot be zero .'s
                     int dCount = 0;
                     while (validCredentials && x < emailCharacters.length) {
+                    	//checking its a valid character or @ or .
                     	if (Character.isLetter(emailCharacters[x])) {
                     		x++;
                     	}
                     	else if (emailCharacters[x] == '@' || emailCharacters[x] == '.') {
+                    		//cannot have @ or . as the final character
                     		if (x == (emailCharacters.length -1)) {
                     			validCredentials = false;
                     			errorMessage = "Invalid email";
                    			}
+                    		//cannot have an @ or a . after an @ or a .
                    			else if (emailCharacters[x+1] == '@' || emailCharacters[x+1] == '.') {
                    				validCredentials = false;
                    				errorMessage = "Invalid email";
                    			}
+                    		//cannot have an @ or a . for the starting character
                    			else if (x == 0) {
                    				validCredentials = false;
                    				errorMessage = "Invalid email";
                    			}
+                    		//cannot have more than one @
                    			else if (aCount > 1) {
                    				validCredentials = false;
                    				errorMessage = "Invalid email";
                    			}
+                    		//There must be a . after an @, cannot have them in reverse order
                    			else if (emailCharacters[x] == '@') {
                    				aCount++;
                    				boolean dot = false;
