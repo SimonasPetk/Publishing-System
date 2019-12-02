@@ -16,6 +16,8 @@ import com.publishingsystem.mainclasses.Article;
 import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.PublishedArticle;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
+import com.publishingsystem.mainclasses.ReviewerOfSubmission;
+import com.publishingsystem.mainclasses.Submission;
 
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -27,19 +29,27 @@ import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JMenu;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
 
 public class ArticlesWindow {
 
 	private JFrame frmAvailableJournalArticles;
 	private JTable tblArticles;
-
+	private static int articleIndexSelected = -1;
 	/**
 	 * Launch the application.
 	 */
@@ -91,60 +101,22 @@ public class ArticlesWindow {
 		editorPane.setEditable(false);
 		scrollPane_1.setViewportView(editorPane);
 		
-		tblArticles = new JTable();
-		tblArticles.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				
-				if (e.getClickCount() == 2 && tblArticles.rowAtPoint(e.getPoint()) == 0) {
-					
-					editorPane.setText("This is a dummy summary added, still need to do a lot of work on it, for example to know which article was pressed, and then show that summary, now everything is hardcoded\n"
-										+ " Possible solution would be to make article id the same as it displayed in the list, however this might not be possible due to articles having id associated with all of the articles not with a specified journal");
-				} else {
-					editorPane.setText(""); // perhaps there is a method like .clear() or smth similar
-				}
-			}
-		});
-		
-		/*
-		 * Template for getting contents of table
-		 * Taken from JournalWindow.java
-		 
-        ArrayList<Article> allArticles= RetrieveDatabase.getJournals();
-        Object[][] tableContents = new Object[allJournals.size()][3];
-        for (int i=0; i<allJournals.size(); i++) {
-            Journal currentJournal = allJournals.get(i);
-            tableContents[i][0] = currentJournal.getJournalName();
-            tableContents[i][1] = currentJournal.getDateOfPublication().toString();
-            tableContents[i][2] = currentJournal.getISSN();
-        }
-        tblJournal.setModel(new DefaultTableModel(
-            tableContents,
-            new String[] {
-                "Title", "Date of Publication", "ISSN"
-            }
-            */
-		
-		ArrayList<PublishedArticle> allArticles = RetrieveDatabase.getArticles(journalID);
+		tblArticles = new JTable();	
+		ArrayList<PublishedArticle> allArticles = RetrieveDatabase.getArticles(selJournal.getISSN());
 		Object[][] tableContents = new Object[allArticles.size()][5];
-		for (int i=0; i<allArticles.size(); i++) {
-		    PublishedArticle currentArticle = allArticles.get(i);
-		    tableContents[i][0] = currentArticle.getTitle();
-		    tableContents[i][1] = currentArticle.getAuthorsOfArticle().toString();
-		    tableContents[i][2] = "some volume?";
-		    tableContents[i][3] = currentArticle.getPdf().getDate();
-		    tableContents[i][4] = currentArticle.getPageRange();
+		for (int i = 0; i < allArticles.size(); i++) {
+			PublishedArticle currentArticle = allArticles.get(i);
+			tableContents[i][0] = currentArticle.getTitle();
+			tableContents[i][1] = currentArticle.getAuthorsOfArticle().toString();
+			tableContents[i][2] = "some volume and edition?";
+			tableContents[i][3] = currentArticle.getPdf().getDate();
+			tableContents[i][4] = currentArticle.getPageRange();
 		}
-		
-		tblArticles.setModel(new DefaultTableModel(
-		    tableContents,
-			new String[] {
-                "Title ", "Authors", "Volume", "Date Published", "Page Range"
-			}
-		) {
-			boolean[] columnEditables = new boolean[] {
-				false, false, false, false, false
-			};
+
+		tblArticles.setModel(new DefaultTableModel(tableContents,
+				new String[] { "Title ", "Authors", "Volume", "Date Published", "Page Range" }) {
+			boolean[] columnEditables = new boolean[] { false, false, false, false, false };
+
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
 			}
@@ -156,6 +128,22 @@ public class ArticlesWindow {
 		tblArticles.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		scrollPane.setViewportView(tblArticles);
 		
+		tblArticles.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				
+				if (e.getClickCount() == 2) {
+					
+					int rowPressed = tblArticles.rowAtPoint(e.getPoint());
+					
+					editorPane.setText(allArticles.get(rowPressed).getSummary());
+				} else {
+					editorPane.setText(""); // perhaps there is a method like .clear() or smth similar
+				}
+			}
+		});
+		
+		
 		JLabel lblJournalName = new JLabel(selJournal.getJournalName());
 		lblJournalName.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
@@ -163,6 +151,34 @@ public class ArticlesWindow {
 		lblAbstract.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JButton btnDownloadPdf = new JButton("Download PDF");
+		btnDownloadPdf.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(articleIndexSelected != -1) {
+					try {
+						PublishedArticle article = allArticles.get(articleIndexSelected);
+				        ArrayList<byte[]> versions = RetrieveDatabase.getPDF(article.getArticleId());
+				        for(byte[] pdf : versions) {
+							JFileChooser f = new JFileChooser();
+					        f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); 
+					        f.showSaveDialog(null);
+					        System.out.println(f.getCurrentDirectory());
+					        System.out.println(f.getSelectedFile());
+					        OutputStream out = new FileOutputStream(f.getSelectedFile()+".pdf");
+							out.write(pdf); //PDF ID
+							out.close();
+				        }
+					}catch(FileNotFoundException fnf) {
+						
+					}catch(IOException io) {
+//						
+					}
+				}else {
+					JOptionPane.showMessageDialog(null, "No article selected", "Error in download", 0);
+				}
+				
+			}
+		});
 	
 		GroupLayout groupLayout = new GroupLayout(frmAvailableJournalArticles.getContentPane());
 		groupLayout.setHorizontalGroup(

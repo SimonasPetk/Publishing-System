@@ -13,9 +13,8 @@ public class Database {
 	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
 	protected static final String DATABASE = "team022";
 	
-	//localhost
-//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
-//	protected static final String DATABASE = "publishing_system";
+	//protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=simonass";
+	//protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -38,22 +37,70 @@ public class Database {
 		}
 	}
 	
-	public static void retireEditor(Editor editor, int issn, String email) {
-		int editorId = editor.getEditorId();
-		int academicId = editor.getAcademicId();
+	public static void tempRetireEditor(EditorOfJournal eoj) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "DELETE FROM EDITOROFJOURNAL WHERE editorID = " + editorId + " AND ISSN = " + issn;
-			System.out.println(query);
-			statement.execute(query);
-			statement.close();
-			Academic[] roles = RetrieveDatabase.getRoles(email);
-			if (roles.length == 0) {
-				deleteAcademic(academicId);
+			String query = "UPDATE EDITOROFJOURNAL SET Retired = 1 WHERE editorID = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, eoj.getEditor().getEditorId());
+				preparedStmt.execute();
 			}
+			
 		}catch (SQLException ex) {
 			ex.printStackTrace();
+		}
+	}
+	
+	public static void reInitiateEditor(EditorOfJournal eoj) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			String query = "UPDATE EDITOROFJOURNAL SET Retired = 0 WHERE editorID = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, eoj.getEditor().getEditorId());
+				preparedStmt.execute();
+			}
+			
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public static void retireEditor(EditorOfJournal eoj) {
+		Editor e = eoj.getEditor();
+		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			String query = "DELETE FROM EDITOROFJOURNAL WHERE editorID = " + e.getEditorId() + " AND ISSN = " + eoj.getJournal().getISSN();
+			System.out.println(query);
+			statement.execute(query);
+			
+			//Update the next editor to be the chief editor if the chief editor is retiring
+			if(eoj.isChiefEditor()) {
+				query = "UPDATE EDITOROFJOURNAL SET CHIEFEDITOR=1 "
+						+ "WHERE EDITORID = "
+						+ "(SELECT EDITORID FROM (SELECT EDITORID FROM EDITOROFJOURNAL WHERE CHIEFEDITOR = 0 AND ISSN = ? ORDER BY EDITORID) AS X LIMIT 1)";
+				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+					preparedStmt.setInt(1, eoj.getJournal().getISSN());
+					preparedStmt.execute();
+				}
+			}
+			
+			if(e.getEditorOfJournals().size() == 1) {
+				query = "DELETE FROM EDITORS WHERE EDITORID = ?";
+				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+					preparedStmt.setInt(1, e.getEditorId());
+					preparedStmt.execute();
+				}
+			}
+			statement.close();
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		Academic[] roles = RetrieveDatabase.getRoles(eoj.getEditor().getEmailId());
+		if (roles[0] == null && roles[1] == null && roles[2] == null) {
+			deleteAcademic(e.getAcademicId());
 		}
 	}
 	
@@ -61,7 +108,7 @@ public class Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "DELETE FROM ACADEMICS WHERE editorID = " + academicId;
+			String query = "DELETE FROM ACADEMICS WHERE academicID = " + academicId;
 			statement.execute(query);
 			statement.close();
 		}catch (SQLException ex) {

@@ -137,7 +137,7 @@ public class JournalWindow {
 			} 
 		});
 		tblJournal.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		tblJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		tblJournal.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		
 		Object[][] tableContents = new Object[allJournals.size()][3];
 		for (int i=0; i<allJournals.size(); i++) {

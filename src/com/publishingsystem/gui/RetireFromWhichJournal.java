@@ -16,6 +16,7 @@ import javax.swing.JScrollBar;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.table.DefaultTableModel;
 
 import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.Database;
@@ -23,17 +24,25 @@ import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
 import com.publishingsystem.mainclasses.Hash;
 import com.publishingsystem.mainclasses.Journal;
+import com.publishingsystem.mainclasses.RetrieveDatabase;
+import com.publishingsystem.mainclasses.Review;
+import com.publishingsystem.mainclasses.ReviewerOfSubmission;
+import com.publishingsystem.mainclasses.Role;
+import com.publishingsystem.mainclasses.Submission;
 
 import java.awt.Button;
 import javax.swing.JButton;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 
 public class RetireFromWhichJournal {
 
 	private JFrame frmRetireFromWhichJournal;
-	private String selectedJournal;
+	private int selectedJournal = -1;
+	private JTable journalTable;
 	/**
 	 * Launch the application.
 	 */
@@ -41,7 +50,7 @@ public class RetireFromWhichJournal {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RetireFromWhichJournal window = new RetireFromWhichJournal(null,null);
+					RetireFromWhichJournal window = new RetireFromWhichJournal(null, null);
 					window.frmRetireFromWhichJournal.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -58,23 +67,22 @@ public class RetireFromWhichJournal {
 		initialize(null, null);
 	}
 	
-	public RetireFromWhichJournal(ArrayList<Journal> j,Editor e) {
-		initialize(j, e);
+	public RetireFromWhichJournal(ArrayList<EditorOfJournal> eojs, JFrame editorWindow) {
+		initialize(eojs, editorWindow);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(ArrayList<Journal> j, Editor editor) {
+	private void initialize(ArrayList<EditorOfJournal> eojs, JFrame editorWindow) {
 		frmRetireFromWhichJournal = new JFrame();
 		frmRetireFromWhichJournal.setTitle("Retire from which journal?");
-		frmRetireFromWhichJournal.setBounds(100, 100, 489, 375);
+		frmRetireFromWhichJournal.setBounds(100, 100, 489, 342);
 		//RetireAsChiefEditor window = new RetireAsChiefEditor(null);
 		frmRetireFromWhichJournal.setVisible(true);
-		frmRetireFromWhichJournal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JLabel lblRetireAsChief = new JLabel("Please the journal to retire from");
-		lblRetireAsChief.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblRetireAsChief.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -84,13 +92,27 @@ public class RetireFromWhichJournal {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				System.out.println(selectedJournal);
-				for (Journal jojo: j) {
-					if ((jojo.getJournalName()).equals(selectedJournal)) {
-						Database.retireEditor(editor, jojo.getISSN(), editor.getEmailId());
+				EditorOfJournal eoj = eojs.get(selectedJournal);
+				ArrayList<EditorOfJournal> coEditors = RetrieveDatabase.getEditorsOfJournal(eoj.getJournal());
+				if(coEditors.size() > 1) {
+					if(eoj.isChiefEditor()) {
+						int dialogResult = JOptionPane.showConfirmDialog (null, "You will be removed as a Chief Editor. Are you sure?");
+						if(dialogResult == JOptionPane.YES_OPTION){
+							Database.retireEditor(eoj);
+							eoj.getEditor().getEditorOfJournals().remove(eoj);
+							}
+					}else {
+						Database.retireEditor(eoj);
 					}
+					if(eoj.getEditor().getEditorOfJournals().size() == 0) {
+						editorWindow.dispose();
+						new JournalWindow(null);
+					}
+					frmRetireFromWhichJournal.dispose();
 				}
-				new LoginScreen();
-				frmRetireFromWhichJournal.dispose();
+				else {
+					JOptionPane.showMessageDialog(null, "Please add another editor to the board of editors for this journal before retiring. ", "Error in retiring", 0);
+				}
 				/*for (EditorOfJournal e: j.getBoardOfEditors()) {
 					if ((e.getEditor().getFullName()).equals(selectedJournal)) {
 						e.setChiefEditor();
@@ -110,57 +132,66 @@ public class RetireFromWhichJournal {
 		});
 		btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		String[] journals = new String[j.size()];
-		for (int i = 0; i<j.size();i++) {
-			journals[i] = j.get(i).getJournalName();
-		}
-		JList journalList = new JList();
-		scrollPane.setViewportView(journalList);
-		journalList.addMouseListener(new MouseAdapter() {
-
-			public void mousePressed(MouseEvent e) {
-				selectedJournal = (String)journalList.getSelectedValue();
-				System.out.println(selectedJournal);
-			}
-
-		});
-		
-		journalList.setModel(new AbstractListModel() {
-            String[] values = journals;
-
-		    public int getSize() {
-				return values.length;
-			}
-			public Object getElementAt(int index) {
-				return values[index];
-			}
-		});
 		GroupLayout groupLayout = new GroupLayout(frmRetireFromWhichJournal.getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-					.addContainerGap(215, Short.MAX_VALUE)
-					.addComponent(btnUpdate)
-					.addGap(189))
+			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(80)
-					.addComponent(scrollPane)
-					.addGap(112))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addComponent(lblRetireAsChief, GroupLayout.PREFERRED_SIZE, 432, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(39, Short.MAX_VALUE))
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(24)
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+								.addComponent(lblRetireAsChief, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 436, Short.MAX_VALUE)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(195)
+							.addComponent(btnUpdate)))
+					.addContainerGap(29, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblRetireAsChief)
 					.addGap(30)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
-					.addGap(18)
+					.addComponent(lblRetireAsChief)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnUpdate)
-					.addGap(38))
+					.addGap(44))
 		);
+		
+		DefaultTableModel journalTableModel = new DefaultTableModel() {
+			boolean[] columnEditables = new boolean[] {
+					false, false
+			};
+
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		};
+		journalTableModel.addColumn("No.");
+		journalTableModel.addColumn("Name");
+		int counter = 1;
+		for(EditorOfJournal eoj : eojs) {
+			
+			Object[] journalRow = new Object[2];
+			journalRow[0] = counter;
+			journalRow[1] = eoj.getJournal().getJournalName();
+			journalTableModel.addRow(journalRow);
+		}
+		
+		journalTable = new JTable(journalTableModel);
+		journalTable.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
+		journalTable.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		journalTable.getColumnModel().getColumn(0).setPreferredWidth(5);
+		journalTable.getColumnModel().getColumn(1).setPreferredWidth(350);
+		journalTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		journalTable.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				selectedJournal = journalTable.rowAtPoint(arg0.getPoint());
+			}
+		});
+		scrollPane.setViewportView(journalTable);
 		frmRetireFromWhichJournal.getContentPane().setLayout(groupLayout);
 	}
 }
