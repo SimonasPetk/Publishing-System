@@ -155,18 +155,72 @@ public class RegistrationWindow {
 
 			    // Validate entered details
 			    boolean validCredentials = true;
+			    String errorMessage = "Names must only contain letters";
 			    if (title == " " || forenames.isEmpty() || surname.isEmpty() || university.isEmpty() || email.isEmpty() || password.isEmpty()) {
                     validCredentials = false;
                     JOptionPane.showMessageDialog(null, "Please fill in all of the fields", "Registration Form", 0);
                 } else {
                     char[] characters = (forenames + surname + university).toCharArray();
                     int i = 0;
+                    //Added a case for '.' as some people may have initials in their university, or as part of their name
                     while (validCredentials && i < characters.length) {
-                        if (!Character.isLetter(characters[i]) && !(characters[i] == ' ') && !(characters[i] == '-')) validCredentials = false;
+                        if (!Character.isLetter(characters[i]) && !(characters[i] == ' ') && !(characters[i] == '-') && !(characters[i] == '.')) validCredentials = false;
                         i++;
                     }
+                    char[] emailCharacters = email.toCharArray();
+                    int x = 0;
+                    int aCount = 0;
+                    int dCount = 0;
+                    while (validCredentials && x < emailCharacters.length) {
+                    	if (Character.isLetter(emailCharacters[x])) {
+                    		x++;
+                    	}
+                    	else if (emailCharacters[x] == '@' || emailCharacters[x] == '.') {
+                    		if (x == (emailCharacters.length -1)) {
+                    			validCredentials = false;
+                    			errorMessage = "Invalid email";
+                   			}
+                   			else if (emailCharacters[x+1] == '@' || emailCharacters[x+1] == '.') {
+                   				validCredentials = false;
+                   				errorMessage = "Invalid email";
+                   			}
+                   			else if (x == 0) {
+                   				validCredentials = false;
+                   				errorMessage = "Invalid email";
+                   			}
+                   			else if (aCount > 1) {
+                   				validCredentials = false;
+                   				errorMessage = "Invalid email";
+                   			}
+                   			else if (emailCharacters[x] == '@') {
+                   				aCount++;
+                   				boolean dot = false;
+                   				for (int y=x; y<emailCharacters.length;y++) {
+                   					if (emailCharacters[y] == '.') {
+                   						dot = true;
+                   					}
+                   				}
+                   				if (!dot) {
+                   					validCredentials = false;
+                       				errorMessage = "Invalid email";
+                   				}
+                   			}
+                   			else if (emailCharacters[x] == '.') {
+                   				dCount++;
+                   			}
+                    		x++;
+                    	}
+                    	else {
+                    		validCredentials = false;
+                    		errorMessage = "Invalid email";
+                    	}
+                    }
+                    if (aCount != 1 || dCount == 0) {
+                    	validCredentials = false;
+                		errorMessage = "Invalid email";
+                    }
                     if (!validCredentials) {
-                        JOptionPane.showMessageDialog(null, "Names must only contain letters", "Registration Form", 0);
+                        JOptionPane.showMessageDialog(null, errorMessage, "Registration Form", 0);
                     } else {
                         if (Database.academicExists(email)) {
                             if (r != Role.COAUTHOR && r != Role.EDITOR) {
