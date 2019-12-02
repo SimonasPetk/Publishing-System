@@ -21,13 +21,16 @@ import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableModel;
 
 import com.publishingsystem.mainclasses.Academic;
+import com.publishingsystem.mainclasses.Article;
 import com.publishingsystem.mainclasses.AuthorOfArticle;
 import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
 import com.publishingsystem.mainclasses.Hash;
 import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
+import com.publishingsystem.mainclasses.ReviewerOfSubmission;
 import com.publishingsystem.mainclasses.Submission;
+import com.publishingsystem.mainclasses.Verdict;
 
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -46,6 +49,7 @@ public class EditorMainWindow {
 	private JFrame frmDashboard;
 	private JTable tblEditor;
 	private Editor editor;
+	private ArrayList<Submission> allSubmissions;
 
 	/**
 	 * Launch the application.
@@ -54,7 +58,7 @@ public class EditorMainWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-				    Academic[] roles = {new Editor(1, "Mr", "Alex", "Hall", "Sheffield", "ahall8@sheffield.ac.uk", new Hash("a")), null, null};
+				    Academic[] roles = RetrieveDatabase.getRoles("jm@gm.com");
 					EditorMainWindow window = new EditorMainWindow(roles);
 					window.frmDashboard.setVisible(true);
 				} catch (Exception e) {
@@ -68,7 +72,15 @@ public class EditorMainWindow {
 	 * Create the application.
 	 */
 	public EditorMainWindow(Academic[] roles) {
-		this.editor = (Editor)roles[0];
+        // For every journal the editor is an editor of, get all in progress submissions for them
+	    allSubmissions = new ArrayList<Submission>();
+	    for (EditorOfJournal jour : ((Editor)roles[0]).getEditorOfJournals()) {
+	        System.out.println(jour);
+	        ArrayList<Submission> thisJournalsSubmissions = RetrieveDatabase.getSubmissionsToJournal(jour.getJournal().getISSN());
+	        allSubmissions.addAll(thisJournalsSubmissions);
+	    }
+	
+	    this.editor = (Editor)roles[0];
 		initialize(roles);
 	}
 
@@ -100,7 +112,7 @@ public class EditorMainWindow {
 		JList list = new JList();
 		list.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		list.setModel(new AbstractListModel() {
-			String[] values = new String[] {"Verdict1", "Verdict2", "Verdict3"};
+			String[] values = new String[] {"", "", ""};
 			public int getSize() {
 				return values.length;
 			}
@@ -163,25 +175,43 @@ public class EditorMainWindow {
 		tblEditor.setEnabled(false);
 		tblEditor.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				if (arg0.getClickCount() == 2 && tblEditor.rowAtPoint(arg0.getPoint()) == 0) {
-			      //  txtrAbstract.append("This is the abstract of the article you pressed on");
-				}
+            public void mouseClicked(MouseEvent arg0) {
+                // get id of selected submission
+			    int selectedSubmissionId = (int)tblEditor.getValueAt(tblEditor.rowAtPoint(arg0.getPoint()), 0);
+                System.out.println(selectedSubmissionId);
+                
+                // get verdicts
+                ArrayList<Verdict[]> listVerdicts = RetrieveDatabase.getVerdicts(selectedSubmissionId);
+                for (Verdict[] ver : listVerdicts) System.out.println("[" + ver[0] + ", " + ver[1] + "]");
+                
+                Verdict[][] verdicts = new Verdict[3][2];
+                int i = 0;
+                for (Verdict[] ver : listVerdicts) {
+                    verdicts[i][0] = ver[0];
+                    verdicts[i][1] = ver[1];
+                    i++;
+                }
+
+                // display verdicts
+                list.setModel(new AbstractListModel() {
+                    String[] values = new String[] {verdicts[0][0].toString() + ", " + verdicts[0][1].toString(),
+                                                    verdicts[1][0].toString() + ", " + verdicts[1][1].toString(),
+                                                    verdicts[2][0].toString() + ", " + verdicts[2][1].toString()};
+                    public int getSize() {
+                        return values.length;
+                    }
+                    public Object getElementAt(int index) {
+                        return values[index];
+                    }
+                });
 			}
 		});
-		
-		ArrayList<Submission> allSubmissions = new ArrayList<Submission>();
-    	for (EditorOfJournal jour : ((Editor)roles[0]).getEditorOfJournals()) {
-    	    System.out.println(jour);
-    	    // For every journal the editor is an editor of, get all in progress submissions for them
-    	    ArrayList<Submission> thisJournalsSubmissions = RetrieveDatabase.getSubmissionsToJournal(jour.getJournal().getISSN());
-    	    allSubmissions.addAll(thisJournalsSubmissions);
-    	}
-		
-	    Object[][] tableContents = new Object[allSubmissions.size()][4];
+				
+	    Object[][] tableContents = new Object[allSubmissions.size()][5];
         for (int i=0; i<allSubmissions.size(); i++ ) {
             Submission currentSubmission = allSubmissions.get(i);
-            tableContents[i][0] = currentSubmission.getArticle().getTitle();
+            tableContents[i][0] = currentSubmission.getArticle().getArticleId();
+            tableContents[i][1] = currentSubmission.getArticle().getTitle();
 
             ArrayList<AuthorOfArticle> authorsOfArticle = currentSubmission.getArticle().getAuthorsOfArticle();
             System.out.println(authorsOfArticle);
@@ -191,16 +221,16 @@ public class EditorMainWindow {
                 System.out.println("aoa: " + aoa);
                 authors = authors + aoa.getAuthor().getForename() + " " + aoa.getAuthor().getSurname() + "\n";
             }
-            tableContents[i][1] = authors;
+            tableContents[i][2] = authors;
 
-            tableContents[i][2] = currentSubmission.getArticle().getJournal().getJournalName();
-            tableContents[i][3] = currentSubmission.getStatus();
+            tableContents[i][3] = currentSubmission.getArticle().getJournal().getJournalName();
+            tableContents[i][4] = currentSubmission.getStatus();
         }
         
 		tblEditor.setModel(new DefaultTableModel(
 			tableContents,
 			new String[] {
-				"Articles", "Authors", "Journal", "Status"
+				"ID", "Articles", "Authors", "Journal", "Status"
 			}
 		));
 		scrollPane.setViewportView(tblEditor);

@@ -1,7 +1,7 @@
 package com.publishingsystem.mainclasses;
 
 public enum Verdict{
-	STRONGACCEPT, WEAKACCEPT, WEAKREJECT, STRONGREJECT;
+	STRONGACCEPT, WEAKACCEPT, WEAKREJECT, STRONGREJECT, NOVERDICT;
 		public String asString() {
 			switch(this) {
 			case STRONGACCEPT:
@@ -12,6 +12,8 @@ public enum Verdict{
 				return "WEAKREJECT";
 			case STRONGREJECT:
 				return "STRONGREJECT";
+			case NOVERDICT:
+			    return "NOVERDICT";
 			default:
 				return "";
 		}
@@ -27,6 +29,8 @@ public enum Verdict{
 				return "Weak Reject";
 			case STRONGREJECT:
 				return "Strong Reject";
+			case NOVERDICT:
+			    return "No Verdict";
 			default:
 				return "";
 		}
