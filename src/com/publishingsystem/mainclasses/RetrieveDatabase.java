@@ -486,59 +486,40 @@ public class RetrieveDatabase extends Database{
 	}
 	
 	public static ArrayList<PublishedArticle> getArticles(int issn) {
-		ArrayList<PublishedArticle> articlesPublished = new ArrayList<PublishedArticle>();
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
-            /*String query = "SELECT V.VOLNUM, V.YEAR, E.EDNUM, E.MONTH, P.ARTICLEID, P.PAGERANGE, A.TITLE, A.SUMMARY, AUT.AUTHORID, AUTS.AUTHORNAME, AUTS.UNIVERSITY, AUTS.EMAILADDRESS, PDF.PDFID" +
-            			   "FROM VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, AUTHOROFARTICLE AUT, AUTHORS AUTS, PDF" +
+            String query = "SELECT V.VOLNUM, V.YEAR, E.EDNUM, E.MONTH, P.ARTICLEID, P.PAGERANGE, A.TITLE, A.SUMMARY, PDF.PDFID" +
+            			   "FROM VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, PDF" +
             			   "WHERE V.ISSN = ? AND V.VOLNUM = E.VOLNUM AND E.EDNUM = P.EDNUM AND P.ARTICLEID = A.ARTICLEID" +
-            			   "AND A.ARTICLEID = AUT.ARTICLEID AND AUT.AUTHORID = AUTS.AUTHORID AND A.PDFID = PDF.PDFID;";
+            			   "AND A.PDFID = PDF.PDFID;";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, issn);
 				System.out.println(preparedStmt);
 				ResultSet res = preparedStmt.executeQuery();
+				
+				ArrayList<Volume> vols = new ArrayList<Volume>();
 				ArrayList<Edition> eds = new ArrayList<Edition>();
+				ArrayList<PublishedArticle> articlesPublished = new ArrayList<PublishedArticle>();
+				
+
 			
 				while(res.next()) {
-					
+						
 					Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
 					PublishedArticle PublishedArticle = new PublishedArticle(article, res.getString("PAGERANGE"), res.getInt("EDNUM"));
-					
+							
+					eds.add(ed);
 					articlesPublished.add(PublishedArticle);
 				}
 				
-				Edition ed = new Edition(res.getString("EDNUM"), res.getInt("MONTH"), articlesPublished);
-				eds.add(ed);
-				Volume vol = new Volume(res.getString("VOLNUM"), res.getInt("YEAR"), eds);
 				
 				return articlesPublished;
+			}
 			}catch (SQLException ex) {
 				ex.printStackTrace();
-			}*/
+			}
 
-            String query = "SELECT V.VOLNUM, V.YEAR, E.EDNUM, E.MONTH, P.ARTICLEID, P.PAGERANGE, A.TITLE, A.SUMMARY, AUT.AUTHORID, AUTS.AUTHORNAME, AUTS.UNIVERSITY, AUTS.EMAILADDRESS, PDF.PDFID " +
-                    "FROM VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, AUTHOROFARTICLE AUT, AUTHORS AUTS, PDF " +
-                    "WHERE V.ISSN = " + issn + " AND V.VOLNUM = E.VOLNUM AND E.EDNUM = P.EDNUM AND P.ARTICLEID = A.ARTICLEID " +
-                    "AND A.ARTICLEID = AUT.ARTICLEID AND AUT.AUTHORID = AUTS.AUTHORID AND A.PDFID = PDF.PDFID;";
-            ResultSet res = statement.executeQuery(query);
-            ArrayList<Edition> eds = new ArrayList<Edition>();
-            
-            while(res.next()) {    
-                Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
-                PublishedArticle PublishedArticle = new PublishedArticle(article, res.getString("PAGERANGE"), res.getInt("EDNUM"));
-                
-                articlesPublished.add(PublishedArticle);
-                
-                Edition ed = new Edition(res.getString("EDNUM"), res.getInt("MONTH"), articlesPublished);
-                eds.add(ed);
-                //Volume vol = new Volume(res.getString("VOLNUM"), res.getInt("YEAR"), eds);
-            }
-            
-            return articlesPublished;
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-		}
 		return null;
 	}
 	

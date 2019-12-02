@@ -143,7 +143,7 @@ public class SubmitArticle {
 
 		JLabel lblSubmitANewArticle = new JLabel("Submit a New Article");
 		lblSubmitANewArticle.setHorizontalAlignment(SwingConstants.CENTER);
-		lblSubmitANewArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblSubmitANewArticle.setFont(new Font("Tahoma", Font.PLAIN, 20));
 
 		JLabel lblChooseAJournal = new JLabel("Choose a Journal to which Publish to:");
 		lblChooseAJournal.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -152,7 +152,7 @@ public class SubmitArticle {
 		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 		txtfldTitle = new JTextField();
-		txtfldTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		txtfldTitle.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		txtfldTitle.setColumns(10);
 		
 		JScrollPane scrPaneAbstract = new JScrollPane();
