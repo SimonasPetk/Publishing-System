@@ -491,9 +491,9 @@ public class RetrieveDatabase extends Database{
             statement.execute("USE "+DATABASE+";");
             String query = "SELECT V.VOLNUM, V.YEAR, E.EDNUM, E.MONTH, P.ARTICLEID, P.PAGERANGE, A.TITLE, A.SUMMARY, PDF.PDFID " +
             			   "FROM VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, PDF " +
-            			   "WHERE V.ISSN = " + issn + " AND V.VOLNUM = E.VOLNUM AND E.EDNUM = P.EDNUM AND P.ARTICLEID = A.ARTICLEID AND A.PDFID = PDF.PDFID;";
+            			   "WHERE V.ISSN = ? AND V.VOLNUM = E.VOLNUM AND E.EDNUM = P.EDNUM AND P.ARTICLEID = A.ARTICLEID AND A.PDFID = PDF.PDFID;";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				//preparedStmt.setInt(1, issn);
+				preparedStmt.setInt(1, issn);
 				System.out.println(preparedStmt);
 				ResultSet res = preparedStmt.executeQuery();
 
@@ -503,7 +503,6 @@ public class RetrieveDatabase extends Database{
 				Volume vol = null;
 				Edition ed = null; 
 				
-				System.out.print(res);
 				while(res.next()) {
 					if (vol == null || vol.getVolumeNumber() != res.getInt("VOLNUM")) {
 						

@@ -109,7 +109,7 @@ public class ArticlesWindow {
 			}
 		});
 		
-		ArrayList<PublishedArticle> allArticles = RetrieveDatabase.getArticles(1234568);
+		ArrayList<PublishedArticle> allArticles = RetrieveDatabase.getArticles(selJournal.getISSN());
 		Object[][] tableContents = new Object[allArticles.size()][5];
 		for (int i = 0; i < allArticles.size(); i++) {
 			PublishedArticle currentArticle = allArticles.get(i);
