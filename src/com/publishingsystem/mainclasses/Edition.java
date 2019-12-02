@@ -51,8 +51,7 @@ public class Edition {
 		return volume;
 	}
 	
-	public boolean getPublished() {
-		
+	public boolean isPublished() {
 		return published;
 	}
 	
