@@ -214,43 +214,12 @@ public class ChiefMainWindow {
 		});
 		mnMenu.add(transferChiefEditor);
 		
-		JMenuItem mntmRetireFromChief = new JMenuItem("Retire From Chief Editors");
+		JMenuItem mntmRetireFromChief = new JMenuItem("Retire From Board Of Editors");
 		mntmRetireFromChief.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				System.out.println("Should have started doneing that");
-				for (EditorOfJournal e: journal.getBoardOfEditors()) {
-					System.out.println(e.getEditor().getFullName());
-				}
-				System.out.println("Should have done that");
-				if (journal.getBoardOfEditors().size() <= 1) {
-					JOptionPane.showMessageDialog(null, "You don't have enough editors to retire ", "Error", 1);
-				}
-				else {
-					ArrayList<EditorOfJournal> newBoardOfEditors = new ArrayList<EditorOfJournal>(); 
-					for(EditorOfJournal e:journal.getBoardOfEditors()) {
-						System.out.println(e.getEditor().getFullName());
-						System.out.println(e.getEditor().getEditorId());
-						System.out.println(editor.getEditorId());
-						if (e.getEditor().getAcademicId() != editor.getAcademicId()) {
-							newBoardOfEditors.add(e);
-						}
-						else {
-							e.retire(journal.getISSN(), editor.getEmailId());
-						}
-					}
-					if (newBoardOfEditors.get(0).getEditor().getEditorId() != editor.getEditorId()) {
-						newBoardOfEditors.get(0).setChiefEditor();
-					}
-					else {
-						newBoardOfEditors.get(1).setChiefEditor();
-					}
-					journal.setBoardOfEditors(newBoardOfEditors);
-					new LoginScreen();
-					JOptionPane.showMessageDialog(null, "You have retired", "Retirement", 1);
-					frmChiefEditorsDashboard.dispose();
-				}
-				
+				new RetireFromWhichJournal(editor.getEditorOfJournals(), frmChiefEditorsDashboard);
+					
 			}
 		});
 		mnMenu.add(mntmRetireFromChief);
@@ -286,7 +255,7 @@ public class ChiefMainWindow {
 				Journal currentJournal = oneEditor.getJournal();
 				EditorOfJournal add = new EditorOfJournal(currentJournal);
 				new RegistrationWindow (Role.EDITOR, add,currentJournal);
-				journal.setBoardOfEditors(RetrieveDatabase.getEditorsOfJournal(journal.getISSN(), journal));
+				journal.setBoardOfEditors(RetrieveDatabase.getEditorsOfJournal(journal));
 			}
 		});
 		mnMenu.add(mntmAppointNewEditors);

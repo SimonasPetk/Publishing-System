@@ -102,8 +102,11 @@ public class LoginScreen {
 
 			    boolean validCredentials = true;
 			    if (email.isEmpty() || password.isEmpty()) validCredentials = false;
-
-			    if (validCredentials) {
+			    
+			    if(!Database.academicExists(email)) {
+			    	JOptionPane.showMessageDialog(null, "No account found by this email", "Login", 0);
+			    }
+			    else if (validCredentials) {
 			        // Check if the generated hash from password is same as stored hash
 			    	boolean correctPassword = Database.validateCredentials(email, password);
                     if (correctPassword) {
@@ -113,7 +116,9 @@ public class LoginScreen {
                         Academic[] userRoles = RetrieveDatabase.getRoles(email);
                         new JournalWindow(userRoles);
                         frmLogInScreen.dispose();
-                    } else JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
+                    } 
+                    else 
+                    	JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
 			    } else JOptionPane.showMessageDialog(null, "Please fill in all fields", "Login", 0);
 			}
 		});

@@ -212,40 +212,15 @@ public class EditorMainWindow {
 		JMenu mnEditorsMenu = new JMenu("Menu");
 		menuBar.add(mnEditorsMenu);
 		
-		JMenuItem mntmRetireFromEditors = new JMenuItem("Retire From Editors");
+		JMenuItem mntmRetireFromEditors = new JMenuItem("Retire From Board Of Editors");
 		mnEditorsMenu.add(mntmRetireFromEditors);
 		mntmRetireFromEditors.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				if (RetrieveDatabase.isChiefEditorByEditorId(editor.getEditorId())) {
-					JOptionPane.showMessageDialog(null, "Please retire as chief editor first", "Error", 0);
-				}
-				else {
-					ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
-					ArrayList<Journal> journalsEIsMemberOf = new ArrayList<Journal>();
-					for (Journal j: allJournals) {
-						for (EditorOfJournal e: j.getBoardOfEditors()) {
-							if (e.getEditor().getEditorId() == editor.getEditorId()) {
-								journalsEIsMemberOf.add(j);
-								System.out.println(j.toString());
-							}
-						}
-					}
-					if (journalsEIsMemberOf.size() > 1) {
-						new RetireFromWhichJournal(journalsEIsMemberOf, editor);
-					}
-					else {
-						for (EditorOfJournal e: editor.getEditorOfJournals()) {
-							if  ((e.getEditor().getEditorId()) == (editor.getEditorId())) {
-								e.retire(e.getJournal().getISSN(), editor.getEmailId());
-							}
-						}
-						new LoginScreen();
-					}
-				}
-				//frmDashboard.dispose();
+				new RetireFromWhichJournal(editor.getEditorOfJournals(), frmDashboard);
 			}
 		});
+		
 		JMenuItem mntmChangePassword = new JMenuItem("Change Password");
 		mntmChangePassword.addMouseListener(new MouseAdapter() {
 			@Override

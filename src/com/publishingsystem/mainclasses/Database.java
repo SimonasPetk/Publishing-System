@@ -38,22 +38,40 @@ public class Database {
 		}
 	}
 	
-	public static void retireEditor(Editor editor, int issn, String email) {
-		int editorId = editor.getEditorId();
-		int academicId = editor.getAcademicId();
+	public static void retireEditor(EditorOfJournal eoj) {
+		Editor e = eoj.getEditor();
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "DELETE FROM EDITOROFJOURNAL WHERE editorID = " + editorId + " AND ISSN = " + issn;
+			String query = "DELETE FROM EDITOROFJOURNAL WHERE editorID = " + e.getEditorId() + " AND ISSN = " + eoj.getJournal().getISSN();
 			System.out.println(query);
 			statement.execute(query);
-			statement.close();
-			Academic[] roles = RetrieveDatabase.getRoles(email);
-			if (roles.length == 0) {
-				deleteAcademic(academicId);
+			
+			//Update the next editor to be the chief editor if the chief editor is retiring
+			if(eoj.isChiefEditor()) {
+				query = "UPDATE EDITOROFJOURNAL SET CHIEFEDITOR=1 "
+						+ "WHERE EDITORID = "
+						+ "(SELECT EDITORID FROM (SELECT EDITORID FROM EDITOROFJOURNAL WHERE CHIEFEDITOR = 0 AND ISSN = ? ORDER BY EDITORID) AS X LIMIT 1)";
+				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+					preparedStmt.setInt(1, eoj.getJournal().getISSN());
+					preparedStmt.execute();
+				}
 			}
+			
+			if(e.getEditorOfJournals().size() == 1) {
+				query = "DELETE FROM EDITORS WHERE EDITORID = ?";
+				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+					preparedStmt.setInt(1, e.getEditorId());
+					preparedStmt.execute();
+				}
+			}
+			statement.close();
 		}catch (SQLException ex) {
 			ex.printStackTrace();
+		}
+		Academic[] roles = RetrieveDatabase.getRoles(eoj.getEditor().getEmailId());
+		if (roles[0] == null && roles[1] == null && roles[2] == null) {
+			deleteAcademic(e.getAcademicId());
 		}
 	}
 	
@@ -61,7 +79,7 @@ public class Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "DELETE FROM ACADEMICS WHERE editorID = " + academicId;
+			String query = "DELETE FROM ACADEMICS WHERE academicID = " + academicId;
 			statement.execute(query);
 			statement.close();
 		}catch (SQLException ex) {
