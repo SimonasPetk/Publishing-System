@@ -976,6 +976,63 @@ public class RetrieveDatabase extends Database {
 	}
 */
 	/**
+	 * getArticle
+	 * 
+	 * Get the article given it's articleId
+	 * @param articleId The ID of the required article
+	 * @return The required article
+	 */
+	public static Article getArticle(int articleId) {
+	    Article result = null;
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+
+            String query = "SELECT title, summary "
+                         + "FROM ARTICLES "
+                         + "WHERE articleID = " + articleId + ";";
+            ResultSet res = statement.executeQuery(query);
+            if (res.next()) {
+                String title = res.getString(1);
+                String summary = res.getString(2);
+                result = new Article(articleId, title, summary);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return result;
+	}
+	
+	/**
+	 * getPublishedArticles
+	 * 
+	 * Get all published articles within the given edition
+	 * @param edId Id of the edition
+	 * @return All published articles in this edition
+	 */
+	public static ArrayList<PublishedArticle> getPublishedArticles(int edId) {
+	    ArrayList<PublishedArticle> results = new ArrayList<PublishedArticle>();
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+
+            String query = "SELECT publishedArticleID, articleID "
+                         + "FROM PUBLISHEDARTICLES "
+                         + "WHERE edID = " + edId + ";";
+            ResultSet res = statement.executeQuery(query);
+            while (res.next()) {
+                int publishedArticleId = res.getInt(1);
+                int resArticleId = res.getInt(2);
+                Article article = getArticle(resArticleId);
+                results.add(new PublishedArticle(publishedArticleId, article));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return results;
+	}
+	
+	/**
 	 * getEditions
 	 *
 	 * Get all editions within the given volume
@@ -1001,6 +1058,8 @@ public class RetrieveDatabase extends Database {
 
                 Edition nextResult = new Edition(month, edId);
                 nextResult.setPublished(published);
+                //ArrayList<PublishedArticle> articles = getPublishedArticles(edId);
+                //nextResult.addPublishedArticles(articles);
                 results.add(nextResult);
             }
         } catch (SQLException ex) {
@@ -1010,6 +1069,7 @@ public class RetrieveDatabase extends Database {
 	}
 
 	public static void main(String[] args) {
+	    /*
 		System.out.println("SELECT Eoj.ISSN FROM AUTHOROFARTICLE Aoa, AUTHORS A, ARTICLES Art, "
 				+ "SUBMISSIONS S, JOURNALS J, EDITOROFJOURNAL Eoj, EDITORS E " + "WHERE A.AUTHORID = Aoa.AUTHORID "
 				+ "AND Aoa.ARTICLEID = Art.ARTICLEID " + "AND Art.ARTICLEID = S.ARTICLEID " + "AND Art.ISSN = J.ISSN "
@@ -1029,7 +1089,8 @@ public class RetrieveDatabase extends Database {
 						+ eoj.isChiefEditor());
 			}
 			;
-		}
+		}*/
+	    
 //		if(a != null) {
 //			System.out.println("Author: "+a);
 //			for(AuthorOfArticle aoa : a.getAuthorOfArticles()){
@@ -1043,11 +1104,16 @@ public class RetrieveDatabase extends Database {
 //						System.out.println(ros.getReview());
 //			};
 //		}
-		if (r != null) {
+/*		if (r != null) {
 			System.out.println("Reviewer " + r);
 			for (ReviewerOfSubmission ros : r.getReviewerOfSubmissions()) {
 				System.out.println(ros.getReview());
 			}
-		}
+		}*/
+	    
+	    CreateDatabase.printAllRecords("VOLUMES");
+	    CreateDatabase.printAllRecords("EDITIONS");
+	    ArrayList<Edition> results = RetrieveDatabase.getEditions(1);
+	    System.out.println(results);
 	}
 }

@@ -6,6 +6,13 @@ public class PublishedArticle extends Article{
 	private String pageRange;
 	private Edition edition;
 	private int publishedArticleId;
+
+	public PublishedArticle(int publishedArticleId, Article a) {
+	    super(a.getArticleId(), a.getTitle(), a.getSummary(), a.getJournal());
+	    this.pageRange = null;
+	    this.edition = null;
+	    this.publishedArticleId = publishedArticleId;
+	}
 	
 	public PublishedArticle(int publishedArticleId, Article a, String pageRange, Edition edition) {
 		super(a.getArticleId(), a.getTitle(), a.getSummary(), a.getJournal());

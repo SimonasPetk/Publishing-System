@@ -64,7 +64,7 @@ public class EditorMainWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-				    Academic[] roles = RetrieveDatabase.getRoles("jm@gm.com");
+				    Academic[] roles = RetrieveDatabase.getRoles("j.smith@uniofsmith.ac.uk");
 					EditorMainWindow window = new EditorMainWindow(roles);
 					window.frmDashboard.setVisible(true);
 				} catch (Exception e) {
