@@ -17,7 +17,13 @@ public class Volume {
 		this.volumeId = volumeId;
 		this.journal = null;
 	}
-	
+	public Volume(int year, int volumeNumber, int volumeId) {
+	    this.editions = new ArrayList<Edition>();
+		this.year = year;
+		this.volumeNumber = volumeNumber;
+		this.volumeId = volumeId;
+		this.journal = null;
+	}
 	
     public void addEdition(Edition e) {
         e.setVolume(this);

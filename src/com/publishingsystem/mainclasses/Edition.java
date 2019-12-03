@@ -20,6 +20,15 @@ public class Edition {
 		this.volume = null;
 	    this.published = false;
 	}
+	
+	public Edition(ArrayList<PublishedArticle> articles, int editionMonth, int editionId, int edNumber, Volume vol) {
+	    this.articles = articles;
+		this.editionMonth = editionMonth;
+		this.editionNumber = edNumber;
+		this.editionId = editionId;
+		this.volume = vol;
+	    this.published = true;
+	}
 
 	
 	public void addPublishedArticle(PublishedArticle a) {
