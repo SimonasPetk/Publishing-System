@@ -149,6 +149,12 @@ public class AddJournal {
 				} else {
 					try {
 						issn = Integer.parseInt(JournalISSN);
+						if (!Database.validateJournalISSN(issn)) {
+							validCredentials = false;	
+							JOptionPane.showMessageDialog(panel,
+									"This Journal already exists please enter an unique journal ISSN.", "Warning",
+									JOptionPane.WARNING_MESSAGE);
+						}
 					} catch (Exception e) {
 						JOptionPane.showMessageDialog(panel,
 								"Please only enter 8 digits of ISSN code, No other characters are needed.", "Warning",
