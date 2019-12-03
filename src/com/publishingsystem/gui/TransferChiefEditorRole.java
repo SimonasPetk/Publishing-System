@@ -11,6 +11,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollBar;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -36,6 +37,7 @@ public class TransferChiefEditorRole {
 
 	private JFrame frmTransferChiefEditorRole;
 	private String selectedChiefEditor;
+	private ArrayList<EditorOfJournal> editorsOfJournal;
 
 	/**
 	 * Launch the application.
@@ -44,7 +46,7 @@ public class TransferChiefEditorRole {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					TransferChiefEditorRole window = new TransferChiefEditorRole(null, null);
+					TransferChiefEditorRole window = new TransferChiefEditorRole(null, null, null);
 					window.frmTransferChiefEditorRole.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -58,17 +60,17 @@ public class TransferChiefEditorRole {
 	 */
 	public TransferChiefEditorRole() {
 		System.out.println("Initialized");
-		initialize(null, null);
+		initialize(null, null, null);
 	}
-
-	public TransferChiefEditorRole(Journal j, Editor e) {
-		initialize(j, e);
+	
+	public TransferChiefEditorRole(EditorOfJournal eoj, JFrame chiefWindow , Academic[] roles) {
+		initialize(eoj, chiefWindow, roles);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(Journal j, Editor editor) {
+	private void initialize(EditorOfJournal chiefEoj, JFrame chiefWindow, Academic[] roles) {
 		frmTransferChiefEditorRole = new JFrame();
 		frmTransferChiefEditorRole.setTitle("Retire as chief editor");
 		frmTransferChiefEditorRole.setBounds(100, 100, 557, 416);
@@ -86,35 +88,34 @@ public class TransferChiefEditorRole {
 		btnUpdate.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				boolean process = false;
-				for (EditorOfJournal e : j.getBoardOfEditors()) {
-					if ((e.getEditor().getFullName()).equals(selectedChiefEditor)) {
-						e.setChiefEditor();
-						Database.removeChiefEditor(editor.getEditorId());
-						process = true;
+				if(selectedChiefEditor != null) {
+					for (EditorOfJournal eoj : editorsOfJournal) {
+						if ((eoj.getEditor().getFullName()).equals(selectedChiefEditor)) {
+							eoj.setChiefEditor(true);
+							Database.setChiefEditor(eoj);
+							chiefEoj.setChiefEditor(false);
+						
+							JOptionPane.showMessageDialog(null, "Transfer Successful", "Transfer", 1);
+							chiefWindow.dispose();
+							new JournalWindow(roles);
+							frmTransferChiefEditorRole.dispose();
+							break;
+						}
 					}
-				}
-				if (process) {
-					JOptionPane.showMessageDialog(null, "Transfer Successful", "Transfer", 1);
-					frmTransferChiefEditorRole.dispose();
-				} else {
-					JOptionPane.showMessageDialog(null, "Transfer Unsuccessful", "Transfer", 1);
-				}
+					Database.removeChiefEditor(chiefEoj);
+				}else
+					JOptionPane.showMessageDialog(null, "Please select an Editor to transfer your Chief Editor role to", "Transfer", 0);
 			}
 		});
 		btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		ArrayList<EditorOfJournal> ed = j.getBoardOfEditors();
-		System.out.println(ed.size());
-		ArrayList<EditorOfJournal> displayEditors = new ArrayList<EditorOfJournal>();
-		for (EditorOfJournal e : ed) {
-			if (!e.isChiefEditor()) {
-				displayEditors.add(e);
-			}
-		}
-		String[] editors = new String[displayEditors.size()];
-		for (int i = 0; i < displayEditors.size(); i++) {
-			editors[i] = displayEditors.get(i).getEditor().getFullName();
+		
+		editorsOfJournal = RetrieveDatabase.getEditorsOfJournal(chiefEoj.getJournal());
+		editorsOfJournal.removeIf(e -> e.isTempRetired() || e.isChiefEditor());
+		
+		String[] editors = new String[editorsOfJournal.size()];
+		for (int i = 0; i < editorsOfJournal.size(); i++) {
+			editors[i] = editorsOfJournal.get(i).getEditor().getFullName();
 		}
 		JList potentialChiefs = new JList();
 		potentialChiefs.setFont(new Font("Tahoma", Font.PLAIN, 15));

@@ -25,14 +25,14 @@ public class Database {
 		return DATABASE;
 	}
 	
-	public static void setChiefEditor(int editorId) {
+	public static void setChiefEditor(EditorOfJournal eoj) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "UPDATE EDITOROFJOURNAL SET ChiefEditor = 1 WHERE editorID = " + editorId;
+			String query = "UPDATE EDITOROFJOURNAL SET ChiefEditor = 1 WHERE editorID = " + eoj.getEditor().getEditorId() + " AND ISSN = "+eoj.getJournal().getISSN();
 			statement.execute(query);
 			statement.close();
-			CreateDatabase.printAllRecords("EDITOROFJOURNAL");
+			
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -117,16 +117,15 @@ public class Database {
 		}
 	}
 	
-	public static void removeChiefEditor(int editorId) {
-		System.out.println("Updating the table where editorId = " + editorId);
+	public static void removeChiefEditor(EditorOfJournal eoj) {
+		
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "UPDATE EDITOROFJOURNAL SET ChiefEditor = 0 WHERE editorID = " + editorId;
+			String query = "UPDATE EDITOROFJOURNAL SET ChiefEditor = 0 WHERE editorID = " + eoj.getEditor().getEditorId() + " AND ISSN = "+eoj.getJournal().getISSN();
 			statement.execute(query);
 			statement.close();
-			CreateDatabase.printAllRecords("EDITOROFJOURNAL");
-			System.out.println("Gone through code to remove ChiefEditor");
+			
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -877,9 +876,11 @@ public class Database {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
             statement.close();
-			String query = "UPDATE EDITIONS SET PUBLISHED = 1 WHERE EDID = ?";
+
+			String query = "UPDATE EDITIONS SET PUBLISHED = 1, MONTH = ? WHERE EDID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, editionId);
+				preparedStmt.setInt(1, Calendar.getInstance().get(Calendar.MONTH));
+				preparedStmt.setInt(2, editionId);
 				preparedStmt.execute();
 
 			} catch (SQLException ex) {

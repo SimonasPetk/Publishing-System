@@ -75,7 +75,6 @@ public class ChiefMainWindow {
 	public ChiefMainWindow(Academic[] roles) {
 		this.editor = (Editor) roles[0];
 		chiefEditorOfJournals = editor.getEditorOfJournals();
-		chiefEditorOfJournals.removeIf(c -> !c.isChiefEditor());
 		initialize(roles);
 	}
 	
@@ -126,6 +125,8 @@ public class ChiefMainWindow {
 		frmChiefEditorsDashboard.setBounds(100, 100, width, height);
 		frmChiefEditorsDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmChiefEditorsDashboard.setVisible(true);
+		
+		chiefEditorOfJournals.removeIf(c -> !c.isChiefEditor());
 		
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = toolkit.getScreenSize();
@@ -273,7 +274,7 @@ public class ChiefMainWindow {
 		transferChiefEditor.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				new EditorJournals(chiefEditorOfJournals, frmChiefEditorsDashboard, "TRANSFER");
+				new EditorJournals(chiefEditorOfJournals, frmChiefEditorsDashboard, "TRANSFER", roles);
 			}
 		});
 		mnMenu.add(transferChiefEditor);
