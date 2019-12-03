@@ -385,7 +385,7 @@ public class Database {
 		}
 	}
 
-	public static void addSubmission(Article article, byte[] pdfBytes) {
+	public static void addSubmission(Article article, byte[] pdfBytes, int numPages) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
@@ -437,11 +437,12 @@ public class Database {
 
 		    ArrayList<PDF> pdfs = article.getSubmission().getVersions();
 		    PDF pdf = pdfs.get(pdfs.size()-1);
-		    query = "INSERT INTO PDF values (null, ?, ?, ?)";
+		    query = "INSERT INTO PDF values (null, ?, ?, ?, ?)";
 		    try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 		    	preparedStmt.setInt(1, article.getSubmission().getSubmissionId());
 		    	preparedStmt.setDate(2, pdf.getDate());
 		    	preparedStmt.setBlob(3, PDFConverter.getPDFBlob(pdfBytes));
+		    	preparedStmt.setInt(4, numPages);
 
 
 		    	preparedStmt.execute();

@@ -46,7 +46,7 @@ public class TestRun {
 		authorsReviewers1.add(ar1);
 		authorsReviewers1.add(new Reviewer(a2));
 		Database.registerReviewers(authorsReviewers1);
-		Database.addSubmission(article, new byte[] {});
+		Database.addSubmission(article, new byte[] {}, 0);
 ////		
 
 		
@@ -65,7 +65,7 @@ public class TestRun {
 		a4.submit(tempS, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), null));
 		
 		Database.registerAuthors(authorsReviewers);
-		Database.addSubmission(tempS, new byte[] {});
+		Database.addSubmission(tempS, new byte[] {}, 0);
 
 		ArrayList<Reviewer> reviewers = new ArrayList<Reviewer>();
 		reviewers.add(new Reviewer(a3));

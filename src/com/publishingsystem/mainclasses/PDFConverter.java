@@ -10,8 +10,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 public class PDFConverter {
+	public static int getNumPagesFromFile(String dir) {
+		try {
+			
+			PDDocument doc = PDDocument.load(new File(dir));
+			int count = doc.getNumberOfPages();
+			doc.close();
+			return count;
+		}catch(IOException io) {
+						io.printStackTrace();
+		}
+		return -1;
+	}
+	
 	public static byte[] getByteArrayFromFile(String dir){
 		try {
 			File file = new File(dir);
@@ -37,6 +51,7 @@ public class PDFConverter {
 
 	public static void main(String[] args) {
 //		byte[] pdf = PDFConverter.getByteArrayFromFile("pathToPDFfile.pdf");
+		System.out.println(PDFConverter.getNumPagesFromFile("/Users/manassarpatwar/desktop/out.pdf"));
 //		System.out.println(pdf.length);
 //		try {
 //			OutputStream out = new FileOutputStream("pathToOutputLocation.pdf");
