@@ -91,27 +91,32 @@ public class RetireFromWhichJournal {
 		btnUpdate.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				System.out.println(selectedJournal);
-				EditorOfJournal eoj = eojs.get(selectedJournal);
-				ArrayList<EditorOfJournal> coEditors = RetrieveDatabase.getEditorsOfJournal(eoj.getJournal());
-				if(coEditors.size() > 1) {
-					if(eoj.isChiefEditor()) {
-						int dialogResult = JOptionPane.showConfirmDialog (null, "You will be removed as a Chief Editor. Are you sure?");
-						if(dialogResult == JOptionPane.YES_OPTION){
+				if (selectedJournal != -1) {
+					System.out.println(selectedJournal);
+					EditorOfJournal eoj = eojs.get(selectedJournal);
+					ArrayList<EditorOfJournal> coEditors = RetrieveDatabase.getEditorsOfJournal(eoj.getJournal());
+					if(coEditors.size() > 1) {
+						if(eoj.isChiefEditor()) {
+							int dialogResult = JOptionPane.showConfirmDialog (null, "You will be removed as a Chief Editor. Are you sure?");
+							if(dialogResult == JOptionPane.YES_OPTION){
+								Database.retireEditor(eoj);
+								eoj.getEditor().getEditorOfJournals().remove(eoj);
+								}
+						}else {
 							Database.retireEditor(eoj);
-							eoj.getEditor().getEditorOfJournals().remove(eoj);
-							}
-					}else {
-						Database.retireEditor(eoj);
+						}
+						if(eoj.getEditor().getEditorOfJournals().size() == 0) {
+							editorWindow.dispose();
+							new JournalWindow(null);
+						}
+						frmRetireFromWhichJournal.dispose();
 					}
-					if(eoj.getEditor().getEditorOfJournals().size() == 0) {
-						editorWindow.dispose();
-						new JournalWindow(null);
+					else {
+						JOptionPane.showMessageDialog(null, "Please add another editor to the board of editors for this journal before retiring. ", "Error in retiring", 0);
 					}
-					frmRetireFromWhichJournal.dispose();
 				}
 				else {
-					JOptionPane.showMessageDialog(null, "Please add another editor to the board of editors for this journal before retiring. ", "Error in retiring", 0);
+					JOptionPane.showMessageDialog(null, "Please select a journal", "Error", 1);
 				}
 				/*for (EditorOfJournal e: j.getBoardOfEditors()) {
 					if ((e.getEditor().getFullName()).equals(selectedJournal)) {
