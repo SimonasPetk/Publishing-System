@@ -437,6 +437,8 @@ public class EditorMainWindow {
 	
 	public void acceptSubmission(Submission s) {
 	    /*
+	    Journal jour = s.getArticle().getJournal();
+	    
         // get the unpublished edition
 	    Edition ed = RetrieveDatabase.getNextEdition(s.getArticle().getJournal().getISSN());
         
@@ -452,7 +454,6 @@ public class EditorMainWindow {
 	    }
         
 	    // else, add the submission to PublishedArticles in the unpublished edition
-
-	    */
+*/
 	}
 }
