@@ -872,6 +872,24 @@ public class Database {
 		return false;
 	}
 	
+	public static void publishEdition(int editionId) {
+		 try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            statement.close();
+			String query = "UPDATE EDITIONS SET PUBLISHED = 1 WHERE EDID = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, editionId);
+				preparedStmt.execute();
+
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		 }catch (SQLException ex) {
+			ex.printStackTrace();
+		 }
+	}
+	
 	
 
 	/**

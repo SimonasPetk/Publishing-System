@@ -51,6 +51,7 @@ public class ChiefMainWindow {
 	private JTable editionTable;
 	private ArrayList<EditorOfJournal> chiefEditorOfJournals;
 	private ArrayList<Edition> editions;
+	private int editionToBePublished = -1;
 
 	/**
 	 * Launch the application.
@@ -136,6 +137,20 @@ public class ChiefMainWindow {
 		lblJournals.setFont(new Font("Tahoma", Font.PLAIN, 20));
 
 		JButton btnPublish = new JButton("Publish Edition");
+		btnPublish.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if(editionToBePublished != -1) {
+					Database.publishEdition(editions.get(editionToBePublished).getEditionId());
+					JOptionPane.showMessageDialog(null, "Edition published", "Publishing Edition", 1);
+					editions.remove(editionToBePublished);
+					refreshEditionTable();
+					editionToBePublished = -1;
+					
+				}else
+					JOptionPane.showMessageDialog(null, "Please select an edition to publish", "Error", 0);
+			}
+		});
 		btnPublish.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JPanel panel = new JPanel();
@@ -200,11 +215,7 @@ public class ChiefMainWindow {
 		editionTable.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				int row = journalTable.rowAtPoint(arg0.getPoint());
-				
-				Edition edition = editions.get(row);
-				System.out.println(edition.getEditionId());
-
+				editionToBePublished = editionTable.rowAtPoint(arg0.getPoint());
 			}
 		});
 		
@@ -235,12 +246,16 @@ public class ChiefMainWindow {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				int row = journalTable.rowAtPoint(arg0.getPoint());
-				System.out.println(row);
+				
 				EditorOfJournal eoj = chiefEditorOfJournals.get(row);
-				System.out.println(eoj.getJournal().getJournalName());
+
 				editions = RetrieveDatabase.getEditionsForChiefEditor(eoj.getJournal().getISSN());
-				System.out.println(editions.size());
-				refreshEditionTable();
+				if(editions.size() > 0) {
+					editionToBePublished = -1;
+					refreshEditionTable();
+				}else {
+					JOptionPane.showMessageDialog(null, "No edition to be published yet for this Journal.", "Publishing Edition", 1);
+				}
 
 			}
 		});
@@ -342,5 +357,15 @@ public class ChiefMainWindow {
 			});
 			mnChangeRole.add(mntmToReviewer);
 		}
+		
+		JMenuItem mntmToReader = new JMenuItem("Reader");
+		mntmToReader.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				new JournalWindow(roles);
+				frmChiefEditorsDashboard.dispose();
+			}
+		});
+		mnChangeRole.add(mntmToReader);
 	}
 }
