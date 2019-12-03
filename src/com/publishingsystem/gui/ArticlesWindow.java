@@ -110,13 +110,14 @@ public class ArticlesWindow {
 			PublishedArticle currentArticle = allArticles.get(i);
 			tableContents[i][0] = currentArticle.getTitle();
 			tableContents[i][1] = currentArticle.getAuthorsOfArticle().toString();
-			tableContents[i][2] = "some volume and edition?";
+			tableContents[i][2] = Integer.toString(currentArticle.getEdition().getVolume().getVolumeNumber()) + "."
+								  + Integer.toString(currentArticle.getEdition().getEditionNumber());
 			tableContents[i][3] = currentArticle.getPdf().getDate();
 			tableContents[i][4] = currentArticle.getPageRange();
 		}
 
 		tblArticles.setModel(new DefaultTableModel(tableContents,
-				new String[] { "Title ", "Authors", "Volume", "Date Published", "Page Range" }) {
+				new String[] { "Title ", "Authors", "Volume.Edition", "Date Published", "Page Range" }) {
 			boolean[] columnEditables = new boolean[] { false, false, false, false, false };
 
 			public boolean isCellEditable(int row, int column) {

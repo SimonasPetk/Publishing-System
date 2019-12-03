@@ -581,11 +581,11 @@ public class RetrieveDatabase extends Database {
 					String pageRange = Integer.toString(pPages) + " - " + Integer.toString(cPages);
 					
 					if (res.getBoolean("PUBLISHED")) {
-						if (vol == null || vol.getVolumeNumber() != res.getInt("VOLID")) {
+						if (vol == null || vol.getVolumeId() != res.getInt("VOLID")) {
 
-							vol = new Volume(res.getInt("YEAR"), volNumber);
+							vol = new Volume(res.getInt("YEAR"), volNumber, res.getInt("VOLID"));
 							volNumber++;
-							if (ed == null || ed.getEditionNumber() != res.getInt("EDID")) {
+							if (ed == null || ed.getEditionId() != res.getInt("EDID")) {
 								
 								ed = new Edition(articlesPublished, res.getInt("MONTH"), res.getInt("EDID"), edNumber, vol);
 								edNumber++;
@@ -605,7 +605,7 @@ public class RetrieveDatabase extends Database {
 								articlesPublished.add(PublishedArticle);
 							}
 						} else {
-							if (ed == null || ed.getEditionNumber() != res.getInt("EDID")) {
+							if (ed == null || ed.getEditionId() != res.getInt("EDID")) {
 
 								ed = new Edition(articlesPublished, res.getInt("MONTH"), res.getInt("EDID"), edNumber, vol);
 								edNumber++;

@@ -21,7 +21,6 @@ public class Edition {
 	    this.published = false;
 	}
 	
-	
 	public Edition(ArrayList<PublishedArticle> articles, int editionMonth, int editionId, int edNumber, Volume vol) {
 	    this.articles = articles;
 		this.editionMonth = editionMonth;
