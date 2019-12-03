@@ -180,7 +180,7 @@ public class RegistrationWindow {
 					int dCount = 0;
 					while (validCredentials && x < emailCharacters.length) {
 						// checking its a valid character or @ or .
-						if (Character.isLetter(emailCharacters[x])) {
+						if (Character.isLetter(emailCharacters[x]) || Character.isDigit(emailCharacters[x])) {
 							x++;
 						} else if (emailCharacters[x] == '@' || emailCharacters[x] == '.') {
 							// cannot have @ or . as the final character

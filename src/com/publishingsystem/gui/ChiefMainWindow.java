@@ -160,6 +160,7 @@ public class ChiefMainWindow {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				new EditorJournals(editor.getEditorOfJournals(), frmChiefEditorsDashboard, "APPOINT");
+				
 			}
 		});
 		mnMenu.add(mntmAppointNewEditors);

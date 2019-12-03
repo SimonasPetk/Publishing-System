@@ -131,7 +131,7 @@ public class AddJournal {
 				} else {
 					try {
 						issn = Integer.parseInt(JournalISSN);
-						if (Database.validateJournalISSN(issn)) {
+						if (Database.validateJournalISSN(issn) && validCredentials) {
 							validCredentials = false;	
 							JOptionPane.showMessageDialog(panel,
 									"This Journal already exists please enter a unique journal ISSN.", "Warning",
@@ -145,7 +145,7 @@ public class AddJournal {
 					}
 				}
 				
-				if (Database.validateJournalTitle(journalName)) {
+				if (Database.validateJournalTitle(journalName) && validCredentials) {
 					System.out.println("Breaks here 163");
 					validCredentials = false;	
 					JOptionPane.showMessageDialog(panel,
