@@ -921,6 +921,31 @@ public class Database {
         return result;
 	}
 	
+	public static void rejectSubmission(int submissionId) {
+		 try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query = "DELETE S.*, Ros.*, Rev.*, C.*, Art.*, Aoa.*, A.* "
+					+ "FROM SUBMISSIONS S INNER JOIN REVIEWEROFSUBMISSION Ros ON S.SUBMISSIONID = Ros.SUBMISSIONID "
+					+ "INNER JOIN REVIEWS Rev ON Rev.SUBMISSIONID = Ros.SUBMISSIONID "
+					+ "INNER JOIN CRITICISMS C ON C.SUBMISSIONID = Rev.SUBMISSIONID "
+					+ "INNER JOIN ARTICLES Art ON S.ARTICLEID = Art.ARTICLEID "
+					+ "INNER JOIN AUTHOROFARTICLE Aoa ON Art.ARTICLEID = Aoa.ARTICLEID "
+					+ "INNER JOIN AUTHORS A ON Aoa.AUTHORID = A.AUTHORID "
+					+ "WHERE S.SUBMISSIONID = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, submissionId);
+				preparedStmt.execute();
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		 }catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+
+	}
+	
 	public static void main(String[] args) {
 		System.out.println("\nDrivers loaded as properties:");
 		System.out.println(System.getProperty("jdbc.drivers"));
