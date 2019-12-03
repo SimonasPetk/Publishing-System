@@ -125,6 +125,8 @@ public class EditorJournals {
 								if (dialogResult == JOptionPane.YES_OPTION) {
 									Database.retireEditor(eoj);
 									eoj.getEditor().getEditorOfJournals().remove(eoj);
+									editorWindow.dispose();
+									new LoginScreen();
 								}
 							} else {
 								Database.retireEditor(eoj);
