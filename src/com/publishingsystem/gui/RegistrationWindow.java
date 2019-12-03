@@ -86,31 +86,25 @@ public class RegistrationWindow {
 		frmRegistrationForm = new JFrame();
 		frmRegistrationForm.setTitle("Registration Form");
 		frmRegistrationForm.setBounds(500, 100, 653, 559);
-		frmRegistrationForm.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				new JournalWindow(null);
-				frmRegistrationForm.dispose();
-			}
-		});
+		
 		frmRegistrationForm.setVisible(true);
 
-		JLabel lblYourTitle = new JLabel("Your Title:");
+		JLabel lblYourTitle = new JLabel("Title:");
 		lblYourTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		JLabel lblYourForenames = new JLabel("Your Forenames:");
+		JLabel lblYourForenames = new JLabel("Forenames:");
 		lblYourForenames.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		JLabel lblYourSurname = new JLabel("Your Surname:");
+		JLabel lblYourSurname = new JLabel("Surname:");
 		lblYourSurname.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 		JLabel lblCurrentUniversityAffiliation = new JLabel("Current University Affiliation:");
 		lblCurrentUniversityAffiliation.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		JLabel lblYourEmailAddress = new JLabel("Your Email Address:");
+		JLabel lblYourEmailAddress = new JLabel("Email Address:");
 		lblYourEmailAddress.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		JLabel lblYourPassword = new JLabel("Your Password:");
+		JLabel lblYourPassword = new JLabel("Password:");
 		lblYourPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 		JLabel lblMainAuthorRegistration = new JLabel("Registration Form");
@@ -246,7 +240,9 @@ public class RegistrationWindow {
 									JOptionPane.showMessageDialog(null,
 											"Email is already in use. They will be added as a co-author.");
 								} else if (r == Role.EDITOR) {
-									validCredentials = true;
+									validCredentials = false;
+									JOptionPane.showMessageDialog(null,
+											"Email is already in use. They will be added as an editor.");
 								}
 								frmRegistrationForm.dispose();
 							}

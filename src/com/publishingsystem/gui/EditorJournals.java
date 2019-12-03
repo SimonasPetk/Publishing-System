@@ -54,7 +54,7 @@ public class EditorJournals {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					EditorJournals window = new EditorJournals(null, null, null);
+					EditorJournals window = new EditorJournals(null, null, null, null);
 					window.frmEditorJournals.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -68,17 +68,22 @@ public class EditorJournals {
 	 */
 	public EditorJournals() {
 		System.out.println("Initialized");
-		initialize(null, null, null);
+		initialize(null, null, null, null);
 	}
 
 	public EditorJournals(ArrayList<EditorOfJournal> eojs, JFrame editorWindow, String option) {
-		initialize(eojs, editorWindow, option);
+		initialize(eojs, editorWindow, option, null);
 	}
+	
+	public EditorJournals(ArrayList<EditorOfJournal> eojs, JFrame editorWindow, String option, Academic[] roles) {
+		initialize(eojs, editorWindow, option, roles);
+	}
+	
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(ArrayList<EditorOfJournal> eojs, JFrame editorWindow, String option) {
+	private void initialize(ArrayList<EditorOfJournal> eojs, JFrame editorWindow, String option, Academic[] roles) {
 		int width = 600;
 		int height = 300;
 		frmEditorJournals = new JFrame();
@@ -147,7 +152,7 @@ public class EditorJournals {
 					}else if(option.equals("TRANSFER")) {
 						frmEditorJournals.dispose();
 						if(coEditors.size() > 1) {
-							new TransferChiefEditorRole(eoj.getJournal(), eoj.getEditor());
+							new TransferChiefEditorRole(eoj, editorWindow, roles);
 						}
 						else
 							JOptionPane.showMessageDialog(null,

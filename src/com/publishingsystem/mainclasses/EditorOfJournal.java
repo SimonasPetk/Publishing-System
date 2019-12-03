@@ -52,15 +52,10 @@ public class EditorOfJournal {
 		return chiefEditor;
 	}
 	
-	public void setChiefEditor() {
-		chiefEditor = true;
-		Database.setChiefEditor(editor.getEditorId());
+	public void setChiefEditor(boolean chiefEditor) {
+		this.chiefEditor = chiefEditor;
 	}
 	
-	public void removeChiefEditor() {
-		chiefEditor = false;
-		Database.removeChiefEditor(editor.getEditorId());
-	}
 	
 	public void addEditorAsChiefEditor() {
 		System.out.println(journal);
