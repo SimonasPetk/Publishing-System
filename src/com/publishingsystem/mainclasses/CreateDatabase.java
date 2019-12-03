@@ -25,18 +25,18 @@ public class CreateDatabase extends Database{
 
 	public static String createTableVolumes() {
 		return "CREATE TABLE VOLUMES ("
-				+ "volNum INT PRIMARY KEY AUTO_INCREMENT,"
-				+ "year DATE, "
+				+ "volID INT PRIMARY KEY AUTO_INCREMENT,"
+				+ "year INT, "
 				+ "published BOOLEAN, "
 				+ "ISSN INT REFERENCES JOURNALS(ISSN))";
 	}
 
 	public static String createTableEditions() {
 		return "CREATE TABLE EDITIONS ("
-				+ "edNum INT PRIMARY KEY AUTO_INCREMENT, "
-				+ "volNum INT REFERENCES VOLUMES(volNum), "
+				+ "edID INT PRIMARY KEY AUTO_INCREMENT, "
+				+ "volID INT REFERENCES VOLUMES(volNum), "
 				+ "published BOOLEAN, "
-				+ "month DATE)";
+				+ "month INT)";
 	}
 
 	public static String createTablePDF() {
@@ -44,7 +44,8 @@ public class CreateDatabase extends Database{
 				+ "pdfID INT PRIMARY KEY AUTO_INCREMENT, "
 				+ "submissionID INT REFERENCES SUBMISSION(submissionID),"
 				+ "uploadDate DATE, "
-				+ "pdfText MEDIUMBLOB)";
+				+ "pdfText MEDIUMBLOB, "
+				+ "numPages INT)";
 	}
 
 	public static String createTableEditors(){
@@ -66,8 +67,8 @@ public class CreateDatabase extends Database{
 		return "CREATE TABLE PUBLISHEDARTICLES ("
 				+ "publishedArticleID INT PRIMARY KEY AUTO_INCREMENT, "
 				+ "articleID INT REFERENCES ARTICLES(articleID),"
-				+ "pageRange INT, "
-				+ "edNum INT REFERENCES EDITION(edNum))";
+				+ "pageRange TEXT, "
+				+ "edID INT REFERENCES EDITION(edNum))";
 	}
 
 	public static String createTableArticles(){
@@ -269,15 +270,15 @@ public class CreateDatabase extends Database{
 		System.out.println(System.getProperty("jdbc.drivers"));
 		System.out.println("\nDrivers loaded by DriverManager:");
 		Enumeration<Driver> list = DriverManager.getDrivers();
-//		dropTables();
-//		createTables();
+		//dropTables();
+	    //createTables();
         try (Connection con = DriverManager.getConnection(CONNECTION)) {
-		    //printAllRecords("JOURNALS");
-			//printAllRecords("EDITORS");
-			//printAllRecords("VOLUMES");
-			//printAllRecords("EDITIONS");
-			//printAllRecords("EDITOROFJOURNAL");
-			//printAllRecords("ACADEMICS");
+		    printAllRecords("JOURNALS");
+			printAllRecords("EDITORS");
+			printAllRecords("VOLUMES");
+			printAllRecords("EDITIONS");
+			printAllRecords("EDITOROFJOURNAL");
+			printAllRecords("ACADEMICS");
             printAllRecords("PUBLISHEDARTICLES");
 		} catch (SQLException ex) {
 		    ex.printStackTrace();
@@ -288,7 +289,7 @@ public class CreateDatabase extends Database{
 //    		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 //          Statement statement = con.createStatement();
 //          statement.execute("USE "+DATABASE+";");
-//          /*
+//         
 //          statement.execute("INSERT INTO ARTICLES VALUES (1, 12345, 1, 'Title of Article', 'This is a brief summary of this article.');");
 //          statement.execute("INSERT INTO VOLUMES VALUES (null, null, 12345);");
 //          statement.execute("INSERT INTO EDITIONS VALUES (null, 1, null);");

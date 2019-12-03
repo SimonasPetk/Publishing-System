@@ -14,8 +14,8 @@ public class Database {
 	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
 	protected static final String DATABASE = "team022";
 	
-	//protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=simonass";
-	//protected static final String DATABASE = "publishing_system";
+//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+//	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -42,7 +42,7 @@ public class Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "UPDATE EDITOROFJOURNAL SET Retired = 1 WHERE editorID = ?";
+			String query = "UPDATE EDITOROFJOURNAL SET TempRetired = 1 WHERE editorID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, eoj.getEditor().getEditorId());
 				preparedStmt.execute();
@@ -57,7 +57,7 @@ public class Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "UPDATE EDITOROFJOURNAL SET Retired = 0 WHERE editorID = ?";
+			String query = "UPDATE EDITOROFJOURNAL SET TempRetired = 0 WHERE editorID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, eoj.getEditor().getEditorId());
 				preparedStmt.execute();
@@ -386,7 +386,7 @@ public class Database {
 		}
 	}
 
-	public static void addSubmission(Article article, byte[] pdfBytes) {
+	public static void addSubmission(Article article, byte[] pdfBytes, int numPages) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
@@ -438,11 +438,12 @@ public class Database {
 
 		    ArrayList<PDF> pdfs = article.getSubmission().getVersions();
 		    PDF pdf = pdfs.get(pdfs.size()-1);
-		    query = "INSERT INTO PDF values (null, ?, ?, ?)";
+		    query = "INSERT INTO PDF values (null, ?, ?, ?, ?)";
 		    try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 		    	preparedStmt.setInt(1, article.getSubmission().getSubmissionId());
 		    	preparedStmt.setDate(2, pdf.getDate());
 		    	preparedStmt.setBlob(3, PDFConverter.getPDFBlob(pdfBytes));
+		    	preparedStmt.setInt(4, numPages);
 
 
 		    	preparedStmt.execute();
@@ -808,6 +809,70 @@ public class Database {
 		}
 		return false;
 	}
+	
+	public static boolean validateJournalTitle(String title) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query = "SELECT NAME FROM JOURNALS WHERE NAME = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setString(1, title.trim());
+				ResultSet res = preparedStmt.executeQuery();
+
+				boolean titleExists = false;
+
+				if (res.next()) {
+					titleExists = true;  
+				}
+
+
+				if (titleExists) {
+					//Generate hash based on fetched salt and entered password
+					
+					return titleExists;
+				}
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return false;
+	}
+	
+	public static boolean validateJournalISSN(int issn) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query = "SELECT ISSN FROM JOURNALS WHERE ISSN = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, issn);
+				ResultSet res = preparedStmt.executeQuery();
+
+				boolean issnExists = false;
+
+				if (res.next()) {
+					issnExists = true;  
+				}
+
+
+				if (issnExists) {
+					//Generate hash based on fetched salt and entered password
+					
+					return issnExists;
+				}
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return false;
+	}
+	
+	
 
 	/**
 	 * addEdition

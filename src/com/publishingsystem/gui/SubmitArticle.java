@@ -277,7 +277,7 @@ public class SubmitArticle {
 
 					// ADDING TO THE DATABASE;
 					Database.registerAuthors(coAuthors);
-					Database.addSubmission(article, pdf);
+					Database.addSubmission(article, pdf, PDFConverter.getNumPagesFromFile(pdfPath));
 
 					ArrayList<Reviewer> reviewers = new ArrayList<Reviewer>();
 					for (Author a : coAuthors) {

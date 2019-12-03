@@ -27,6 +27,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class AddJournal {
 
@@ -76,6 +78,19 @@ public class AddJournal {
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 		textField = new JTextField();
+		textField.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e) {
+				System.out.println("exited Journal Title");
+				String journalTitle = textField.getText();
+				
+				if (Database.validateJournalTitle(journalTitle)) {
+					JOptionPane.showMessageDialog(panel,
+							"This Journal already exists please enter an unique journal name.", "Warning",
+							JOptionPane.WARNING_MESSAGE);
+				}
+			}
+		});
 		textField.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		textField.setColumns(10);
 
@@ -116,12 +131,28 @@ public class AddJournal {
 				} else {
 					try {
 						issn = Integer.parseInt(JournalISSN);
+						if (Database.validateJournalISSN(issn)) {
+							validCredentials = false;	
+							JOptionPane.showMessageDialog(panel,
+									"This Journal already exists please enter a unique journal ISSN.", "Warning",
+									JOptionPane.WARNING_MESSAGE);
+						}
 					} catch (Exception e) {
 						JOptionPane.showMessageDialog(panel,
 								"Please only enter 8 digits of ISSN code, No other characters are needed.", "Warning",
 								JOptionPane.WARNING_MESSAGE);
+						validCredentials = false;
 					}
 				}
+				
+				if (Database.validateJournalTitle(journalName)) {
+					System.out.println("Breaks here 163");
+					validCredentials = false;	
+					JOptionPane.showMessageDialog(panel,
+							"This Journal already exists please enter a unique journal name.", "Warning",
+							JOptionPane.WARNING_MESSAGE);
+				}
+				
 				if (validCredentials) {
 					Date now = new Date(System.currentTimeMillis());
 					Journal newJournal = new Journal(Integer.parseInt(JournalISSN), journalName, now);
