@@ -3,28 +3,40 @@ import java.util.ArrayList;
 
 public class Edition {
 	private ArrayList<PublishedArticle> articles;
-	private String editionDate;
-	private int editionNumber;
+	private int editionMonth;
+	private int editionNumber; // edition number within volume
+	private int editionId; // edition id in database
 	private Volume volume;
 	private boolean published;
 	private final static int maxArticles = 8;
 	private final static int minArticles = 3; 
 	
 	
-	public Edition(String editionDate, int editionNumber, ArrayList<PublishedArticle> articles, Volume volume) {
-		this.editionDate = editionDate;
-		this.editionNumber = editionNumber;
-		this.articles = articles;
-		this.volume = volume;
-		this.published = false;
+	public Edition(int editionMonth, int editionId) {
+	    this.articles = new ArrayList<PublishedArticle>();
+		this.editionMonth = editionMonth;
+		this.editionNumber = -1;
+		this.editionId = editionId;
+		this.volume = null;
+	    this.published = false;
 	}
 
-	public void setEditionDate(String editionDate) {
-		this.editionDate = editionDate;
+	
+	public void addPublishedArticle(PublishedArticle a) {
+	    a.setEdition(this);
+	    this.articles.add(a);
+	}
+	
+	public void setEditionMonth(int editionMonth) {
+		this.editionMonth = editionMonth;
 	}
 
 	public void setEditionNumber(int editionNumber) {
 		this.editionNumber = editionNumber;
+	}
+	
+	public void setEditionId(int editionId) {
+	    this.editionId = editionId;
 	}
 	
 	public void setVolume(Volume vol) {
@@ -35,16 +47,21 @@ public class Edition {
 		this.published = set;
 	}
 
+	
 	public ArrayList<PublishedArticle> getArticles() {
 		return articles;
 	}
 
-	public String getEditionDate() {
-		return editionDate;
+	public int getEditionMonth() {
+		return editionMonth;
 	}
 
 	public int getEditionNumber() {
 		return editionNumber;
+	}
+
+	public int getEditionId() {
+	    return editionId;
 	}
 	
 	public Volume getVolume() {
@@ -55,6 +72,7 @@ public class Edition {
 		return published;
 	}
 	
+	
 	public boolean maxArticlesReached() {
 		return maxArticles == articles.size();
 	}
@@ -62,5 +80,4 @@ public class Edition {
 	public boolean minArticlesReached() {
 		return minArticles <= articles.size();
 	}
-	
 }

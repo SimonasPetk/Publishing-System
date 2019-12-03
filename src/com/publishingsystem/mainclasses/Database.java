@@ -2,6 +2,7 @@ package com.publishingsystem.mainclasses;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 
 import javax.swing.JList;
@@ -808,6 +809,34 @@ public class Database {
 		return false;
 	}
 
+	/**
+	 * addEdition
+	 * 
+	 * Add a given edition to the database and return the primary key of it's new record
+	 * @param volNum The volume number the edition is in
+	 * @param month The month of the edition
+	 * @return Primary key of the new edition record
+	 */
+	public static int addEdition(int volNum, Date month) {
+	    int result = -1;
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            
+            String query = "INSERT INTO EDITIONS VALUES (null, " + volNum + ", 0, " + month + ");";
+            statement.execute(query);
+            
+            query = "SELECT last_insert_id() AS last_id FROM EDITIONS;";
+            ResultSet res = statement.executeQuery(query);
+            if (res.next()) {
+                result = res.getInt(1);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return result;
+	}
+	
 	public static void main(String[] args) {
 		System.out.println("\nDrivers loaded as properties:");
 		System.out.println(System.getProperty("jdbc.drivers"));
