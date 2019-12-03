@@ -570,10 +570,11 @@ public class RetrieveDatabase extends Database {
 				ArrayList<PublishedArticle> articlesPublished = new ArrayList<PublishedArticle>();
 				Volume vol = null;
 				Edition ed = null;
-				int volNumber = 1;
+				int volNumber = 1;   
 				int edNumber = 1;
 				int cPages = 0;
 				int pPages = 0;
+				
 				while (res.next()) {
 					
 					cPages = res.getInt("NUMPAGES") + pPages;
@@ -582,11 +583,11 @@ public class RetrieveDatabase extends Database {
 					if (res.getBoolean("PUBLISHED")) {
 						if (vol == null || vol.getVolumeNumber() != res.getInt("VOLID")) {
 
-							vol = new Volume(res.getString("YEAR"), volNumber);
+							vol = new Volume(res.getInt("YEAR"), volNumber);
 							volNumber++;
 							if (ed == null || ed.getEditionNumber() != res.getInt("EDID")) {
-
-								ed = new Edition(res.getString("MONTH"), edNumber, articlesPublished, vol);
+								
+								ed = new Edition(articlesPublished, res.getInt("MONTH"), res.getInt("EDID"), edNumber, vol);
 								edNumber++;
 							
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
@@ -606,7 +607,7 @@ public class RetrieveDatabase extends Database {
 						} else {
 							if (ed == null || ed.getEditionNumber() != res.getInt("EDID")) {
 
-								ed = new Edition(res.getString("MONTH"), edNumber, articlesPublished, vol);
+								ed = new Edition(articlesPublished, res.getInt("MONTH"), res.getInt("EDID"), edNumber, vol);
 								edNumber++;
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));

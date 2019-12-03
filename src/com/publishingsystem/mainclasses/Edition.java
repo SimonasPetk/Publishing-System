@@ -22,7 +22,7 @@ public class Edition {
 	}
 	
 	
-	public Edition( ArrayList<PublishedArticle> articles, int editionMonth, int editionId, int edNumber, Volume vol) {
+	public Edition(ArrayList<PublishedArticle> articles, int editionMonth, int editionId, int edNumber, Volume vol) {
 	    this.articles = articles;
 		this.editionMonth = editionMonth;
 		this.editionNumber = edNumber;
