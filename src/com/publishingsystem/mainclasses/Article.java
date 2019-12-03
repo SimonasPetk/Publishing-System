@@ -11,6 +11,13 @@ public class Article {
 	private PDF pdf;
 	private int numReviews;
 
+	public Article(int articleId, String title, String summary) {
+        this.articleId = articleId;
+        this.title = title;
+        this.summary = summary;
+        this.journal = null;
+        this.authorsOfArticle = new ArrayList<AuthorOfArticle>();
+    }	
 	public Article(int articleId, String title, String summary, Journal journal) {
 		this.articleId = articleId;
 		this.title = title;
