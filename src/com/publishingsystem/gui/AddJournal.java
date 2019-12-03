@@ -134,7 +134,7 @@ public class AddJournal {
 						if (Database.validateJournalISSN(issn)) {
 							validCredentials = false;	
 							JOptionPane.showMessageDialog(panel,
-									"This Journal already exists please enter an unique journal ISSN.", "Warning",
+									"This Journal already exists please enter a unique journal ISSN.", "Warning",
 									JOptionPane.WARNING_MESSAGE);
 						}
 					} catch (Exception e) {
@@ -146,12 +146,12 @@ public class AddJournal {
 				}
 				
 				if (Database.validateJournalTitle(journalName)) {
+					System.out.println("Breaks here 163");
 					validCredentials = false;	
 					JOptionPane.showMessageDialog(panel,
-							"This Journal already exists please enter an unique journal name.", "Warning",
+							"This Journal already exists please enter a unique journal name.", "Warning",
 							JOptionPane.WARNING_MESSAGE);
 				}
-				
 				
 				if (validCredentials) {
 					Date now = new Date(System.currentTimeMillis());

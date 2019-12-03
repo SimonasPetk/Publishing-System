@@ -22,7 +22,7 @@ public class PublishedArticle extends Article{
 		return publishedArticleId;
 	}
 
-	public void setEditionNumber(Edition en) {
+	public void setEdition(Edition en) {
 		this.edition = en;
 	}
 	

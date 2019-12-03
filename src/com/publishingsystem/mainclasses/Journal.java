@@ -16,6 +16,7 @@ public class Journal {
 		this.boardOfEditors = new ArrayList<EditorOfJournal>();
 		this.volumes = new ArrayList<Volume>();
 	}
+	
 
 	public String getJournalName() {
 		return this.journalName;
