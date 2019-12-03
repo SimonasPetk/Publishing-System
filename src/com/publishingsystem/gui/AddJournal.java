@@ -106,6 +106,7 @@ public class AddJournal {
 				int journalISSN = Integer.parseInt(textField_1.getText());
 				
 				if (Database.validateJournalISSN(journalISSN)) {
+					System.out.println("Breaks here 109");
 					JOptionPane.showMessageDialog(panel,
 							"This Journal already exists please enter an unique journal ISSN.", "Warning",
 							JOptionPane.WARNING_MESSAGE);
@@ -144,10 +145,10 @@ public class AddJournal {
 				} else {
 					try {
 						issn = Integer.parseInt(JournalISSN);
-						if (!Database.validateJournalISSN(issn)) {
+						if (Database.validateJournalISSN(issn)) {
 							validCredentials = false;	
 							JOptionPane.showMessageDialog(panel,
-									"This Journal already exists please enter an unique journal ISSN.", "Warning",
+									"This Journal already exists please enter a unique journal ISSN.", "Warning",
 									JOptionPane.WARNING_MESSAGE);
 						}
 					} catch (Exception e) {
@@ -159,16 +160,17 @@ public class AddJournal {
 				}
 				
 				if (Database.validateJournalTitle(journalName)) {
+					System.out.println("Breaks here 163");
 					validCredentials = false;	
 					JOptionPane.showMessageDialog(panel,
-							"This Journal already exists please enter an unique journal name.", "Warning",
+							"This Journal already exists please enter a unique journal name.", "Warning",
 							JOptionPane.WARNING_MESSAGE);
 				}
 				
 				if (Database.validateJournalISSN(issn)) {
 					validCredentials = false;	
 					JOptionPane.showMessageDialog(panel,
-							"This Journal already exists please enter an unique journal ISSN.", "Warning",
+							"This Journal already exists please enter a unique journal ISSN.", "Warning",
 							JOptionPane.WARNING_MESSAGE);
 				}
 				
