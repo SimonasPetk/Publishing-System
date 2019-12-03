@@ -544,7 +544,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT V.VOLID, V.YEAR, E.EDID, E.MONTH, P.PUBLISHEDARTICLEID, P.ARTICLEID, P.PAGERANGE, A.TITLE, A.SUMMARY, PDF.PDFID "
+			String query = "SELECT V.VOLID, V.YEAR, E.EDID, E.MONTH, P.PUBLISHEDARTICLEID, P.ARTICLEID, P.PAGERANGE, A.TITLE, A.SUMMARY, PDF.PDFID, PDF.NUMPAGES "
 					+ "FROM VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, PDF "
 					+ "WHERE V.ISSN = ? AND V.VOLID = E.VOLID AND E.EDID = P.EDID AND P.ARTICLEID = A.ARTICLEID AND A.PDFID = PDF.PDFID;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
@@ -557,8 +557,14 @@ public class RetrieveDatabase extends Database {
 				Edition ed = null;
 				int volNumber = 1;   
 				int edNumber = 1;
+				int cPages = 0;
+				int pPages = 0;
 				
 				while (res.next()) {
+					
+					cPages = res.getInt("NUMPAGES") + pPages;
+					String pageRange = Integer.toString(pPages) + " - " + Integer.toString(cPages);
+					
 					if (res.getBoolean("PUBLISHED")) {
 						if (vol == null || vol.getVolumeNumber() != res.getInt("VOLID")) {
 
@@ -568,17 +574,19 @@ public class RetrieveDatabase extends Database {
 
 								ed = new Edition(res.getString("MONTH"), edNumber, articlesPublished, vol);
 								edNumber++;
+							
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
 								PublishedArticle PublishedArticle = new PublishedArticle(
-										res.getInt("PUBLISHEDARTICLEID"), article, res.getString("PAGERANGE"), ed);
+										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
 								articlesPublished.add(PublishedArticle);
+								
 							} else {
 
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
 								PublishedArticle PublishedArticle = new PublishedArticle(
-										res.getInt("PUBLISHEDARTICLEID"), article, res.getString("PAGERANGE"), ed);
+										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
 								articlesPublished.add(PublishedArticle);
 							}
 						} else {
@@ -589,17 +597,18 @@ public class RetrieveDatabase extends Database {
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
 								PublishedArticle PublishedArticle = new PublishedArticle(
-										res.getInt("PUBLISHEDARTICLEID"), article, res.getString("PAGERANGE"), ed);
+										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
 								articlesPublished.add(PublishedArticle);
 							} else {
 
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
 								PublishedArticle PublishedArticle = new PublishedArticle(
-										res.getInt("PUBLISHEDARTICLEID"), article, res.getString("PAGERANGE"), ed);
+										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
 								articlesPublished.add(PublishedArticle);
 							}
 						}
+						pPages = cPages;
 					}
 				}
 
