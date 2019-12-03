@@ -23,16 +23,18 @@ import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
 import com.publishingsystem.mainclasses.Hash;
 import com.publishingsystem.mainclasses.Journal;
+import com.publishingsystem.mainclasses.RetrieveDatabase;
 
 import java.awt.Button;
 import javax.swing.JButton;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.SwingConstants;
 
 public class TransferChiefEditorRole {
 
-	private JFrame frmRetireAsChief;
+	private JFrame frmTransferChiefEditorRole;
 	private String selectedChiefEditor;
 	/**
 	 * Launch the application.
@@ -42,7 +44,7 @@ public class TransferChiefEditorRole {
 			public void run() {
 				try {
 					TransferChiefEditorRole window = new TransferChiefEditorRole(null,null);
-					window.frmRetireAsChief.setVisible(true);
+					window.frmTransferChiefEditorRole.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -66,15 +68,16 @@ public class TransferChiefEditorRole {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Journal j, Editor editor) {
-		frmRetireAsChief = new JFrame();
-		frmRetireAsChief.setTitle("Retire as chief editor");
-		frmRetireAsChief.setBounds(100, 100, 489, 375);
+		frmTransferChiefEditorRole = new JFrame();
+		frmTransferChiefEditorRole.setTitle("Retire as chief editor");
+		frmTransferChiefEditorRole.setBounds(100, 100, 557, 416);
 		//RetireAsChiefEditor window = new RetireAsChiefEditor(null);
-		frmRetireAsChief.setVisible(true);
-		frmRetireAsChief.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmTransferChiefEditorRole.setVisible(true);
+		frmTransferChiefEditorRole.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JLabel lblRetireAsChief = new JLabel("Please choose the editor to replace you");
-		lblRetireAsChief.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblRetireAsChief.setHorizontalAlignment(SwingConstants.CENTER);
+		lblRetireAsChief.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -94,11 +97,11 @@ public class TransferChiefEditorRole {
 				if (process) {
 					JOptionPane.showMessageDialog(null, "Transfer Successful", "Transfer", 1);
 					new LoginScreen();
+					frmTransferChiefEditorRole.dispose();
 				}
 				else {
 					JOptionPane.showMessageDialog(null, "Transfer Unsuccessful", "Transfer", 1);
 				}
-				frmRetireAsChief.dispose();
 			}
 		});
 		btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -116,6 +119,7 @@ public class TransferChiefEditorRole {
 			editors[i] = displayEditors.get(i).getEditor().getFullName();
 		}
 		JList potentialChiefs = new JList();
+		potentialChiefs.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		scrollPane.setViewportView(potentialChiefs);
 		potentialChiefs.addMouseListener(new MouseAdapter() {
 
@@ -136,32 +140,51 @@ public class TransferChiefEditorRole {
 				return values[index];
 			}
 		});
-		GroupLayout groupLayout = new GroupLayout(frmRetireAsChief.getContentPane());
+		
+		JButton btnCancel = new JButton("Cancel");
+		btnCancel.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		btnCancel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				System.out.println("Pressed");
+				System.out.println(editor.getEmailId());
+				new ChiefMainWindow(RetrieveDatabase.getRoles(editor.getEmailId()));
+				frmTransferChiefEditorRole.dispose();
+			}
+		});
+		
+		
+		GroupLayout groupLayout = new GroupLayout(frmTransferChiefEditorRole.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-					.addContainerGap(215, Short.MAX_VALUE)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(188)
 					.addComponent(btnUpdate)
-					.addGap(189))
+					.addGap(35)
+					.addComponent(btnCancel)
+					.addGap(162))
+				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+					.addGap(100)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+					.addGap(100))
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(80)
-					.addComponent(scrollPane)
-					.addGap(112))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addComponent(lblRetireAsChief, GroupLayout.PREFERRED_SIZE, 432, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(39, Short.MAX_VALUE))
+					.addGap(50)
+					.addComponent(lblRetireAsChief, GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE)
+					.addGap(50))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(lblRetireAsChief)
-					.addGap(30)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
+					.addGap(27)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE)
 					.addGap(18)
-					.addComponent(btnUpdate)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnCancel)
+						.addComponent(btnUpdate))
 					.addGap(38))
 		);
-		frmRetireAsChief.getContentPane().setLayout(groupLayout);
+		frmTransferChiefEditorRole.getContentPane().setLayout(groupLayout);
 	}
 }

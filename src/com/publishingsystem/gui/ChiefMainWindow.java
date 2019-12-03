@@ -209,6 +209,7 @@ public class ChiefMainWindow {
 				}
 				else {
 					new TransferChiefEditorRole(journal,editor);
+					frmChiefEditorsDashboard.dispose();
 				}
 			}
 		});
