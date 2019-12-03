@@ -38,9 +38,9 @@ import java.awt.event.MouseEvent;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
-public class RetireFromWhichJournal {
+public class EditorJournals {
 
-	private JFrame frmRetireFromWhichJournal;
+	private JFrame frmEditorJournals;
 	private int selectedJournal = -1;
 	private JTable journalTable;
 
@@ -51,8 +51,8 @@ public class RetireFromWhichJournal {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RetireFromWhichJournal window = new RetireFromWhichJournal(null, null);
-					window.frmRetireFromWhichJournal.setVisible(true);
+					EditorJournals window = new EditorJournals(null, null, null);
+					window.frmEditorJournals.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -63,95 +63,98 @@ public class RetireFromWhichJournal {
 	/**
 	 * Create the application.
 	 */
-	public RetireFromWhichJournal() {
+	public EditorJournals() {
 		System.out.println("Initialized");
-		initialize(null, null);
+		initialize(null, null, null);
 	}
 
-	public RetireFromWhichJournal(ArrayList<EditorOfJournal> eojs, JFrame editorWindow) {
-		initialize(eojs, editorWindow);
+	public EditorJournals(ArrayList<EditorOfJournal> eojs, JFrame editorWindow, String option) {
+		initialize(eojs, editorWindow, option);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(ArrayList<EditorOfJournal> eojs, JFrame editorWindow) {
-		frmRetireFromWhichJournal = new JFrame();
-		frmRetireFromWhichJournal.setTitle("Retire from which journal?");
-		frmRetireFromWhichJournal.setBounds(100, 100, 489, 342);
+	private void initialize(ArrayList<EditorOfJournal> eojs, JFrame editorWindow, String option) {
+		frmEditorJournals = new JFrame();
+		if(option.equals("RETIRE"))
+			frmEditorJournals.setTitle("Retire from journal");
+		else
+			frmEditorJournals.setTitle("Appoint new editor");
+		frmEditorJournals.setBounds(100, 100, 489, 342);
 		// RetireAsChiefEditor window = new RetireAsChiefEditor(null);
-		frmRetireFromWhichJournal.setVisible(true);
+		frmEditorJournals.setVisible(true);
 
-		JLabel lblRetireAsChief = new JLabel("Please the journal to retire from");
-		lblRetireAsChief.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		JLabel lblMain = new JLabel();
+		if(option.equals("RETIRE"))
+			lblMain.setText("Please select the journal to retire from");
+		else
+			lblMain.setText("Please select the journal to add new editor");
+		lblMain.setFont(new Font("Tahoma", Font.PLAIN, 20));
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-		JButton btnUpdate = new JButton("Retire");
+		JButton btnUpdate = new JButton();
+		if(option.equals("RETIRE"))
+			btnUpdate.setText("Retire");
+		else
+			btnUpdate.setText("Add Editor");
 		btnUpdate.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				if (selectedJournal != -1) {
-					System.out.println(selectedJournal);
+				System.out.println(selectedJournal);
+				if(selectedJournal != -1) {
 					EditorOfJournal eoj = eojs.get(selectedJournal);
-					ArrayList<EditorOfJournal> coEditors = RetrieveDatabase.getEditorsOfJournal(eoj.getJournal());
-					if(coEditors.size() > 1) {
-						if(eoj.isChiefEditor()) {
-							int dialogResult = JOptionPane.showConfirmDialog (null, "You will be removed as a Chief Editor. Are you sure?");
-							if(dialogResult == JOptionPane.YES_OPTION){
-								Database.retireEditor(eoj);
-								eoj.getEditor().getEditorOfJournals().remove(eoj);
+					if(option.equals("RETIRE")) {
+						ArrayList<EditorOfJournal> coEditors = RetrieveDatabase.getEditorsOfJournal(eoj.getJournal());
+						if (coEditors.size() > 1) {
+							if (eoj.isChiefEditor()) {
+								int dialogResult = JOptionPane.showConfirmDialog(null,
+										"You will be removed as a Chief Editor. Are you sure?");
+								if (dialogResult == JOptionPane.YES_OPTION) {
+									Database.retireEditor(eoj);
+									eoj.getEditor().getEditorOfJournals().remove(eoj);
 								}
-						}else {
-							Database.retireEditor(eoj);
+							} else {
+								Database.retireEditor(eoj);
+							}
+							if (eoj.getEditor().getEditorOfJournals().size() == 0) {
+								editorWindow.dispose();
+								new JournalWindow(null);
+							}
+							frmEditorJournals.dispose();
+						} else {
+							JOptionPane.showMessageDialog(null,
+									"Please add another editor to the board of editors for this journal before retiring. ",
+									"Error in retiring", 0);
 						}
-						if(eoj.getEditor().getEditorOfJournals().size() == 0) {
-							editorWindow.dispose();
-							new JournalWindow(null);
-						}
-						frmRetireFromWhichJournal.dispose();
+					}else if(option.equals("APPOINT")){
+						frmEditorJournals.dispose();
+						new RegistrationWindow(Role.EDITOR, eoj, eoj.getJournal());
 					}
-					else {
-						JOptionPane.showMessageDialog(null, "Please add another editor to the board of editors for this journal before retiring. ", "Error in retiring", 0);
-					}
-				}
-				else {
+				}else {
 					JOptionPane.showMessageDialog(null, "Please select a journal", "Error", 1);
 				}
-				/*for (EditorOfJournal e: j.getBoardOfEditors()) {
-					if ((e.getEditor().getFullName()).equals(selectedJournal)) {
-						e.setChiefEditor();
-						Database.removeChiefEditor(editor.getEditorId());
-						process = true;
-					}
-				}
-				if (process) {
-					JOptionPane.showMessageDialog(null, "Transfer Successful", "Transfer", 1);
-				}
-				else {
-					JOptionPane.showMessageDialog(null, "Transfer Unsuccessful", "Transfer", 1);
-				}
-				frmRetireFromWhichJournal.dispose();
-				new LoginScreen();*/
+				
 			}
 		});
 		btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		GroupLayout groupLayout = new GroupLayout(frmRetireFromWhichJournal.getContentPane());
+		GroupLayout groupLayout = new GroupLayout(frmEditorJournals.getContentPane());
 		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addGroup(groupLayout
 				.createSequentialGroup()
 				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
 						.createSequentialGroup().addGap(24)
 						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-								.addComponent(lblRetireAsChief, Alignment.LEADING, GroupLayout.DEFAULT_SIZE,
+								.addComponent(lblMain, Alignment.LEADING, GroupLayout.DEFAULT_SIZE,
 										GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 436,
 										Short.MAX_VALUE)))
 						.addGroup(groupLayout.createSequentialGroup().addGap(195).addComponent(btnUpdate)))
 				.addContainerGap(29, Short.MAX_VALUE)));
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup().addGap(30).addComponent(lblRetireAsChief)
+				.addGroup(groupLayout.createSequentialGroup().addGap(30).addComponent(lblMain)
 						.addPreferredGap(ComponentPlacement.RELATED)
 						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
 						.addPreferredGap(ComponentPlacement.UNRELATED).addComponent(btnUpdate).addGap(44)));
@@ -167,11 +170,11 @@ public class RetireFromWhichJournal {
 		journalTableModel.addColumn("Name");
 		int counter = 1;
 		for (EditorOfJournal eoj : eojs) {
-
 			Object[] journalRow = new Object[2];
 			journalRow[0] = counter;
 			journalRow[1] = eoj.getJournal().getJournalName();
 			journalTableModel.addRow(journalRow);
+			counter++;
 		}
 
 		journalTable = new JTable(journalTableModel);
@@ -187,6 +190,6 @@ public class RetireFromWhichJournal {
 			}
 		});
 		scrollPane.setViewportView(journalTable);
-		frmRetireFromWhichJournal.getContentPane().setLayout(groupLayout);
+		frmEditorJournals.getContentPane().setLayout(groupLayout);
 	}
 }

@@ -327,7 +327,7 @@ public class EditorMainWindow {
 		mntmRetireFromEditors.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				new RetireFromWhichJournal(editor.getEditorOfJournals(), frmDashboard);
+				new EditorJournals(editor.getEditorOfJournals(), frmDashboard, "RETIRE");
 			}
 		});
 		

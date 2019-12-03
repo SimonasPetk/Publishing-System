@@ -128,7 +128,7 @@ public class ChiefMainWindow {
 		mntmRetireFromChief.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				new RetireFromWhichJournal(editor.getEditorOfJournals(), frmChiefEditorsDashboard);
+				new EditorJournals(editor.getEditorOfJournals(), frmChiefEditorsDashboard, "RETIRE");
 
 			}
 		});
@@ -153,32 +153,17 @@ public class ChiefMainWindow {
 				// System.exit(0);
 			}
 		});
+		
 
 		JMenuItem mntmAppointNewEditors = new JMenuItem("Appoint New Editors");
 		mntmAppointNewEditors.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				System.out.println(editor.getEditorOfJournals());
-				ArrayList<EditorOfJournal> editorOfJournals = editor.getEditorOfJournals();
-				System.out.println(editorOfJournals.toString());
-				EditorOfJournal oneEditor = editorOfJournals.get(0);
-				Journal currentJournal = oneEditor.getJournal();
-				EditorOfJournal add = new EditorOfJournal(currentJournal);
-				new RegistrationWindow(Role.EDITOR, add, currentJournal);
-				journal.setBoardOfEditors(RetrieveDatabase.getEditorsOfJournal(journal));
+				new EditorJournals(editor.getEditorOfJournals(), frmChiefEditorsDashboard, "APPOINT");
 			}
 		});
 		mnMenu.add(mntmAppointNewEditors);
 		mnMenu.add(mntmLogOut);
-
-		/*
-		 * JMenuItem appointAcademic = new JMenuItem("Appoint Academic as editor");
-		 * appointAcademic.addMouseListener(new MouseAdapter() {
-		 * 
-		 * @Override public void mousePressed(MouseEvent arg0) { new
-		 * RegisterAcademicAsEditor(editor.getJournal()); } });
-		 * mnMenu.add(appointAcademic);
-		 */
 
 		JMenu mnChangeRole = new JMenu("Change My Role");
 		menuBar.add(mnChangeRole);
