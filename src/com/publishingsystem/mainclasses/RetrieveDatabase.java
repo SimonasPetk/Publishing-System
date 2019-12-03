@@ -525,8 +525,6 @@ public class RetrieveDatabase extends Database{
 				System.out.println(preparedStmt);
 				ResultSet res = preparedStmt.executeQuery();
 
-				ArrayList<Volume> vols = new ArrayList<Volume>();
-				ArrayList<Edition> eds = new ArrayList<Edition>();
 				ArrayList<PublishedArticle> articlesPublished = new ArrayList<PublishedArticle>();
 				Volume vol = null;
 				Edition ed = null; 
@@ -534,8 +532,8 @@ public class RetrieveDatabase extends Database{
 				while(res.next()) {
 					if (vol == null || vol.getVolumeNumber() != res.getInt("VOLNUM")) {
 						
-						vol = new Volume(res.getString("YEAR"), res.getInt("VOLNUM"), eds, getJournal(issn));
-						
+						vol = new Volume(res.getString("YEAR"), res.getInt("VOLNUM"));
+					
 						if (ed == null || ed.getEditionNumber() != res.getInt("EDNUM")) {
 							
 							ed = new Edition(res.getString("MONTH"), res.getInt("EDNUM"), articlesPublished, vol);
@@ -564,7 +562,6 @@ public class RetrieveDatabase extends Database{
 							articlesPublished.add(PublishedArticle);
 						}
 					}
-					eds.add(ed);
 				}
 				
 				
