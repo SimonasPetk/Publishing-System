@@ -165,6 +165,13 @@ public class AddJournal {
 							JOptionPane.WARNING_MESSAGE);
 				}
 				
+				if (Database.validateJournalISSN(issn)) {
+					validCredentials = false;	
+					JOptionPane.showMessageDialog(panel,
+							"This Journal already exists please enter an unique journal ISSN.", "Warning",
+							JOptionPane.WARNING_MESSAGE);
+				}
+				
 				
 				if (validCredentials) {
 					Date now = new Date(System.currentTimeMillis());
