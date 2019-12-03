@@ -96,9 +96,9 @@ public class RetrieveDatabase extends Database {
 				preparedStmt.setInt(1, issn);
 				ResultSet res = preparedStmt.executeQuery();
 				while(res.next()) {
-					Edition e = new Edition(-1, res.getInt("EDITIONID"));
+					Edition e = new Edition(-1, res.getInt("EDID"));
 					for(int i = 0; i < res.getInt("NUMPUBARTICLES"); i++) {
-						e.addPublishedArticle(new PublishedArticle(-1, null, null, null));
+						e.addPublishedArticle(new PublishedArticle(-1, new Article(-1, null, null, null), null, null));
 					}
 					e.setVolume(new Volume(-1, res.getInt("VOLID")));
 					editions.add(e);
