@@ -13,8 +13,8 @@ public class Database {
 	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
 	protected static final String DATABASE = "team022";
 	
-	//protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=simonass";
-	//protected static final String DATABASE = "publishing_system";
+//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+//	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -41,7 +41,7 @@ public class Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "UPDATE EDITOROFJOURNAL SET Retired = 1 WHERE editorID = ?";
+			String query = "UPDATE EDITOROFJOURNAL SET TempRetired = 1 WHERE editorID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, eoj.getEditor().getEditorId());
 				preparedStmt.execute();
@@ -56,7 +56,7 @@ public class Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "UPDATE EDITOROFJOURNAL SET Retired = 0 WHERE editorID = ?";
+			String query = "UPDATE EDITOROFJOURNAL SET TempRetired = 0 WHERE editorID = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, eoj.getEditor().getEditorId());
 				preparedStmt.execute();

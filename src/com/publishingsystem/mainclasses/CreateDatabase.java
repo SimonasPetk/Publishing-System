@@ -25,7 +25,7 @@ public class CreateDatabase extends Database{
 
 	public static String createTableVolumes() {
 		return "CREATE TABLE VOLUMES ("
-				+ "volNum INT PRIMARY KEY AUTO_INCREMENT,"
+				+ "volID INT PRIMARY KEY AUTO_INCREMENT,"
 				+ "year DATE, "
 				+ "published BOOLEAN, "
 				+ "ISSN INT REFERENCES JOURNALS(ISSN))";
@@ -33,8 +33,8 @@ public class CreateDatabase extends Database{
 
 	public static String createTableEditions() {
 		return "CREATE TABLE EDITIONS ("
-				+ "edNum INT PRIMARY KEY AUTO_INCREMENT, "
-				+ "volNum INT REFERENCES VOLUMES(volNum), "
+				+ "edID INT PRIMARY KEY AUTO_INCREMENT, "
+				+ "volID INT REFERENCES VOLUMES(volNum), "
 				+ "published BOOLEAN, "
 				+ "month DATE)";
 	}
@@ -67,7 +67,7 @@ public class CreateDatabase extends Database{
 				+ "publishedArticleID INT PRIMARY KEY AUTO_INCREMENT, "
 				+ "articleID INT REFERENCES ARTICLES(articleID),"
 				+ "pageRange INT, "
-				+ "edNum INT REFERENCES EDITION(edNum))";
+				+ "edID INT REFERENCES EDITION(edNum))";
 	}
 
 	public static String createTableArticles(){
