@@ -1,4 +1,5 @@
 package com.publishingsystem.gui;
+
 import java.awt.EventQueue;
 import com.publishingsystem.mainclasses.*;
 import com.publishingsystem.gui.*;
@@ -67,18 +68,18 @@ public class LoginScreen {
 		frmLogInScreen.setTitle("Login");
 		frmLogInScreen.setBounds(100, 100, 700, 300);
 		frmLogInScreen.setVisible(true);
-		
+
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = toolkit.getScreenSize();
-		frmLogInScreen.setLocation(screenSize.width/2-width/2, screenSize.height/2-height/2);
-		
+		frmLogInScreen.setLocation(screenSize.width / 2 - width / 2, screenSize.height / 2 - height / 2);
+
 		frmLogInScreen.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-            	new JournalWindow(null);
-            	frmLogInScreen.dispose();
-            }
-        });
+			@Override
+			public void windowClosing(WindowEvent e) {
+				new JournalWindow(null);
+				frmLogInScreen.dispose();
+			}
+		});
 
 		JLabel lblEmail = new JLabel("Email Address:");
 		lblEmail.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -96,30 +97,30 @@ public class LoginScreen {
 		btnLogin.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-			    // Get email and password entered then validate
-			    String email = emailField.getText();
-			    String password = new String(passwordField.getPassword());
+				// Get email and password entered then validate
+				String email = emailField.getText();
+				String password = new String(passwordField.getPassword());
 
-			    boolean validCredentials = true;
-			    if (email.isEmpty() || password.isEmpty()) validCredentials = false;
-			    
-			    if(!Database.academicExists(email)) {
-			    	JOptionPane.showMessageDialog(null, "No account found by this email", "Login", 0);
-			    }
-			    else if (validCredentials) {
-			        // Check if the generated hash from password is same as stored hash
-			    	boolean correctPassword = Database.validateCredentials(email, password);
-                    if (correctPassword) {
-                        password = ""; // clear password for security
-                        
-                        // Open next window
-                        Academic[] userRoles = RetrieveDatabase.getRoles(email);
-                        new JournalWindow(userRoles);
-                        frmLogInScreen.dispose();
-                    } 
-                    else 
-                    	JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
-			    } else JOptionPane.showMessageDialog(null, "Please fill in all fields", "Login", 0);
+				boolean validCredentials = true;
+				if (email.isEmpty() || password.isEmpty())
+					validCredentials = false;
+
+				if (!Database.academicExists(email)) {
+					JOptionPane.showMessageDialog(null, "No account found by this email", "Login", 0);
+				} else if (validCredentials) {
+					// Check if the generated hash from password is same as stored hash
+					boolean correctPassword = Database.validateCredentials(email, password);
+					if (correctPassword) {
+						password = ""; // clear password for security
+
+						// Open next window
+						Academic[] userRoles = RetrieveDatabase.getRoles(email);
+						new JournalWindow(userRoles);
+						frmLogInScreen.dispose();
+					} else
+						JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
+				} else
+					JOptionPane.showMessageDialog(null, "Please fill in all fields", "Login", 0);
 			}
 		});
 		btnLogin.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -127,7 +128,7 @@ public class LoginScreen {
 		JLabel lblWelcomeBack = new JLabel("Welcome Back!");
 		lblWelcomeBack.setHorizontalAlignment(SwingConstants.CENTER);
 		lblWelcomeBack.setFont(new Font("Tahoma", Font.PLAIN, 25));
-		
+
 		JButton btnGoBack = new JButton("Back to Journals");
 		btnGoBack.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		btnGoBack.addActionListener(new ActionListener() {
@@ -138,47 +139,42 @@ public class LoginScreen {
 		});
 
 		GroupLayout groupLayout = new GroupLayout(frmLogInScreen.getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(88, Short.MAX_VALUE)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblPassword, GroupLayout.PREFERRED_SIZE, 315, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblEmail, GroupLayout.PREFERRED_SIZE, 321, GroupLayout.PREFERRED_SIZE)
-						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-							.addComponent(emailField, GroupLayout.PREFERRED_SIZE, 529, GroupLayout.PREFERRED_SIZE)
-							.addComponent(passwordField, GroupLayout.PREFERRED_SIZE, 529, GroupLayout.PREFERRED_SIZE)))
-					.addGap(83))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(25)
-					.addComponent(lblWelcomeBack, GroupLayout.PREFERRED_SIZE, 643, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(32, Short.MAX_VALUE))
-				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
-					.addGap(205)
-					.addComponent(btnLogin, GroupLayout.PREFERRED_SIZE, 129, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnGoBack)
-					.addContainerGap(209, Short.MAX_VALUE))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(13)
-					.addComponent(lblWelcomeBack, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(lblEmail)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(emailField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(4)
-					.addComponent(lblPassword)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(passwordField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(groupLayout.createSequentialGroup().addContainerGap(88, Short.MAX_VALUE)
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblPassword, GroupLayout.PREFERRED_SIZE, 315, GroupLayout.PREFERRED_SIZE)
+								.addComponent(lblEmail, GroupLayout.PREFERRED_SIZE, 321, GroupLayout.PREFERRED_SIZE)
+								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+										.addComponent(emailField, GroupLayout.PREFERRED_SIZE, 529,
+												GroupLayout.PREFERRED_SIZE)
+										.addComponent(passwordField, GroupLayout.PREFERRED_SIZE, 529,
+												GroupLayout.PREFERRED_SIZE)))
+						.addGap(83))
+				.addGroup(
+						groupLayout.createSequentialGroup().addGap(25)
+								.addComponent(lblWelcomeBack, GroupLayout.PREFERRED_SIZE, 643,
+										GroupLayout.PREFERRED_SIZE)
+								.addContainerGap(32, Short.MAX_VALUE))
+				.addGroup(Alignment.LEADING,
+						groupLayout.createSequentialGroup().addGap(205)
+								.addComponent(btnLogin, GroupLayout.PREFERRED_SIZE, 129, GroupLayout.PREFERRED_SIZE)
+								.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnGoBack)
+								.addContainerGap(209, Short.MAX_VALUE)));
+		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
+				.createSequentialGroup().addGap(13)
+				.addComponent(lblWelcomeBack, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(ComponentPlacement.UNRELATED).addComponent(lblEmail)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addComponent(emailField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+						GroupLayout.PREFERRED_SIZE)
+				.addGap(4).addComponent(lblPassword).addPreferredGap(ComponentPlacement.RELATED)
+				.addComponent(
+						passwordField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnLogin, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnGoBack))
-					.addContainerGap(71, Short.MAX_VALUE))
-		);
+				.addContainerGap(71, Short.MAX_VALUE)));
 		frmLogInScreen.getContentPane().setLayout(groupLayout);
 	}
 }

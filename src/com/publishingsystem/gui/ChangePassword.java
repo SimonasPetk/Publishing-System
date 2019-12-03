@@ -1,4 +1,5 @@
 package com.publishingsystem.gui;
+
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -51,74 +52,68 @@ public class ChangePassword {
 		frmChangePassword.setTitle("Change Password");
 		frmChangePassword.setBounds(300, 300, 450, 300);
 		frmChangePassword.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
+
 		JLabel lblChangeYourPassword = new JLabel("Change Your Password");
 		lblChangeYourPassword.setHorizontalAlignment(SwingConstants.CENTER);
 		lblChangeYourPassword.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		
+
 		JLabel lblCurrentPassword = new JLabel("Current Password");
 		lblCurrentPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JLabel lblNewPassword = new JLabel("New Password");
 		lblNewPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		JButton btnChange = new JButton("Change");
 		btnChange.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				
+
 				// Show a pop up message that it was successfully changed
 				frmChangePassword.dispose();
 			}
 		});
 		btnChange.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		pwdOldPassword = new JPasswordField();
 		pwdOldPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
+
 		pwdNewPassword = new JPasswordField();
 		pwdNewPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(frmChangePassword.getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(110)
-					.addComponent(lblChangeYourPassword, GroupLayout.PREFERRED_SIZE, 214, Short.MAX_VALUE)
-					.addGap(110))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(160)
-					.addComponent(btnChange, GroupLayout.PREFERRED_SIZE, 114, Short.MAX_VALUE)
-					.addGap(160))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(35)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(pwdNewPassword, GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
-							.addGap(42))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addComponent(pwdOldPassword, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
-								.addComponent(lblNewPassword, Alignment.LEADING)
-								.addComponent(lblCurrentPassword, Alignment.LEADING))
-							.addGap(42))))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(lblChangeYourPassword)
-					.addGap(10)
-					.addComponent(lblCurrentPassword)
-					.addGap(10)
-					.addComponent(pwdOldPassword, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(10)
-					.addComponent(lblNewPassword)
-					.addGap(10)
-					.addComponent(pwdNewPassword, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-					.addGap(10)
-					.addComponent(btnChange)
-					.addContainerGap(64, Short.MAX_VALUE))
-		);
+		groupLayout
+				.setHorizontalGroup(
+						groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup().addGap(110)
+										.addComponent(lblChangeYourPassword, GroupLayout.PREFERRED_SIZE, 214,
+												Short.MAX_VALUE)
+										.addGap(110))
+								.addGroup(
+										groupLayout
+												.createSequentialGroup().addGap(160)
+												.addComponent(btnChange, GroupLayout.PREFERRED_SIZE, 114,
+														Short.MAX_VALUE)
+												.addGap(160))
+								.addGroup(groupLayout.createSequentialGroup().addGap(35)
+										.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+												.addGroup(groupLayout.createSequentialGroup()
+														.addComponent(pwdNewPassword, GroupLayout.DEFAULT_SIZE, 325,
+																Short.MAX_VALUE)
+														.addGap(42))
+												.addGroup(groupLayout.createSequentialGroup()
+														.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+																.addComponent(pwdOldPassword, Alignment.LEADING,
+																		GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
+																.addComponent(lblNewPassword, Alignment.LEADING)
+																.addComponent(lblCurrentPassword, Alignment.LEADING))
+														.addGap(42)))));
+		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup().addContainerGap().addComponent(lblChangeYourPassword)
+						.addGap(10).addComponent(lblCurrentPassword).addGap(10)
+						.addComponent(pwdOldPassword, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+								GroupLayout.PREFERRED_SIZE)
+						.addGap(10).addComponent(lblNewPassword).addGap(10)
+						.addComponent(pwdNewPassword, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+						.addGap(10).addComponent(btnChange).addContainerGap(64, Short.MAX_VALUE)));
 		frmChangePassword.getContentPane().setLayout(groupLayout);
 		frmChangePassword.setVisible(true);
 	}

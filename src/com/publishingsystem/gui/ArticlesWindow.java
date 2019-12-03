@@ -1,4 +1,5 @@
 package com.publishingsystem.gui;
+
 import java.awt.Dimension;
 import java.awt.EventQueue;
 
@@ -50,6 +51,7 @@ public class ArticlesWindow {
 	private JFrame frmAvailableJournalArticles;
 	private JTable tblArticles;
 	private static int articleIndexSelected = -1;
+
 	/**
 	 * Launch the application.
 	 */
@@ -57,7 +59,7 @@ public class ArticlesWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					//ArticlesWindow window = new ArticlesWindow(58051210);
+					// ArticlesWindow window = new ArticlesWindow(58051210);
 					ArticlesWindow window = new ArticlesWindow(12345, null);
 					window.frmAvailableJournalArticles.setVisible(true);
 				} catch (Exception e) {
@@ -80,28 +82,28 @@ public class ArticlesWindow {
 	private void initialize(int journalID, Academic[] roles) {
 		int width = 1080;
 		int height = 740;
-		
-	    Journal selJournal = RetrieveDatabase.getJournal(journalID);
-	    
+
+		Journal selJournal = RetrieveDatabase.getJournal(journalID);
+
 		frmAvailableJournalArticles = new JFrame();
 		frmAvailableJournalArticles.setTitle("View Articles");
 		frmAvailableJournalArticles.setBounds(100, 100, width, height);
 		frmAvailableJournalArticles.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAvailableJournalArticles.setVisible(true);
-		
+
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = toolkit.getScreenSize();
-		frmAvailableJournalArticles.setLocation(screenSize.width/2-width/2, screenSize.height/2-height/2);
-		
+		frmAvailableJournalArticles.setLocation(screenSize.width / 2 - width / 2, screenSize.height / 2 - height / 2);
+
 		JScrollPane scrollPane = new JScrollPane();
-		
+
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		JEditorPane editorPane = new JEditorPane();
 		editorPane.setEditable(false);
 		scrollPane_1.setViewportView(editorPane);
-		
-		tblArticles = new JTable();	
+
+		tblArticles = new JTable();
 		ArrayList<PublishedArticle> allArticles = RetrieveDatabase.getArticles(selJournal.getISSN());
 		Object[][] tableContents = new Object[allArticles.size()][5];
 		for (int i = 0; i < allArticles.size(); i++) {
@@ -127,112 +129,102 @@ public class ArticlesWindow {
 		tblArticles.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
 		tblArticles.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		scrollPane.setViewportView(tblArticles);
-		
+
 		tblArticles.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				
+
 				if (e.getClickCount() == 2) {
-					
+
 					int rowPressed = tblArticles.rowAtPoint(e.getPoint());
-					
+
 					editorPane.setText(allArticles.get(rowPressed).getSummary());
 				} else {
 					editorPane.setText(""); // perhaps there is a method like .clear() or smth similar
 				}
 			}
 		});
-		
-		
+
 		JLabel lblJournalName = new JLabel(selJournal.getJournalName());
 		lblJournalName.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		
+
 		JLabel lblAbstract = new JLabel("Abstract:");
 		lblAbstract.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		
+
 		JButton btnDownloadPdf = new JButton("Download PDF");
 		btnDownloadPdf.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(articleIndexSelected != -1) {
+				if (articleIndexSelected != -1) {
 					try {
 						PublishedArticle article = allArticles.get(articleIndexSelected);
-				        ArrayList<byte[]> versions = RetrieveDatabase.getPDF(article.getArticleId());
-				        for(byte[] pdf : versions) {
+						ArrayList<byte[]> versions = RetrieveDatabase.getPDF(article.getArticleId());
+						for (byte[] pdf : versions) {
 							JFileChooser f = new JFileChooser();
-					        f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); 
-					        f.showSaveDialog(null);
-					        System.out.println(f.getCurrentDirectory());
-					        System.out.println(f.getSelectedFile());
-					        OutputStream out = new FileOutputStream(f.getSelectedFile()+".pdf");
-							out.write(pdf); //PDF ID
+							f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+							f.showSaveDialog(null);
+							System.out.println(f.getCurrentDirectory());
+							System.out.println(f.getSelectedFile());
+							OutputStream out = new FileOutputStream(f.getSelectedFile() + ".pdf");
+							out.write(pdf); // PDF ID
 							out.close();
-				        }
-					}catch(FileNotFoundException fnf) {
-						
-					}catch(IOException io) {
+						}
+					} catch (FileNotFoundException fnf) {
+
+					} catch (IOException io) {
 //						
 					}
-				}else {
+				} else {
 					JOptionPane.showMessageDialog(null, "No article selected", "Error in download", 0);
 				}
-				
+
 			}
 		});
-	
+
 		GroupLayout groupLayout = new GroupLayout(frmAvailableJournalArticles.getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(10)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addGroup(groupLayout
+				.createSequentialGroup().addGap(10)
+				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblJournalName, GroupLayout.PREFERRED_SIZE, 600, GroupLayout.PREFERRED_SIZE)
 						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE))
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.RELATED, 279, Short.MAX_VALUE)
-							.addComponent(btnDownloadPdf)
-							.addContainerGap())
-						.addGroup(groupLayout.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblAbstract, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
-								.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 364, Short.MAX_VALUE))
-							.addGap(16))))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(10)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+								.addPreferredGap(ComponentPlacement.RELATED, 279, Short.MAX_VALUE)
+								.addComponent(btnDownloadPdf).addContainerGap())
+						.addGroup(groupLayout.createSequentialGroup().addPreferredGap(ComponentPlacement.UNRELATED)
+								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(lblAbstract, GroupLayout.PREFERRED_SIZE, 85,
+												GroupLayout.PREFERRED_SIZE)
+										.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 364, Short.MAX_VALUE))
+								.addGap(16)))));
+		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
+				.createSequentialGroup().addGap(10)
+				.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblJournalName, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblAbstract, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))
-					.addGap(10)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGap(10)
+				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE)
-							.addGap(10)
-							.addComponent(btnDownloadPdf)
-							.addGap(165))
+								.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 374, Short.MAX_VALUE).addGap(10)
+								.addComponent(btnDownloadPdf).addGap(165))
 						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE))
-					.addGap(32))
-		);
-		
+				.addGap(32)));
+
 		frmAvailableJournalArticles.getContentPane().setLayout(groupLayout);
-		
+
 		JMenuBar menuBar = new JMenuBar();
 		frmAvailableJournalArticles.setJMenuBar(menuBar);
-		
+
 		JButton btnBackToJournals = new JButton("Back To Journals");
 		btnBackToJournals.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				new JournalWindow(roles);
 				frmAvailableJournalArticles.dispose();
-				
+
 			}
 		});
 		menuBar.add(btnBackToJournals);
-	
+
 	}
 }
