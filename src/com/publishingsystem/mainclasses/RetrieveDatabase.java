@@ -86,7 +86,7 @@ public class RetrieveDatabase extends Database {
 			statement.close();
 			
 			String query = "";
-			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+//			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 			
 			
 		} catch (SQLException ex) {
@@ -161,7 +161,7 @@ public class RetrieveDatabase extends Database {
 				ex.printStackTrace();
 			}
 
-			query = "SELECT E.EDITORID, CHIEFEDITOR, RETIRED, J.ISSN, NAME, DATEOFPUBLICATION "
+			query = "SELECT E.EDITORID, CHIEFEDITOR, TEMPRETIRED, J.ISSN, NAME, DATEOFPUBLICATION "
 					+ "FROM EDITORS E, EDITOROFJOURNAL EJ, JOURNALS J "
 					+ "WHERE J.ISSN = EJ.ISSN AND E.EDITORID = EJ.EDITORID AND E.ACADEMICID = ?";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
@@ -179,7 +179,7 @@ public class RetrieveDatabase extends Database {
 					journal.setBoardOfEditors(RetrieveDatabase.getEditorsOfJournal(journal));
 					boolean chiefEditor = res.getBoolean("chiefEditor");
 					EditorOfJournal editorOfJournal = new EditorOfJournal(journal, editor, chiefEditor);
-					if (res.getBoolean("RETIRED"))
+					if (res.getBoolean("TEMPRETIRED"))
 						editorOfJournal.temporaryRetire();
 					editor.addEditorOfJournal(editorOfJournal);
 				}
@@ -624,7 +624,7 @@ public class RetrieveDatabase extends Database {
 			statement.execute("USE " + DATABASE + ";");
 			String query = "SELECT Aca.ACADEMICID, Aca.TITLE, Aca.FORENAME, Aca.SURNAME, Aca.UNIVERSITY, Aca.EMAILADDRESS, "
 					+ "E.EDITORID, Eoj.CHIEFEDITOR FROM ACADEMICS Aca, EDITORS E, EDITOROFJOURNAL Eoj WHERE Aca.ACADEMICID = E.ACADEMICID "
-					+ "AND E.EDITORID = Eoj.EDITORID AND Eoj.RETIRED = 0 AND Eoj.ISSN = " + j.getISSN() + ";";
+					+ "AND E.EDITORID = Eoj.EDITORID AND Eoj.TEMPRETIRED = 0 AND Eoj.ISSN = " + j.getISSN() + ";";
 			ResultSet res = statement.executeQuery(query);
 
 			while (res.next()) {
@@ -680,7 +680,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT Retired FROM EDITOROFJOURNAL WHERE editorID= '" + editorId + "';";
+			String query = "SELECT TempRetired FROM EDITOROFJOURNAL WHERE editorID= '" + editorId + "';";
 			ResultSet res = statement.executeQuery(query);
 			if (res.next()) {
 				if (res.getInt(1) == 1) {

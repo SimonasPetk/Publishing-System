@@ -97,46 +97,10 @@ public class ChiefMainWindow {
 								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 390, GroupLayout.PREFERRED_SIZE)))
 				.addGap(10)));
 
-		/*
-		 * This is the code to get stuff and put it in the table Taken from
-		 * JournalWindow.java
-		 *
-		 * ArrayList<Article> allJournals = RetrieveDatabase.getJournals(); Object[][]
-		 * tableContents = new Object[allJournals.size()][3]; for (int i=0;
-		 * i<allJournals.size(); i++) { Journal currentJournal = allJournals.get(i);
-		 * tableContents[i][0] = currentJournal.getJournalName(); tableContents[i][1] =
-		 * currentJournal.getDateOfPublication().toString(); tableContents[i][2] =
-		 * currentJournal.getISSN(); } tblJournal.setModel(new DefaultTableModel(
-		 * tableContents, new String[] { "Title", "Date of Publication", "ISSN" }
-		 */
 
 		table = new JTable();
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		table.setModel(new DefaultTableModel(
-				new Object[][] { { null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null }, },
-				new String[] { "Journal Name", "Edition Number", "Volume", "Number of Articles" }) {
-			boolean[] columnEditables = new boolean[] { false, false, false, false };
-
-			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
-			}
-		});
+		
 		scrollPane.setViewportView(table);
 		frmChiefEditorsDashboard.getContentPane().setLayout(groupLayout);
 

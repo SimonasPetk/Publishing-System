@@ -44,7 +44,8 @@ public class CreateDatabase extends Database{
 				+ "pdfID INT PRIMARY KEY AUTO_INCREMENT, "
 				+ "submissionID INT REFERENCES SUBMISSION(submissionID),"
 				+ "uploadDate DATE, "
-				+ "pdfText MEDIUMBLOB)";
+				+ "pdfText MEDIUMBLOB, "
+				+ "numPages INT)";
 	}
 
 	public static String createTableEditors(){
