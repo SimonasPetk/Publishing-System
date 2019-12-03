@@ -25,16 +25,18 @@ public class CreateDatabase extends Database{
 
 	public static String createTableVolumes() {
 		return "CREATE TABLE VOLUMES ("
-				+ "volNum INT PRIMARY KEY AUTO_INCREMENT,"
-				+ "year DATE, "
+				+ "volID INT PRIMARY KEY AUTO_INCREMENT,"
+				+ "year INT, "
+				+ "published BOOLEAN, "
 				+ "ISSN INT REFERENCES JOURNALS(ISSN))";
 	}
 
 	public static String createTableEditions() {
 		return "CREATE TABLE EDITIONS ("
-				+ "edNum INT PRIMARY KEY AUTO_INCREMENT, "
-				+ "volNum INT REFERENCES VOLUMES(volNum), "
-				+ "month DATE)";
+				+ "edID INT PRIMARY KEY AUTO_INCREMENT, "
+				+ "volID INT REFERENCES VOLUMES(volNum), "
+				+ "published BOOLEAN, "
+				+ "month INT)";
 	}
 
 	public static String createTablePDF() {
@@ -42,7 +44,8 @@ public class CreateDatabase extends Database{
 				+ "pdfID INT PRIMARY KEY AUTO_INCREMENT, "
 				+ "submissionID INT REFERENCES SUBMISSION(submissionID),"
 				+ "uploadDate DATE, "
-				+ "pdfText MEDIUMBLOB)";
+				+ "pdfText MEDIUMBLOB, "
+				+ "numPages INT)";
 	}
 
 	public static String createTableEditors(){
@@ -56,15 +59,16 @@ public class CreateDatabase extends Database{
 				+ "editorID INT REFERENCES EDITORS(editorID),"
 				+ "ISSN INT REFERENCES JOURNALS(ISSN),"
 				+ "ChiefEditor BOOLEAN, "
-				+ "Retired BOOLEAN, "
+				+ "TempRetired BOOLEAN, "
 				+ "PRIMARY KEY (editorID, ISSN))";
 	}
 
 	public static String createTablePublishedArticles() {
 		return "CREATE TABLE PUBLISHEDARTICLES ("
-				+ "articleID INT PRIMARY KEY REFERENCES ARTICLES(articleID),"
-				+ "pageRange INT,"
-				+ "edNum INT REFERENCES EDITION(edNum))";
+				+ "publishedArticleID INT PRIMARY KEY AUTO_INCREMENT, "
+				+ "articleID INT REFERENCES ARTICLES(articleID),"
+				+ "pageRange TEXT, "
+				+ "edID INT REFERENCES EDITION(edNum))";
 	}
 
 	public static String createTableArticles(){
@@ -275,6 +279,7 @@ public class CreateDatabase extends Database{
 			printAllRecords("EDITIONS");
 			printAllRecords("EDITOROFJOURNAL");
 			printAllRecords("ACADEMICS");
+            printAllRecords("PUBLISHEDARTICLES");
 		} catch (SQLException ex) {
 		    ex.printStackTrace();
 		}		

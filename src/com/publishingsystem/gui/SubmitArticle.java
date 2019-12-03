@@ -1,4 +1,5 @@
 package com.publishingsystem.gui;
+
 import java.awt.EventQueue;
 import java.awt.FileDialog;
 
@@ -59,7 +60,7 @@ public class SubmitArticle {
 	private String pdfPath;
 	private JScrollPane scrPaneAuthors;
 	private DefaultListModel<String> coAuthorsModel;
-    private JList<String> listOfAuthors;
+	private JList<String> listOfAuthors;
 
 	/**
 	 * Launch the application.
@@ -68,8 +69,9 @@ public class SubmitArticle {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					SubmitArticle window = new SubmitArticle(new Author(1, "Dr", "kb", "kb", "Sheffield", "kb@gm.com", new Hash("9d5be6810a8de8673cf2a5b83f2030393028b71127dd034beb9bd03f3a946302")));
-					//SubmitArticle window = new SubmitArticle(null);
+					SubmitArticle window = new SubmitArticle(new Author(1, "Dr", "kb", "kb", "Sheffield", "kb@gm.com",
+							new Hash("9d5be6810a8de8673cf2a5b83f2030393028b71127dd034beb9bd03f3a946302")));
+					// SubmitArticle window = new SubmitArticle(null);
 					window.frmSubmitAnArticle.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -82,34 +84,31 @@ public class SubmitArticle {
 	 * Create the application.
 	 */
 	public SubmitArticle(Author a) {
-        coAuthors = new ArrayList<Author>();
-        numReviewsOfCoAuthors = new ArrayList<Integer>();
-        Academic[] newRoles = new Academic[3];
+		coAuthors = new ArrayList<Author>();
+		numReviewsOfCoAuthors = new ArrayList<Integer>();
+		Academic[] newRoles = new Academic[3];
 		newRoles[1] = a;
 		initialize(a, newRoles);
 	}
-	
+
 	public SubmitArticle(Academic[] roles) {
 		coAuthors = new ArrayList<Author>();
 		numReviewsOfCoAuthors = new ArrayList<Integer>();
 		Author a = null;
-		if(roles[1] == null) {
+		if (roles[1] == null) {
 			Academic aca = null;
-			for(Academic role : roles) {
-				if(roles != null) {
+			for (Academic role : roles) {
+				if (roles != null) {
 					aca = role;
 					break;
 				}
 			}
-			a = new Author(-1, aca.getTitle(), 
-								aca.getForename(), 
-								aca.getSurname(), 
-								aca.getEmailId(), 
-								aca.getUniversity(), null);
+			a = new Author(-1, aca.getTitle(), aca.getForename(), aca.getSurname(), aca.getEmailId(),
+					aca.getUniversity(), null);
 			a.setAcademicId(aca.getAcademicId());
 			roles[1] = a;
-		}else {
-			a = (Author)roles[1];
+		} else {
+			a = (Author) roles[1];
 		}
 		initialize(a, roles);
 	}
@@ -118,9 +117,10 @@ public class SubmitArticle {
 		this.coAuthors.add(coAuthor);
 		this.numReviewsOfCoAuthors.add(numReview);
 		this.coAuthorsModel.clear();
-	    for (Author author : coAuthors){
-        	coAuthorsModel.addElement(author.getForename()+" "+author.getSurname()+" ("+author.getEmailId()+")");
-        }
+		for (Author author : coAuthors) {
+			coAuthorsModel
+					.addElement(author.getForename() + " " + author.getSurname() + " (" + author.getEmailId() + ")");
+		}
 	}
 
 	/**
@@ -131,12 +131,12 @@ public class SubmitArticle {
 		frmSubmitAnArticle.setTitle("Submit an Article");
 		frmSubmitAnArticle.setBounds(100, 100, 700, 552);
 		frmSubmitAnArticle.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-            	new JournalWindow(null);
-            	frmSubmitAnArticle.dispose();
-            }
-        });
+			@Override
+			public void windowClosing(WindowEvent e) {
+				new JournalWindow(null);
+				frmSubmitAnArticle.dispose();
+			}
+		});
 		frmSubmitAnArticle.setVisible(true);
 		selectedJournalName = null;
 		JScrollPane scrollPane = new JScrollPane();
@@ -154,7 +154,7 @@ public class SubmitArticle {
 		txtfldTitle = new JTextField();
 		txtfldTitle.setFont(new Font("Tahoma", Font.PLAIN, 11));
 		txtfldTitle.setColumns(10);
-		
+
 		JScrollPane scrPaneAbstract = new JScrollPane();
 		scrPaneAbstract.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		JLabel lblAbstract = new JLabel("Abstract:");
@@ -162,37 +162,38 @@ public class SubmitArticle {
 		JEditorPane editPaneAbstract = new JEditorPane();
 		scrPaneAbstract.setViewportView(editPaneAbstract);
 
-        // Authors of article
-        JLabel lblAuthors = new JLabel("Authors:");
-        lblAuthors.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		// Authors of article
+		JLabel lblAuthors = new JLabel("Authors:");
+		lblAuthors.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-        JLabel lblNewLabel_2 = new JLabel("Please Register Your Article's Every Co-Author");
+		JLabel lblNewLabel_2 = new JLabel("Please Register Your Article's Every Co-Author");
 
-        JScrollPane scrPaneAuthors = new JScrollPane();
-        scrPaneAuthors.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		JScrollPane scrPaneAuthors = new JScrollPane();
+		scrPaneAuthors.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        coAuthorsModel = new DefaultListModel<>();
-        listOfAuthors = new JList<>(coAuthorsModel);
-        listOfAuthors.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        coAuthorsModel.addElement(mainAuthor.getForename()+" "+mainAuthor.getSurname()+" ("+mainAuthor.getEmailId()+")");
-        scrPaneAuthors.setViewportView(listOfAuthors);
+		coAuthorsModel = new DefaultListModel<>();
+		listOfAuthors = new JList<>(coAuthorsModel);
+		listOfAuthors.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		coAuthorsModel.addElement(
+				mainAuthor.getForename() + " " + mainAuthor.getSurname() + " (" + mainAuthor.getEmailId() + ")");
+		scrPaneAuthors.setViewportView(listOfAuthors);
 
-        String[] listOfAuthors = new String[coAuthors.size()];
-        for (int i=0; i<coAuthors.size(); i++) {
-            listOfAuthors[i] = coAuthors.get(i).getForename() + " " + coAuthors.get(i).getSurname();
-        }
+		String[] listOfAuthors = new String[coAuthors.size()];
+		for (int i = 0; i < coAuthors.size(); i++) {
+			listOfAuthors[i] = coAuthors.get(i).getForename() + " " + coAuthors.get(i).getSurname();
+		}
 
-        SubmitArticle submitArticleGUI = this;
-        JButton btnRegisterANew = new JButton("Register a New Co-Author");
-        btnRegisterANew.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                new RegistrationWindow(Role.COAUTHOR, submitArticleGUI);
-            }
-        });
-        btnRegisterANew.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		SubmitArticle submitArticleGUI = this;
+		JButton btnRegisterANew = new JButton("Register a New Co-Author");
+		btnRegisterANew.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				new RegistrationWindow(Role.COAUTHOR, submitArticleGUI);
+			}
+		});
+		btnRegisterANew.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-        // PDF
+		// PDF
 		JButton btnUploadPdf = new JButton("Upload PDF");
 		JLabel lblPdfIsNot = new JLabel("PDF is not yet uploaded");
 		btnUploadPdf.addMouseListener(new MouseAdapter() {
@@ -202,12 +203,11 @@ public class SubmitArticle {
 				fd.setVisible(true);
 				File[] f = fd.getFiles();
 
-				if(f.length > 0){
+				if (f.length > 0) {
 					pdfPath = fd.getFiles()[0].getAbsolutePath();
 					System.out.println(pdfPath);
 					lblPdfIsNot.setText("PDF is successfully uploaded");
-				}		
-				else {
+				} else {
 					lblPdfIsNot.setText("Try Again! PDF did not upload!");
 				}
 			}
@@ -220,20 +220,19 @@ public class SubmitArticle {
 		listOfJournals.addMouseListener(new MouseAdapter() {
 
 			public void mousePressed(MouseEvent e) {
-				selectedJournalName = (String)listOfJournals.getSelectedValue();
+				selectedJournalName = (String) listOfJournals.getSelectedValue();
 			}
 
 		});
 		System.out.println(selectedJournalName);
 
-
 		ArrayList<Journal> allJournals = RetrieveDatabase.getJournals();
-        String[] listContents = new String[allJournals.size()];
-        for (int i=0; i<allJournals.size(); i++) {
-            listContents[i] = allJournals.get(i).getJournalName();
-        }
+		String[] listContents = new String[allJournals.size()];
+		for (int i = 0; i < allJournals.size(); i++) {
+			listContents[i] = allJournals.get(i).getJournalName();
+		}
 
-        // Submit Button
+		// Submit Button
 		JButton btnSubmit = new JButton("Submit");
 		btnSubmit.addMouseListener(new MouseAdapter() {
 			@Override
@@ -243,50 +242,52 @@ public class SubmitArticle {
 				String summary = editPaneAbstract.getText();
 				System.out.println(summary);
 				Journal journal = null;
-				for (Journal item: allJournals) {
+				for (Journal item : allJournals) {
 					if (item.getJournalName().equals(selectedJournalName)) {
 						journal = item;
 					}
 				}
 				String errorMessage = "";
-				if(title.isEmpty()) {
+				if (title.isEmpty()) {
 					errorMessage += "Please give a title. ";
 				}
-				if(summary.isEmpty()) {
+				if (summary.isEmpty()) {
 					errorMessage += "Please give a summary. ";
 				}
-				if(journal == null) {
+				if (journal == null) {
 					errorMessage += "Please select a journal. ";
 				}
-				if(pdfPath == null) {
+				if (pdfPath == null) {
 					errorMessage += "Please upload a pdf of your article.";
 				}
 				if (errorMessage.length() > 0) {
 					JOptionPane.showMessageDialog(null, errorMessage, "Error in submission", 0);
 				}
-				
-				if(title != null && summary != null && journal != null && pdfPath != null && !title.isEmpty() && !summary.isEmpty()){
+
+				if (title != null && summary != null && journal != null && pdfPath != null && !title.isEmpty()
+						&& !summary.isEmpty()) {
 					byte[] pdf = PDFConverter.getByteArrayFromFile(pdfPath);
 					Article article = new Article(-1, title, summary, journal);
 					mainAuthor.registerCoAuthors(article, coAuthors);
 					Calendar calendar = Calendar.getInstance();
-					mainAuthor.submit(article, new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), article.getSubmission()));
-	
+					mainAuthor.submit(article,
+							new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), article.getSubmission()));
+
 					coAuthors.add(mainAuthor);
-					
-					//ADDING TO THE DATABASE;
+
+					// ADDING TO THE DATABASE;
 					Database.registerAuthors(coAuthors);
-					Database.addSubmission(article, pdf);
-			
+					Database.addSubmission(article, pdf, PDFConverter.getNumPagesFromFile(pdfPath));
+
 					ArrayList<Reviewer> reviewers = new ArrayList<Reviewer>();
-					for(Author a : coAuthors) {
+					for (Author a : coAuthors) {
 						reviewers.add(new Reviewer(a));
 					}
 					Database.registerReviewers(reviewers);
-					if(roles[2] == null)
-						roles[2] = reviewers.get(reviewers.size()-1);
+					if (roles[2] == null)
+						roles[2] = reviewers.get(reviewers.size() - 1);
 					new AuthorMainWindow(roles);
-					//This is for just adding co-authors
+					// This is for just adding co-authors
 					frmSubmitAnArticle.dispose();
 				}
 			}
@@ -295,80 +296,62 @@ public class SubmitArticle {
 
 		btnRegisterANew.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(frmSubmitAnArticle.getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(80)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(btnUploadPdf)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblPdfIsNot))
-						.addComponent(lblAuthors)
-						.addComponent(lblAbstract)
-						.addComponent(lblTitle)
-						.addComponent(lblChooseAJournal)
-						.addComponent(lblSubmitANewArticle, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
-						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
-						.addComponent(txtfldTitle, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
-						.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrPaneAuthors, GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
-							.addGap(50)
-							.addComponent(btnRegisterANew)
-							.addGap(35))
-						.addComponent(scrPaneAbstract, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE))
-					.addGap(80))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(290)
-					.addComponent(btnSubmit, GroupLayout.PREFERRED_SIZE, 104, Short.MAX_VALUE)
-					.addGap(290))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(10)
-					.addComponent(lblSubmitANewArticle)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblChooseAJournal)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblTitle)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(txtfldTitle, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblAbstract)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrPaneAbstract, GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblAuthors)
-					.addGap(2)
-					.addComponent(lblNewLabel_2)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(10)
-							.addComponent(scrPaneAuthors, GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnUploadPdf)
-								.addComponent(lblPdfIsNot))
-							.addGap(10))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(30)
-							.addComponent(btnRegisterANew)
-							.addGap(10)))
-					.addComponent(btnSubmit)
-					.addGap(13))
-		);
+		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup().addGap(80)
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup().addComponent(btnUploadPdf)
+										.addPreferredGap(ComponentPlacement.RELATED).addComponent(lblPdfIsNot))
+								.addComponent(lblAuthors).addComponent(lblAbstract).addComponent(lblTitle)
+								.addComponent(lblChooseAJournal)
+								.addComponent(lblSubmitANewArticle, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
+								.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
+								.addComponent(txtfldTitle, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
+								.addComponent(lblNewLabel_2, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
+								.addGroup(groupLayout.createSequentialGroup()
+										.addComponent(scrPaneAuthors, GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
+										.addGap(50).addComponent(btnRegisterANew).addGap(35))
+								.addComponent(scrPaneAbstract, GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE))
+						.addGap(80))
+				.addGroup(groupLayout.createSequentialGroup().addGap(290)
+						.addComponent(btnSubmit, GroupLayout.PREFERRED_SIZE, 104, Short.MAX_VALUE).addGap(290)));
+		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup().addGap(10).addComponent(lblSubmitANewArticle)
+						.addPreferredGap(ComponentPlacement.RELATED).addComponent(lblChooseAJournal)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
+						.addPreferredGap(ComponentPlacement.RELATED).addComponent(lblTitle)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(txtfldTitle, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+								GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.RELATED).addComponent(lblAbstract)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(scrPaneAbstract, GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)
+						.addPreferredGap(ComponentPlacement.RELATED).addComponent(lblAuthors).addGap(2)
+						.addComponent(lblNewLabel_2)
+						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup().addGap(10)
+										.addComponent(scrPaneAuthors, GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+										.addPreferredGap(ComponentPlacement.UNRELATED)
+										.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+												.addComponent(btnUploadPdf).addComponent(lblPdfIsNot))
+										.addGap(10))
+								.addGroup(groupLayout.createSequentialGroup().addGap(30).addComponent(btnRegisterANew)
+										.addGap(10)))
+						.addComponent(btnSubmit).addGap(13)));
 
 		listOfJournals.setModel(new AbstractListModel() {
-			//String[] values = new String[] {"First Journal", "Second journal", "Third Journal", "", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal", "First Journal", "Second journal", "Third Journal"};
-            String[] values = listContents;
+			// String[] values = new String[] {"First Journal", "Second journal", "Third
+			// Journal", "", "First Journal", "Second journal", "Third Journal", "First
+			// Journal", "Second journal", "Third Journal", "First Journal", "Second
+			// journal", "Third Journal", "First Journal", "Second journal", "Third
+			// Journal", "First Journal", "Second journal", "Third Journal", "First
+			// Journal", "Second journal", "Third Journal"};
+			String[] values = listContents;
 
-		    public int getSize() {
+			public int getSize() {
 				return values.length;
 			}
+
 			public Object getElementAt(int index) {
 				return values[index];
 			}

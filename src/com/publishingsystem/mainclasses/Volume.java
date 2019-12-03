@@ -10,7 +10,7 @@ public class Volume {
 	private final static int maxEditions = 6;
 	private final static int minEditions = 4;
 	
-	public Volume(String dateOfPublication, int volumeNumber, ArrayList<Edition> editions, Journal journal) {
+	public Volume(String dateOfPublication, int volumeNumber) {
 		this.dateOfPublication = dateOfPublication;
 		this.volumeNumber = volumeNumber;
 		this.editions = editions;
@@ -29,9 +29,15 @@ public class Volume {
 	public void setPublished(boolean set) {
 		this.published = set;
 	}
+	
 	public void setJournal(Journal j) {
 		this.journal = j;
 	}
+	
+	public void addEdition(Edition e) {
+	    this.editions.add(e);
+	}
+	
 	public ArrayList<Edition> getEditions() {
 		return editions;
 	}

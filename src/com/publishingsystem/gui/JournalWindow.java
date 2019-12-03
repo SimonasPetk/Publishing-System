@@ -291,7 +291,7 @@ public class JournalWindow {
 					}
 				});
 				mnChangeRole.add(mntmToReviewer);
-			}	
+			}
 		}
 	}
 }

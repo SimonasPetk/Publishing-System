@@ -32,6 +32,7 @@ import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.ReviewerOfSubmission;
 import com.publishingsystem.mainclasses.Submission;
 import com.publishingsystem.mainclasses.Verdict;
+import com.publishingsystem.mainclasses.Volume;
 
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -51,6 +52,8 @@ public class EditorMainWindow {
 	private JTable tblEditor;
 	private Editor editor;
 	private ArrayList<Submission> allSubmissions;
+	private int selectedSubmissionId;
+	private Verdict[] finalVerdicts;
 
 	/**
 	 * Launch the application.
@@ -75,6 +78,8 @@ public class EditorMainWindow {
 	public EditorMainWindow(Academic[] roles) {
         // For every journal the editor is an editor of, get all in progress submissions for them
 	    allSubmissions = new ArrayList<Submission>();
+	    selectedSubmissionId = -1;
+	    finalVerdicts = new Verdict[3];
 	    for (EditorOfJournal jour : ((Editor)roles[0]).getEditorOfJournals()) {
 	        System.out.println(jour);
 	        ArrayList<Submission> thisJournalsSubmissions = RetrieveDatabase.getSubmissionsToJournal(jour.getJournal().getISSN());
@@ -126,11 +131,78 @@ public class EditorMainWindow {
 		JLabel lblFinalVerdicts = new JLabel("Final Verdicts:");
 		lblFinalVerdicts.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
-		JButton btnAcceptArticle = new JButton("Accept Article");
+		JButton btnAcceptArticle = new JButton("Process Article");
+	    btnAcceptArticle.addMouseListener(new MouseAdapter() {
+	        @Override
+	        public void mouseClicked(MouseEvent arg0) {
+                // there isn't 3 final verdicts yet, error
+	            if (finalVerdicts[2] == Verdict.NOVERDICT) {
+	                JOptionPane.showMessageDialog(null, "Three final verdicts haven't been submitted yet", "Error", 0);
+                    return;
+	            }
+	            
+	            // get submission object
+	            Submission selectedSubmission = null;
+	            for (Submission sub : allSubmissions) {
+	                if (sub.getSubmissionId() == selectedSubmissionId) {
+	                    selectedSubmission = sub;
+	                    break;
+	                }
+	            }
+	            
+	            // check if article should be accepted
+	            int[] verdictCount = getVerdictCount(finalVerdicts);
+	            if (verdictCount[0] == 3) {
+	                // 3 strong accept = accept
+	                acceptSubmission(selectedSubmission);
+	                return;
+	            } else if (verdictCount[3] == 3) {
+	                // 3 strong reject = reject
+	                JOptionPane.showMessageDialog(null, "Submission has received 3 Strong Rejects and has been rejected.", "Rejected", 1);
+	                return;
+	            } else if (verdictCount[0] > 0 && verdictCount[3] > 0) {
+	                // at least 1 strong accept and 1 strong reject + any = discuss
+	                    // Strong Accept, Strong Reject, Strong Accept
+	                    // Strong Accept, Strong Reject, Weak Accept
+	                    // Strong Accept, Strong Reject, Weak Reject
+	                    // Strong Accept, Strong Reject, Strong Reject
+	                
+	                // editor must make a decision to accept/reject the article or cancel processing of the submission now
+	                String[] options = {"Accept", "Reject", "Cancel"};
+	                int selectedFunction = JOptionPane.showOptionDialog(null, 
+	                        "Cannot automatically calculate whether the article should be accepted or rejected. Please make a decision.", 
+	                        "No Decision",
+	                        JOptionPane.INFORMATION_MESSAGE, 0, null, options, options[0]);
+	                System.out.println(selectedFunction);
+	                if (selectedFunction == 0) {
+	                    // editor has selected to accept the submission
+	                    acceptSubmission(selectedSubmission);
+	                    return;
+	                } else if (selectedFunction == 1) {
+	                    // editor has selected to reject the submission
+	                    JOptionPane.showMessageDialog(null, "Submission has been rejected.", "Rejected", 1);
+	                    return;
+	                } else {
+	                    // editor has chosen to cancel processing the article now, leave it in the list of submissions
+	                    return;
+	                }
+	            } else {
+	                // no strong, only weak = majority decision
+  	                    // weak accept, weak reject, weak accept
+                        // weak accept, weak reject, weak reject
+	                if (verdictCount[1] > verdictCount[2]) {
+	                    // 2 weak accepts, 1 weak reject = accept
+	                    acceptSubmission(selectedSubmission);
+	                    return;
+	                } else {
+	                    // 1 weak accept, 2 weak rejects = reject
+	                    JOptionPane.showMessageDialog(null, "Submission has received more Weak Rejects than Weak Accepts and has been rejected.", "Rejected", 1);
+	                    return;
+	                }
+	            }
+	        }
+	    });
 		btnAcceptArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
-		JButton btnRejectArticle = new JButton("Reject Article");
-		btnRejectArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
 		JList list = new JList();
 		list.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -143,9 +215,6 @@ public class EditorMainWindow {
 				return values[index];
 			}
 		});
-		
-		JButton btnDownloadPdf = new JButton("Download PDF");
-		btnDownloadPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(frmDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -163,12 +232,7 @@ public class EditorMainWindow {
 						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 							.addComponent(lblFinalVerdicts, GroupLayout.PREFERRED_SIZE, 179, GroupLayout.PREFERRED_SIZE)
 							.addComponent(list, GroupLayout.PREFERRED_SIZE, 342, GroupLayout.PREFERRED_SIZE))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(btnRejectArticle)
-							.addPreferredGap(ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-								.addComponent(btnAcceptArticle, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(btnDownloadPdf, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+						.addComponent(btnAcceptArticle))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
@@ -183,14 +247,9 @@ public class EditorMainWindow {
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(list, GroupLayout.PREFERRED_SIZE, 64, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnAcceptArticle)
-								.addComponent(btnRejectArticle))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(btnDownloadPdf)
-							.addGap(563))
+							.addComponent(btnAcceptArticle))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
+							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
 							.addGap(20))))
 		);
 		
@@ -200,26 +259,24 @@ public class EditorMainWindow {
 			@Override
             public void mouseClicked(MouseEvent arg0) {
                 // get id of selected submission
-			    int selectedSubmissionId = (int)tblEditor.getValueAt(tblEditor.rowAtPoint(arg0.getPoint()), 0);
+			    selectedSubmissionId = (int)tblEditor.getValueAt(tblEditor.rowAtPoint(arg0.getPoint()), 0);
                 System.out.println(selectedSubmissionId);
                 
                 // get verdicts
                 ArrayList<Verdict[]> listVerdicts = RetrieveDatabase.getVerdicts(selectedSubmissionId);
                 for (Verdict[] ver : listVerdicts) System.out.println("[" + ver[0] + ", " + ver[1] + "]");
                 
-                Verdict[][] verdicts = new Verdict[3][2];
                 int i = 0;
                 for (Verdict[] ver : listVerdicts) {
-                    verdicts[i][0] = ver[0];
-                    verdicts[i][1] = ver[1];
+                    finalVerdicts[i] = ver[0];
                     i++;
                 }
 
                 // display verdicts
                 list.setModel(new AbstractListModel() {
-                    String[] values = new String[] {verdicts[0][0].toString() + ", " + verdicts[0][1].toString(),
-                                                    verdicts[1][0].toString() + ", " + verdicts[1][1].toString(),
-                                                    verdicts[2][0].toString() + ", " + verdicts[2][1].toString()};
+                    String[] values = new String[] {finalVerdicts[0].toString(),
+                                                    finalVerdicts[1].toString(),
+                                                    finalVerdicts[2].toString()};
                     public int getSize() {
                         return values.length;
                     }
@@ -356,5 +413,37 @@ public class EditorMainWindow {
 			}
 		});
 		mnChangeRole.add(mntmToReader);
+	}
+	
+	/**
+	 * getVerdictCount
+	 * 
+	 * Take a list of verdicts (e.g. three final verdicts) and return an array of how many times each type of verdict appears
+	 * @param verdicts Array of verdicts to be counted
+	 * @return integer array where index 0 is count of Strong Accept, 1 is count of Weak Accept, 2 is count of Weak Reject and 3 is count of Strong Reject
+	 */
+	public int[] getVerdictCount(Verdict[] verdicts) {
+	    int[] results = new int[4];
+	    for (Verdict verdict : verdicts) {
+	        if (verdict == Verdict.STRONGACCEPT) results[0]++;
+	        else if (verdict == Verdict.WEAKACCEPT) results[1]++;
+	        else if (verdict == Verdict.WEAKREJECT) results[2]++;
+	        else if (verdict == Verdict.STRONGREJECT) results[3]++;
+	    }
+	    return results;
+	}
+	
+	public void acceptSubmission(Submission s) {
+	    // get the edition this will be in
+	    //ArrayList<Volume> vols = RetrieveDatabase.getVolumes(s.getArticle().getJournal().getISSN());
+	    
+	    // get the page range this will be in
+	    
+	    
+	    // create new published article object
+	    
+	    
+	    // add to database
+	    
 	}
 }

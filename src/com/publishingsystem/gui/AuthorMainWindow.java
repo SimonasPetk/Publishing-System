@@ -1,4 +1,5 @@
 package com.publishingsystem.gui;
+
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -68,9 +69,11 @@ public class AuthorMainWindow {
 			public void run() {
 				try {
 					System.out.println("Hello");
-					//Academic[] testAcademic = {null, new Author(6, "Mr", "Alex", "Hall", "ahall8@sheffield.ac.uk", "Sheffield", new Hash("password"))};
-					Academic[] testAcademic = {null, new Author(7, "Dr", "Kirill", "Bogdanov", "kb@gm.com", "Sheffield", new Hash("password"))};
-					//Academic[] testAcademic = null;
+					// Academic[] testAcademic = {null, new Author(6, "Mr", "Alex", "Hall",
+					// "ahall8@sheffield.ac.uk", "Sheffield", new Hash("password"))};
+					Academic[] testAcademic = { null,
+							new Author(7, "Dr", "Kirill", "Bogdanov", "kb@gm.com", "Sheffield", new Hash("password")) };
+					// Academic[] testAcademic = null;
 					AuthorMainWindow window = new AuthorMainWindow(testAcademic);
 					window.frmAuthorsDashboard.setVisible(true);
 				} catch (Exception e) {
@@ -84,29 +87,29 @@ public class AuthorMainWindow {
 	 * Create the application.
 	 */
 	public AuthorMainWindow(Academic[] roles) {
-		this.author = (Author)roles[1];
+		this.author = (Author) roles[1];
 		initialize(roles);
 	}
-	
+
 	public void enable() {
 		this.frmAuthorsDashboard.setEnabled(true);
 	}
-	
+
 	public void refreshReviewTable() {
-		DefaultTableModel model = ((DefaultTableModel)reviewTable.getModel());
+		DefaultTableModel model = ((DefaultTableModel) reviewTable.getModel());
 		model.setRowCount(0);
-		for(int i = 0; i < reviewersOfSubmission.size(); i++) {
+		for (int i = 0; i < reviewersOfSubmission.size(); i++) {
 			ReviewerOfSubmission ros = reviewersOfSubmission.get(i);
 			Review review = reviewersOfSubmission.get(i).getReview();
 			Verdict finalVerdict = review.getFinalVerdict();
 			boolean responded = RetrieveDatabase.checkIfAllAnswered(ros);
 			String[] reviewString = new String[5];
-			reviewString[0] = "Reviewer "+(i+1);
+			reviewString[0] = "Reviewer " + (i + 1);
 			reviewString[1] = review.getSummary();
 			reviewString[2] = review.getInitialVerdict().toString();
 			reviewString[3] = finalVerdict == null ? "NONE" : finalVerdict.toString();
 			reviewString[4] = responded ? "Yes" : "No";
-			
+
 			model.addRow(reviewString);
 		}
 	}
@@ -123,17 +126,15 @@ public class AuthorMainWindow {
 		frmAuthorsDashboard.setBounds(100, 100, width, height);
 		frmAuthorsDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAuthorsDashboard.setVisible(true);
-		
+
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = toolkit.getScreenSize();
-		frmAuthorsDashboard.setLocation(screenSize.width/2-width/2, screenSize.height/2-height/2);
-
+		frmAuthorsDashboard.setLocation(screenSize.width / 2 - width / 2, screenSize.height / 2 - height / 2);
 
 		// Window title
 		JLabel lblArticleList = new JLabel("Your articles:");
 		lblArticleList.setToolTipText("");
 		lblArticleList.setFont(new Font("Tahoma", Font.PLAIN, 20));
-
 
 		// Your articles panel
 		JScrollPane scrSubmitted = new JScrollPane();
@@ -145,11 +146,11 @@ public class AuthorMainWindow {
 		tblSubmittedModel.addColumn("Title");
 		tblSubmittedModel.addColumn("Status");
 
-		for(int i = 0; i < authorOfArticles.size(); i++) {
-			AuthorOfArticle aoa =authorOfArticles.get(i);
+		for (int i = 0; i < authorOfArticles.size(); i++) {
+			AuthorOfArticle aoa = authorOfArticles.get(i);
 			Article article = aoa.getArticle();
 			String[] articles = new String[4];
-			articles[0] = "  "+String.valueOf(article.getArticleId());
+			articles[0] = "  " + String.valueOf(article.getArticleId());
 			articles[1] = aoa.isMainAuthor() ? "Yes" : "No";
 			articles[2] = article.getTitle();
 			articles[3] = article.getSubmission().getStatus().getStatus();
@@ -164,58 +165,50 @@ public class AuthorMainWindow {
 		tblSubmitted.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		tblSubmitted.setEnabled(false);
 		scrSubmitted.setViewportView(tblSubmitted);
-		
-		tblSubmitted.addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mouseReleased(MouseEvent e) {
-		        int r = tblSubmitted.rowAtPoint(e.getPoint());
-		        if (r >= 0 && r < tblSubmitted.getRowCount()) {
-		        	tblSubmitted.setRowSelectionInterval(r, r);
-		        } else {
-		        	tblSubmitted.clearSelection();
-		        }
 
-		        int rowindex = tblSubmitted.getSelectedRow();
-		        if (rowindex < 0)
-		            return;
-		    }
+		tblSubmitted.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				int r = tblSubmitted.rowAtPoint(e.getPoint());
+				if (r >= 0 && r < tblSubmitted.getRowCount()) {
+					tblSubmitted.setRowSelectionInterval(r, r);
+				} else {
+					tblSubmitted.clearSelection();
+				}
+
+				int rowindex = tblSubmitted.getSelectedRow();
+				if (rowindex < 0)
+					return;
+			}
 		});
 
 		JPanel panelArticleReviews = new JPanel();
 		panelArticleReviews.setVisible(false);
-		
+
 		JLabel lblSmthsadas = new JLabel("To check for reviews, click on an entry");
 
 		// Configure layout
 		GroupLayout groupLayout = new GroupLayout(frmAuthorsDashboard.getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
-					.addGap(19)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addGroup(Alignment.LEADING,
+				groupLayout.createSequentialGroup().addGap(19).addGroup(groupLayout
+						.createParallelGroup(Alignment.LEADING)
 						.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 1026, Short.MAX_VALUE)
+						.addGroup(groupLayout.createSequentialGroup().addComponent(lblSmthsadas).addContainerGap())
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblSmthsadas)
-							.addContainerGap())
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addComponent(panelArticleReviews, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 1026, Short.MAX_VALUE)
-								.addComponent(lblArticleList, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 800, GroupLayout.PREFERRED_SIZE))
-							.addGap(19))))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(20)
-					.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
-					.addGap(1)
-					.addComponent(lblSmthsadas)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(panelArticleReviews, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
-					.addGap(29))
-		);
+								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+										.addComponent(panelArticleReviews, Alignment.LEADING, GroupLayout.DEFAULT_SIZE,
+												1026, Short.MAX_VALUE)
+										.addComponent(lblArticleList, Alignment.LEADING, GroupLayout.PREFERRED_SIZE,
+												800, GroupLayout.PREFERRED_SIZE))
+								.addGap(19)))));
+		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup().addGap(20)
+						.addComponent(lblArticleList, GroupLayout.PREFERRED_SIZE, 25, GroupLayout.PREFERRED_SIZE)
+						.addGap(1).addComponent(lblSmthsadas).addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(scrSubmitted, GroupLayout.DEFAULT_SIZE, 466, Short.MAX_VALUE)
+						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addComponent(panelArticleReviews, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
+						.addGap(29)));
 		panelArticleReviews.setLayout(new BorderLayout(0, 0));
 
 		// Review panel
@@ -223,7 +216,7 @@ public class AuthorMainWindow {
 		panelArticleReviews.add(lblArticlesReview, BorderLayout.NORTH);
 		lblArticlesReview.setToolTipText("");
 		lblArticlesReview.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		
+
 		JPanel panel = new JPanel();
 		panelArticleReviews.add(panel, BorderLayout.SOUTH);
 
@@ -237,7 +230,7 @@ public class AuthorMainWindow {
 		reviewTableModel.addColumn("Initial Verdict");
 		reviewTableModel.addColumn("Final Verdict");
 		reviewTableModel.addColumn("Responded");
-		
+
 		AuthorMainWindow amw = this;
 
 		reviewTable = new JTable(reviewTableModel);
@@ -250,54 +243,52 @@ public class AuthorMainWindow {
 		reviewTable.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		reviewTable.setEnabled(false);
 		scrollPane_2.setViewportView(reviewTable);
-		
-		reviewTable.addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mouseReleased(MouseEvent e) {
-		        int r = reviewTable.rowAtPoint(e.getPoint());
-		        if (r >= 0 && r < reviewTable.getRowCount()) {
-		        	reviewTable.setRowSelectionInterval(r, r);
-		        } else {
-		        	reviewTable.clearSelection();
-		        }
 
-		        int rowindex = reviewTable.getSelectedRow();
-		        if (rowindex < 0)
-		            return;
-		    }
+		reviewTable.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				int r = reviewTable.rowAtPoint(e.getPoint());
+				if (r >= 0 && r < reviewTable.getRowCount()) {
+					reviewTable.setRowSelectionInterval(r, r);
+				} else {
+					reviewTable.clearSelection();
+				}
+
+				int rowindex = reviewTable.getSelectedRow();
+				if (rowindex < 0)
+					return;
+			}
 		});
-		
+
 		reviewTable.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				int row = reviewTable.rowAtPoint(arg0.getPoint());
 				System.out.println(row);
 				ReviewerOfSubmission ros = reviewersOfSubmission.get(row);
-			
-				if(!ros.getReview().responsesRecieved()) {
+
+				if (!ros.getReview().responsesRecieved()) {
 					frmAuthorsDashboard.setEnabled(false);
-					new CriticismResponse(amw, ros, row+1);
+					new CriticismResponse(amw, ros, row + 1);
 				}
 			}
 		});
-
 
 		tblSubmitted.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				int row = tblSubmitted.rowAtPoint(arg0.getPoint());
 				AuthorOfArticle aoa = authorOfArticles.get(row);
-				
-				if(aoa.isMainAuthor()) {
+
+				if (aoa.isMainAuthor()) {
 					RetrieveDatabase.checkReviewsForAuthor(aoa);
 					reviewersOfSubmission = aoa.getArticle().getSubmission().getReviewersOfSubmission();
-					if(reviewersOfSubmission.size() > 0) {
+					if (reviewersOfSubmission.size() > 0) {
 						panelArticleReviews.setVisible(true);
 						refreshReviewTable();
-					}
-					else
+					} else
 						JOptionPane.showMessageDialog(null, "No reviews recieved yet.");
-				}else {
+				} else {
 					panelArticleReviews.setVisible(false);
 				}
 			}
@@ -337,16 +328,16 @@ public class AuthorMainWindow {
 		JMenu mnChangeRole = new JMenu("Change My Role");
 		menuBar.add(mnChangeRole);
 
-		if(roles[0] != null) {
-			Editor chiefEditor = (Editor)roles[0];
+		if (roles[0] != null) {
+			Editor chiefEditor = (Editor) roles[0];
 			boolean isChiefEditor = false;
-			for(EditorOfJournal eoj : chiefEditor.getEditorOfJournals()) {
-				if(eoj.isChiefEditor()) {
+			for (EditorOfJournal eoj : chiefEditor.getEditorOfJournals()) {
+				if (eoj.isChiefEditor()) {
 					isChiefEditor = true;
 					break;
 				}
 			}
-			if(isChiefEditor) {
+			if (isChiefEditor) {
 				JMenuItem mntmToEditor = new JMenuItem("Chief Editor");
 				mntmToEditor.addMouseListener(new MouseAdapter() {
 					@Override
@@ -368,7 +359,7 @@ public class AuthorMainWindow {
 			mnChangeRole.add(mntmToEditor);
 		}
 
-		if(roles[2] != null) {
+		if (roles[2] != null) {
 			JMenuItem mntmToReviewer = new JMenuItem("Reviewer");
 			mntmToReviewer.addMouseListener(new MouseAdapter() {
 				@Override

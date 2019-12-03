@@ -5,13 +5,23 @@ import java.util.ArrayList;
 public class PublishedArticle extends Article{
 	private String pageRange;
 	private Edition edition;
+	private int publishedArticleId;
 	
-	public PublishedArticle(Article a, String pageRange, Edition edition) {
+	public PublishedArticle(int publishedArticleId, Article a, String pageRange, Edition edition) {
 		super(a.getArticleId(), a.getTitle(), a.getSummary(), a.getJournal());
 		this.pageRange = pageRange;
 		this.edition = edition;
+		this.publishedArticleId = publishedArticleId;
 	}
 	
+	public Edition getEdition() {
+		return edition;
+	}
+
+	public int getPublishedArticleId() {
+		return publishedArticleId;
+	}
+
 	public void setEditionNumber(Edition en) {
 		this.edition = en;
 	}
