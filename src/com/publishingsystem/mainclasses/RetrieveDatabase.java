@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -805,6 +807,30 @@ public class RetrieveDatabase extends Database{
         return results;
 	}
 
+	public static ArrayList<Volume> getVolumes(int issn) {
+	    ArrayList<Volume> results = new ArrayList<Volume>();
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            
+            // Get the volumes
+            String query = "SELECT volNum, year FROM VOLUMES WHERE issn = " + issn + ";";
+            ResultSet res = statement.executeQuery(query);
+            
+            // Add to results
+            while (res.next()) {
+                int volNum = res.getInt(1);
+                Date resYear = res.getDate(2);
+                DateFormat df = new SimpleDateFormat("yyyy");
+                String year = df.format(resYear);
+                //String dateOfPublication, int volumeNumber, ArrayList<Edition> editions, Journal journal
+                results.add(new Volume(year, volNum));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return results;
+	}
 
 	public static void main(String[] args) {
 		System.out.println("SELECT Eoj.ISSN FROM AUTHOROFARTICLE Aoa, AUTHORS A, ARTICLES Art, "
