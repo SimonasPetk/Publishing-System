@@ -204,9 +204,6 @@ public class EditorMainWindow {
 	    });
 		btnAcceptArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		
-		JButton btnRejectArticle = new JButton("Reject Article");
-		btnRejectArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
 		JList list = new JList();
 		list.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		list.setModel(new AbstractListModel() {
@@ -218,9 +215,6 @@ public class EditorMainWindow {
 				return values[index];
 			}
 		});
-		
-		JButton btnDownloadPdf = new JButton("Download PDF");
-		btnDownloadPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(frmDashboard.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -238,12 +232,7 @@ public class EditorMainWindow {
 						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 							.addComponent(lblFinalVerdicts, GroupLayout.PREFERRED_SIZE, 179, GroupLayout.PREFERRED_SIZE)
 							.addComponent(list, GroupLayout.PREFERRED_SIZE, 342, GroupLayout.PREFERRED_SIZE))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(btnRejectArticle)
-							.addPreferredGap(ComponentPlacement.RELATED, 100, Short.MAX_VALUE)
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
-								.addComponent(btnAcceptArticle, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(btnDownloadPdf, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+						.addComponent(btnAcceptArticle))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
@@ -258,14 +247,9 @@ public class EditorMainWindow {
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(list, GroupLayout.PREFERRED_SIZE, 64, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(btnAcceptArticle)
-								.addComponent(btnRejectArticle))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(btnDownloadPdf)
-							.addGap(563))
+							.addComponent(btnAcceptArticle))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
+							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
 							.addGap(20))))
 		);
 		
