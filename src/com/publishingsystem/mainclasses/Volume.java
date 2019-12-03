@@ -3,59 +3,65 @@ import java.util.ArrayList;
 
 public class Volume {
 	private ArrayList<Edition> editions;
-	private String dateOfPublication;
+	private int year;
 	private int volumeNumber;
+	private int volumeId;
 	private Journal journal;
-	private boolean published;
 	private final static int maxEditions = 6;
 	private final static int minEditions = 4;
 	
-	public Volume(String dateOfPublication, int volumeNumber) {
-		this.dateOfPublication = dateOfPublication;
-		this.volumeNumber = volumeNumber;
-		this.editions = editions;
-		this.journal = journal;
-		this.published = false;
+	public Volume(int year, int volumeId) {
+	    this.editions = new ArrayList<Edition>();
+		this.year = year;
+		this.volumeNumber = -1;
+		this.volumeId = volumeId;
+		this.journal = null;
 	}
 	
-	public void setDateOfPublication(String dateOfPublication) {
-		this.dateOfPublication = dateOfPublication;
-	}
 	
-	public void setVolumeNumber(int volumeNumber) {
-		this.volumeNumber = volumeNumber;
-	}
+    public void addEdition(Edition e) {
+        e.setVolume(this);
+        this.editions.add(e);
+    }
 	
-	public void setPublished(boolean set) {
-		this.published = set;
-	}
-	
-	public void setJournal(Journal j) {
-		this.journal = j;
-	}
-	
-	public void addEdition(Edition e) {
-	    this.editions.add(e);
-	}
-	
+    public void setYear(int year) {
+        this.year = year;
+    }
+    
+    public void setVolumeNumber(int volumeNumber) {
+        this.volumeNumber = volumeNumber;
+    }
+
+    public void setVolumeId(int volumeId) {
+        this.volumeId = volumeId;
+    }
+    
+    public void setJournal(Journal j) {
+        j.addVolume(this);
+        this.journal = j;
+    }
+    
+    
 	public ArrayList<Edition> getEditions() {
-		return editions;
-	}
+	    return editions;
+    }
 	
-	public String getDateOfPublication() {
-		return dateOfPublication;
+	public int getYear() {
+		return year;
 	}
 	
 	public int getVolumeNumber() {
 		return volumeNumber;
 	}
+	
+	public int getVolumeId() {
+	    return volumeId;
+	}
+
 	public Journal getJournal() {
 		return journal;
 	}
 	
-	public boolean isPublished() {
-		return published;
-	}
 	
 	public boolean maxEditionsReached() {
 		return maxEditions == editions.size();
@@ -64,5 +70,4 @@ public class Volume {
 	public boolean minEditionsReached() {
 		return minEditions <= editions.size();
 	}
-	
 }

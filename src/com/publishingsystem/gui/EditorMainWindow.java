@@ -24,6 +24,7 @@ import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.Article;
 import com.publishingsystem.mainclasses.AuthorOfArticle;
 import com.publishingsystem.mainclasses.Database;
+import com.publishingsystem.mainclasses.Edition;
 import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
 import com.publishingsystem.mainclasses.Hash;
@@ -42,6 +43,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Date;
 import java.util.ArrayList;
 import javax.swing.JList;
 import javax.swing.AbstractListModel;
@@ -268,7 +270,7 @@ public class EditorMainWindow {
                 
                 int i = 0;
                 for (Verdict[] ver : listVerdicts) {
-                    finalVerdicts[i] = ver[0];
+                    finalVerdicts[i] = ver[1];
                     i++;
                 }
 
@@ -434,16 +436,23 @@ public class EditorMainWindow {
 	}
 	
 	public void acceptSubmission(Submission s) {
-	    // get the edition this will be in
-	    //ArrayList<Volume> vols = RetrieveDatabase.getVolumes(s.getArticle().getJournal().getISSN());
-	    
-	    // get the page range this will be in
-	    
-	    
-	    // create new published article object
-	    
-	    
-	    // add to database
-	    
+	    /*
+        // get the unpublished edition
+	    Edition ed = RetrieveDatabase.getNextEdition(s.getArticle().getJournal().getISSN());
+        
+        if (ed == null) {
+            // there was either no unpublished edition or the unpublished edition was full
+            // a new edition must be created
+            int volNum = 
+            Database.addEdition(volNum, (new Date(System.currentTimeMillis()).get));
+            
+            // add the submission to this new article
+	    } else {
+	        // add the submission as an article to the edition
+	    }
+        
+	    // else, add the submission to PublishedArticles in the unpublished edition
+
+	    */
 	}
 }
