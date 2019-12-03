@@ -248,20 +248,24 @@ public class SubmitArticle {
 						journal = item;
 					}
 				}
+				String errorMessage = "";
 				if(title.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "Please give a title", "Error in submission", 0);
+					errorMessage += "Please give a title. ";
 				}
 				if(summary.isEmpty()) {
-					JOptionPane.showMessageDialog(null, "Please give a summary", "Error in submission", 0);
+					errorMessage += "Please give a summary. ";
 				}
 				if(journal == null) {
-					JOptionPane.showMessageDialog(null, "Please select a journal", "Error in submission", 0);
+					errorMessage += "Please select a journal. ";
 				}
 				if(pdfPath == null) {
-					JOptionPane.showMessageDialog(null, "Please upload a pdf of your article", "Error in submission", 0);
+					errorMessage += "Please upload a pdf of your article.";
+				}
+				if (errorMessage.length() > 0) {
+					JOptionPane.showMessageDialog(null, errorMessage, "Error in submission", 0);
 				}
 				
-				if(title != null && summary != null && journal != null && pdfPath != null){
+				if(title != null && summary != null && journal != null && pdfPath != null && !title.isEmpty() && !summary.isEmpty()){
 					byte[] pdf = PDFConverter.getByteArrayFromFile(pdfPath);
 					Article article = new Article(-1, title, summary, journal);
 					mainAuthor.registerCoAuthors(article, coAuthors);
