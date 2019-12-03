@@ -865,98 +865,50 @@ public class RetrieveDatabase extends Database {
 		return results;
 	}
 
-	/*public static ArrayList<Volume> getVolumes(int issn) {
-	    ArrayList<Volume> results = new ArrayList<Volume>();
-        try (Connection con = DriverManager.getConnection(CONNECTION)) {
-            Statement statement = con.createStatement();
-            statement.execute("USE "+DATABASE+";");
-
-            // Get the volumes
-            String query = "SELECT volNum, year FROM VOLUMES WHERE issn = " + issn + ";";
-            ResultSet res = statement.executeQuery(query);
-
-            // Add to results
-            while (res.next()) {
-                int volNum = res.getInt(1);
-                Date resYear = res.getDate(2);
-                DateFormat df = new SimpleDateFormat("yyyy");
-                String year = df.format(resYear);
-                //String dateOfPublication, int volumeNumber, ArrayList<Edition> editions, Journal journal
-                results.add(new Volume(year, volNum));
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return results;
-	}*/
-
-
 	/**
-	 * getNextEdition
+	 * getRecentEdition
 	 *
-	 * Get the next unpublished edition in a journal that can take new articles
-	 * @param issn The issn of the journal
-	 * @return The edition that can take more articles. Returns null if there is no edition or the most recent edition is full.
+     * Get the most recent edition of the given volume
+	 * @param vol The given Volume
+	 * @return The most recent edition
 	 */
-/*  public static Edition getNextEdition(int issn) {
-	    Edition result = null;
-	    // get the next unpublished edition in the journal
+    public static Edition getRecentEdition(Volume vol) {
+        Edition result = null;
 	    try (Connection con = DriverManager.getConnection(CONNECTION)) {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
 
-            // select the most recent volume number
-            String query = "SELECT TOP 1 volId "
-                    + "FROM VOLUMES "
-                    + "WHERE ISSN = " + issn + " AND published = 0 "
-                    + "ORDER BY volId DESC;";
-            ResultSet res1 = statement.executeQuery(query);
-
-            if (res1.next()) {
-                // select the most recent edition from this volume
-                query = "SELECT TOP 1 edId, month "
-                        + "FROM EDITIONS "
-                        + "WHERE volId = " + res1.getInt(1) + "AND published = 0 "
-                        + "ORDER BY volId DESC;";
-                ResultSet res2 = statement.executeQuery(query);
-                if (res2.next()) {
-                    // get the number of published articles in this edition
-                    query = "SELECT COUNT(publishedArticleID)"
-                            + "FROM PUBLISHEDARTICLES "
-                            + "WHERE edId = " + res2.getInt(1) + " "
-                            + "GROUP BY edId";
-                    ResultSet res3 = statement.executeQuery(query);
-                    if (res3.next()) {
-                        // if there are less than 8 articles, the edition is available to use
-                        // otherwise, return null and a new edition will have to be used
-                        if (res3.getInt(1) < 8) {
-                            result = new Edition(res2.getString(2), -1, null);
-                        } else {
-                            result = null;
-                        }
-                    }
-                }
+            // select the most recent edition from this volume
+            String query = "SELECT TOP 1 edId, month "
+                         + "FROM EDITIONS "
+                         + "WHERE volId = " + vol.getVolumeId() + "AND published = 0 "
+                         + "ORDER BY volId DESC;";
+            ResultSet res = statement.executeQuery(query);
+            if (res.next()) {
+                int edId = res.getInt(1);
+                int month = res.getInt(2);
+                result = new Edition(month, edId);
             }
 	    } catch (SQLException ex) {
 	        ex.printStackTrace();
 	    }
 	    return result;
 	}
-*/
+
 	/**
-	 * getNextVolume
+	 * getRecentVolume
 	 *
-	 * NOT DONE YET
-	 * @param issn
-	 * @return
+	 * Get the most recent volume from a given journal
+	 * @param issn The issn of the journal
+	 * @return The most recent volume object
 	 */
-/*	public static Volume getNextVolume(int issn) {
+	public static Volume getRecentVolume(int issn) {
 	    Volume result = null;
 	    try (Connection con = DriverManager.getConnection(CONNECTION)) {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
 
-            // select the most recent volume number
+            // select the most recent volume for this journal
             String query = "SELECT TOP 1 volId, year "
                     + "FROM VOLUMES "
                     + "WHERE ISSN = " + issn + " AND published = 0 "
@@ -974,7 +926,7 @@ public class RetrieveDatabase extends Database {
 	    }
 	    return result;
 	}
-*/
+
 	/**
 	 * getArticle
 	 * 
@@ -1068,6 +1020,35 @@ public class RetrieveDatabase extends Database {
         return results;
 	}
 
+    /**
+     * getVolumes
+     * 
+     * Gets all the volumes in the given journal
+     * @param issn The issn of the journal
+     * @return All Volumes in the journal
+     */
+    public static ArrayList<Volume> getVolumes(int issn) {
+        ArrayList<Volume> results = new ArrayList<Volume>();
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+
+            String query = "SELECT volNum, year "
+                         + "FROM VOLUMES "
+                         + "WHERE issn = " + issn + ";";
+            ResultSet res = statement.executeQuery(query);
+            while (res.next()) {
+                int volNum = res.getInt(1);
+                int year = res.getInt(2);
+                results.add(new Volume(year, volNum));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return results;
+    }
+
+	
 	public static void main(String[] args) {
 	    /*
 		System.out.println("SELECT Eoj.ISSN FROM AUTHOROFARTICLE Aoa, AUTHORS A, ARTICLES Art, "
