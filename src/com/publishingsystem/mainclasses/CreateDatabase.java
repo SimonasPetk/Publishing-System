@@ -269,12 +269,13 @@ public class CreateDatabase extends Database{
 		//dropTables();
 		//createTables();
         try (Connection con = DriverManager.getConnection(CONNECTION)) {
-		    printAllRecords("JOURNALS");
-			printAllRecords("EDITORS");
-			printAllRecords("VOLUMES");
-			printAllRecords("EDITIONS");
-			printAllRecords("EDITOROFJOURNAL");
-			printAllRecords("ACADEMICS");
+		    //printAllRecords("JOURNALS");
+			//printAllRecords("EDITORS");
+			//printAllRecords("VOLUMES");
+			//printAllRecords("EDITIONS");
+			//printAllRecords("EDITOROFJOURNAL");
+			//printAllRecords("ACADEMICS");
+            printAllRecords("PUBLISHEDARTICLES");
 		} catch (SQLException ex) {
 		    ex.printStackTrace();
 		}		

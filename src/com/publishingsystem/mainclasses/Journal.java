@@ -46,6 +46,7 @@ public class Journal {
 	}
 	
 	public void addVolume(Volume v) {
+	    v.setJournal(this);
 		this.volumes.add(v);
 	}
 
@@ -64,5 +65,4 @@ public class Journal {
 	public String toString() {
 	    return this.iSSN + ", " + this.journalName + ", " + this.dateOfPublication + ", " + this.boardOfEditors + ", " + this.volumes;
 	}
-	
 }
