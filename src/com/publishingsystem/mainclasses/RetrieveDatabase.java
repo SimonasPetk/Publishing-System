@@ -77,13 +77,38 @@ public class RetrieveDatabase extends Database {
 		}
 		return null;
 	}
+	
+	public ArrayList<Edition> getEditionsForChiefEditor(int editorid){
+		ArrayList<Edition> editions = new ArrayList<Edition>();
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE " + DATABASE + ";");
+			statement.close();
+			
+			String query = "";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+			
+			
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
 
 	public static boolean editorOfJournalHasClash(EditorOfJournal eoj) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
 			statement.close();
-			String query = "SELECT Eoj.ISSN FROM AUTHOROFARTICLE Aoa, AUTHORS A, ARTICLES Art, SUBMISSIONS S, JOURNALS J, EDITOROFJOURNAL Eoj WHERE A.AUTHORID = Aoa.AUTHORID AND Aoa.ARTICLEID = Art.ARTICLEID AND Art.ARTICLEID = S.ARTICLEID AND Art.ISSN = J.ISSN AND J.ISSN = Eoj.ISSN AND Eoj.EDITORID = ? AND Eoj.ISSN = ? AND A.UNIVERSITY = ?";
+			String query = "SELECT Eoj.ISSN FROM AUTHOROFARTICLE Aoa, AUTHORS A, ARTICLES Art, SUBMISSIONS S, JOURNALS J, EDITOROFJOURNAL Eoj "
+					+ "WHERE A.AUTHORID = Aoa.AUTHORID "
+					+ "AND Aoa.ARTICLEID = Art.ARTICLEID "
+					+ "AND Art.ARTICLEID = S.ARTICLEID "
+					+ "AND Art.ISSN = J.ISSN "
+					+ "AND J.ISSN = Eoj.ISSN "
+					+ "AND Eoj.EDITORID = ? "
+					+ "AND Eoj.ISSN = ? "
+					+ "AND A.UNIVERSITY = ?";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, eoj.getEditor().getEditorId());
 				preparedStmt.setInt(2, eoj.getJournal().getISSN());

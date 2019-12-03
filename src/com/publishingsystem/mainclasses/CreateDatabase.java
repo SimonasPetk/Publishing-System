@@ -26,7 +26,7 @@ public class CreateDatabase extends Database{
 	public static String createTableVolumes() {
 		return "CREATE TABLE VOLUMES ("
 				+ "volID INT PRIMARY KEY AUTO_INCREMENT,"
-				+ "year DATE, "
+				+ "year INT, "
 				+ "published BOOLEAN, "
 				+ "ISSN INT REFERENCES JOURNALS(ISSN))";
 	}
@@ -36,7 +36,7 @@ public class CreateDatabase extends Database{
 				+ "edID INT PRIMARY KEY AUTO_INCREMENT, "
 				+ "volID INT REFERENCES VOLUMES(volNum), "
 				+ "published BOOLEAN, "
-				+ "month DATE)";
+				+ "month INT)";
 	}
 
 	public static String createTablePDF() {
@@ -66,7 +66,7 @@ public class CreateDatabase extends Database{
 		return "CREATE TABLE PUBLISHEDARTICLES ("
 				+ "publishedArticleID INT PRIMARY KEY AUTO_INCREMENT, "
 				+ "articleID INT REFERENCES ARTICLES(articleID),"
-				+ "pageRange INT, "
+				+ "pageRange TEXT, "
 				+ "edID INT REFERENCES EDITION(edNum))";
 	}
 
@@ -269,8 +269,8 @@ public class CreateDatabase extends Database{
 		System.out.println(System.getProperty("jdbc.drivers"));
 		System.out.println("\nDrivers loaded by DriverManager:");
 		Enumeration<Driver> list = DriverManager.getDrivers();
-//		dropTables();
-//		createTables();
+		dropTables();
+		createTables();
         try (Connection con = DriverManager.getConnection(CONNECTION)) {
 		    //printAllRecords("JOURNALS");
 			//printAllRecords("EDITORS");
