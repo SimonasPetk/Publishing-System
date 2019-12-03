@@ -93,12 +93,12 @@ public class TransferChiefEditorRole {
 				}
 				if (process) {
 					JOptionPane.showMessageDialog(null, "Transfer Successful", "Transfer", 1);
+					new LoginScreen();
 				}
 				else {
 					JOptionPane.showMessageDialog(null, "Transfer Unsuccessful", "Transfer", 1);
 				}
 				frmRetireAsChief.dispose();
-				new LoginScreen();
 			}
 		});
 		btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 15));
