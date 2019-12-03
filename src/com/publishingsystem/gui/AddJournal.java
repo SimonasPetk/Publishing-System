@@ -103,13 +103,18 @@ public class AddJournal {
 			@Override
 			public void focusLost(FocusEvent e) {
 				System.out.println("exited JournalISSN");
-				int journalISSN = Integer.parseInt(textField_1.getText());
-				
-				if (Database.validateJournalISSN(journalISSN)) {
-					JOptionPane.showMessageDialog(panel,
-							"This Journal already exists please enter an unique journal ISSN.", "Warning",
-							JOptionPane.WARNING_MESSAGE);
+				try {
+					int journalISSN = Integer.parseInt(textField_1.getText());
+					if (Database.validateJournalISSN(journalISSN)) {
+						JOptionPane.showMessageDialog(panel,
+								"This Journal already exists please enter an unique journal ISSN.", "Warning",
+								JOptionPane.WARNING_MESSAGE);
+					}
 				}
+				catch (Exception e1) {
+					System.out.println("JournalISSN empty exception caught");
+				}
+
 			}
 		});
 		textField_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
