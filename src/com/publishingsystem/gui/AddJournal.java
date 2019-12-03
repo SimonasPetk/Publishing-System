@@ -99,24 +99,6 @@ public class AddJournal {
 		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 		textField_1 = new JTextField();
-		textField_1.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				System.out.println("exited JournalISSN");
-				try {
-					int journalISSN = Integer.parseInt(textField_1.getText());
-					if (Database.validateJournalISSN(journalISSN)) {
-						JOptionPane.showMessageDialog(panel,
-								"This Journal already exists please enter an unique journal ISSN.", "Warning",
-								JOptionPane.WARNING_MESSAGE);
-					}
-				}
-				catch (Exception e1) {
-					System.out.println("JournalISSN empty exception caught");
-				}
-
-			}
-		});
 		textField_1.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		textField_1.setColumns(10);
 
@@ -149,7 +131,7 @@ public class AddJournal {
 				} else {
 					try {
 						issn = Integer.parseInt(JournalISSN);
-						if (!Database.validateJournalISSN(issn)) {
+						if (Database.validateJournalISSN(issn)) {
 							validCredentials = false;	
 							JOptionPane.showMessageDialog(panel,
 									"This Journal already exists please enter an unique journal ISSN.", "Warning",
@@ -167,13 +149,6 @@ public class AddJournal {
 					validCredentials = false;	
 					JOptionPane.showMessageDialog(panel,
 							"This Journal already exists please enter an unique journal name.", "Warning",
-							JOptionPane.WARNING_MESSAGE);
-				}
-				
-				if (Database.validateJournalISSN(issn)) {
-					validCredentials = false;	
-					JOptionPane.showMessageDialog(panel,
-							"This Journal already exists please enter an unique journal ISSN.", "Warning",
 							JOptionPane.WARNING_MESSAGE);
 				}
 				
