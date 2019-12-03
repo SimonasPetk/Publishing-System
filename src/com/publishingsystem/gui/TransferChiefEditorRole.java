@@ -74,7 +74,6 @@ public class TransferChiefEditorRole {
 		frmTransferChiefEditorRole.setBounds(100, 100, 557, 416);
 		// RetireAsChiefEditor window = new RetireAsChiefEditor(null);
 		frmTransferChiefEditorRole.setVisible(true);
-		frmTransferChiefEditorRole.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JLabel lblRetireAsChief = new JLabel("Please choose the editor to replace you");
 		lblRetireAsChief.setHorizontalAlignment(SwingConstants.CENTER);
@@ -97,7 +96,6 @@ public class TransferChiefEditorRole {
 				}
 				if (process) {
 					JOptionPane.showMessageDialog(null, "Transfer Successful", "Transfer", 1);
-					new LoginScreen();
 					frmTransferChiefEditorRole.dispose();
 				} else {
 					JOptionPane.showMessageDialog(null, "Transfer Unsuccessful", "Transfer", 1);
@@ -148,8 +146,6 @@ public class TransferChiefEditorRole {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				System.out.println("Pressed");
-				System.out.println(editor.getEmailId());
-				new ChiefMainWindow(RetrieveDatabase.getRoles(editor.getEmailId()));
 				frmTransferChiefEditorRole.dispose();
 			}
 		});

@@ -59,7 +59,7 @@ public class AuthorMainWindow {
 	private int selectedAuthorOfArticle;
 	private JTable reviewTable;
 	private DefaultTableModel reviewTableModel;
-	ArrayList<ReviewerOfSubmission> reviewersOfSubmission;
+	private ArrayList<ReviewerOfSubmission> reviewersOfSubmission;
 
 	/**
 	 * Launch the application.
