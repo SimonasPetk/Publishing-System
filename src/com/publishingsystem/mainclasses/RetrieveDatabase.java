@@ -546,7 +546,7 @@ public class RetrieveDatabase extends Database {
 			statement.execute("USE " + DATABASE + ";");
 			String query = "SELECT V.VOLID, V.YEAR, E.EDID, E.MONTH, P.PUBLISHEDARTICLEID, P.ARTICLEID, P.PAGERANGE, A.TITLE, A.SUMMARY, PDF.PDFID "
 					+ "FROM VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, PDF "
-					+ "WHERE V.ISSN = ? AND V.VOLNUM = E.VOLNUM AND E.EDNUM = P.EDNUM AND P.ARTICLEID = A.ARTICLEID AND A.PDFID = PDF.PDFID;";
+					+ "WHERE V.ISSN = ? AND V.VOLID = E.VOLID AND E.EDID = P.EDID AND P.ARTICLEID = A.ARTICLEID AND A.PDFID = PDF.PDFID;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, issn);
 				System.out.println(preparedStmt);

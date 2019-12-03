@@ -808,6 +808,70 @@ public class Database {
 		}
 		return false;
 	}
+	
+	public static boolean validateJournalTitle(String title) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query = "SELECT NAME FROM JOURNALS WHERE NAME = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setString(1, title.trim());
+				ResultSet res = preparedStmt.executeQuery();
+
+				boolean titleExists = false;
+
+				if (res.next()) {
+					titleExists = true;  
+				}
+
+
+				if (titleExists) {
+					//Generate hash based on fetched salt and entered password
+					
+					return titleExists;
+				}
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return false;
+	}
+	
+	public static boolean validateJournalISSN(int issn) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query = "SELECT ISSN FROM JOURNALS WHERE ISSN = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, issn);
+				ResultSet res = preparedStmt.executeQuery();
+
+				boolean issnExists = false;
+
+				if (res.next()) {
+					issnExists = true;  
+				}
+
+
+				if (issnExists) {
+					//Generate hash based on fetched salt and entered password
+					
+					return issnExists;
+				}
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return false;
+	}
+	
+	
 
 	public static void main(String[] args) {
 		System.out.println("\nDrivers loaded as properties:");
