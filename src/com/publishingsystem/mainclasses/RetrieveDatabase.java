@@ -78,7 +78,7 @@ public class RetrieveDatabase extends Database {
 		return null;
 	}
 
-	public ArrayList<Edition> getEditionsForChiefEditor(int issn){
+	public static ArrayList<Edition> getEditionsForChiefEditor(int issn){
 		ArrayList<Edition> editions = new ArrayList<Edition>();
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
@@ -96,12 +96,14 @@ public class RetrieveDatabase extends Database {
 				preparedStmt.setInt(1, issn);
 				ResultSet res = preparedStmt.executeQuery();
 				while(res.next()) {
-					ArrayList<Article> articles = new ArrayList<Article>();
+					Edition e = new Edition(-1, res.getInt("EDITIONID"));
 					for(int i = 0; i < res.getInt("NUMPUBARTICLES"); i++) {
-						articles.add(new Article(-1, null, null, null));
+						e.addPublishedArticle(new PublishedArticle(-1, null, null, null));
 					}
-//					editions.add(new Edition(res.getInt()))
+					e.setVolume(new Volume(-1, res.getInt("VOLID")));
+					editions.add(e);
 				}
+				return editions;
 			} catch (SQLException ex) {
 				ex.printStackTrace();
 			}
