@@ -116,7 +116,7 @@ public class EditorJournals {
 									Database.retireEditor(eoj);
 									eoj.getEditor().getEditorOfJournals().remove(eoj);
 									editorWindow.dispose();
-									new LoginScreen();
+									new JournalWindow(null);
 								}
 							} else {
 								Database.retireEditor(eoj);
