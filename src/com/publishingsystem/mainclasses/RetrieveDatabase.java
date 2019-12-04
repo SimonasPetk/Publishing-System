@@ -697,6 +697,37 @@ public class RetrieveDatabase extends Database {
 
 		return null;
 	}
+	
+	public static ArrayList<AuthorOfArticle> getAuthors(int articleID) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE " + DATABASE + ";");
+			String query = "SELECT AUT.AUTHORNAME, AOA.MAINAUTHOR, AUT.EMAILADDRESS s"
+					+ "FROM AUTHOROFARTICLE AOA, AUTHORS AUT "
+					+ "WHERE AOA.ARTICLEID = ?, AOA.AUTHORID = AUT.AUTHORID;";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, articleID);
+				System.out.println(preparedStmt);
+				ResultSet res = preparedStmt.executeQuery();
+				ArrayList<AuthorOfArticle> authors = new ArrayList<AuthorOfArticle>();
+				Author au = null;
+				AuthorOfArticle aoa = null;
+				
+				while (res.next()) {
+					au = new Author(-1, null, res.getString("AUTHORNAME"), null, res.getString("EMAILADDRESS"), null, null);
+					aoa = new AuthorOfArticle(null, au, res.getBoolean("MAINAUTHOR"));
+					authors.add(aoa);
+				}
+				
+				return authors;
+			} 
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
+
 
 	// SELECT J.ISSN, V.VOLNUM, E.EDNUM, P.ARTICLEID, A.ARTICLEID, AUT.AUTHORID,
 	// AUTS.AUTHORNAME FROM JOURNALS J, VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P,
