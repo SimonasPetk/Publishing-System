@@ -926,7 +926,7 @@ public class Database {
             statement.execute("USE "+DATABASE+";");
             
             String query = "INSERT INTO VOLUMES "
-                         + "VALUES (null, " + year + ", 0, " + issn + ");";
+                         + "VALUES (null, " + year + ", " + issn + ");";
             statement.execute(query);
             
             query = "SELECT last_insert_id() AS last_id FROM VOLUMEs;";

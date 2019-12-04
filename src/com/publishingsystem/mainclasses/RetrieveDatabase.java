@@ -981,7 +981,7 @@ public class RetrieveDatabase extends Database {
             // select the most recent volume for this journal
             String query = "SELECT volId, year "
                     + "FROM VOLUMES "
-                    + "WHERE ISSN = " + issn + " AND published = 0 "
+                    + "WHERE ISSN = " + issn +" "
                     + "ORDER BY volId DESC LIMIT 1;";
             ResultSet res = statement.executeQuery(query);
             if (res.next()) {
