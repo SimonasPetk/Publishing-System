@@ -739,19 +739,6 @@ public class Database {
 		}
 	}
 
-	public static void acceptArticle(Submission s) {
-		try (Connection con = DriverManager.getConnection(CONNECTION)) {
-			Statement statement = con.createStatement();
-			statement.execute("USE "+DATABASE+";");
-			statement.close();
-
-
-
-		}catch (SQLException ex) {
-			ex.printStackTrace();
-		}
-	}
-
 	public static boolean academicExists(String email) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
@@ -901,13 +888,14 @@ public class Database {
 	 * @param month The month of the edition
 	 * @return Primary key of the new edition record
 	 */
-	public static int addEdition(int volNum, Date month) {
+	public static int addEdition(int volNum, int month) {
 	    int result = -1;
         try (Connection con = DriverManager.getConnection(CONNECTION)) {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
             
-            String query = "INSERT INTO EDITIONS VALUES (null, " + volNum + ", 0, " + month + ");";
+            String query = "INSERT INTO EDITIONS "
+                         + "VALUES (null, " + volNum + ", 0, " + month + ");";
             statement.execute(query);
             
             query = "SELECT last_insert_id() AS last_id FROM EDITIONS;";
@@ -921,6 +909,65 @@ public class Database {
         return result;
 	}
 	
+
+    /**
+     * addVolume
+     * 
+     * Create a new volume for the given year in the given journal in the database
+     * @param issn The issn of the given journal
+     * @param year The year of the new volume
+     * @return The primary key of this new volume
+     */
+    public static int addVolume(int issn, int year) {
+        int result = -1;
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            
+            String query = "INSERT INTO VOLUMES "
+                         + "VALUES (null, " + year + ", 0, " + issn + ");";
+            statement.execute(query);
+            
+            query = "SELECT last_insert_id() AS last_id FROM VOLUMEs;";
+            ResultSet res = statement.executeQuery(query);
+            if (res.next()) {
+                result = res.getInt(1);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * addPublishedArticle
+     * 
+     * Create a new published article for the given article in the given edition in the database
+     * @param edId The id of the edition the published article is a part of
+     * @param articleId The id of the article the published article links to
+     * @return
+     */
+	public static int addPublishedArticle(int edId, int articleId) {
+        int result = -1;
+        try (Connection con = DriverManager.getConnection(CONNECTION)) {
+            Statement statement = con.createStatement();
+            statement.execute("USE "+DATABASE+";");
+            
+            String query = "INSERT INTO PUBLISHEDARTICLES "
+                         + "VALUES (null, " + articleId + ", " + edId + ");";
+            statement.execute(query);
+            
+            query = "SELECT last_insert_id() AS last_id FROM PUBLISHEDARTICLES;";
+            ResultSet res = statement.executeQuery(query);
+            if (res.next()) {
+                result = res.getInt(1);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return result;
+	}
+    
 	public static void rejectSubmission(int submissionId) {
 		 try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();

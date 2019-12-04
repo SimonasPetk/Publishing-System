@@ -67,7 +67,6 @@ public class CreateDatabase extends Database{
 		return "CREATE TABLE PUBLISHEDARTICLES ("
 				+ "publishedArticleID INT PRIMARY KEY AUTO_INCREMENT, "
 				+ "articleID INT REFERENCES ARTICLES(articleID),"
-				+ "pageRange TEXT, "
 				+ "edID INT REFERENCES EDITION(edNum))";
 	}
 

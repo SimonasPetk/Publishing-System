@@ -14,7 +14,7 @@ public class Journal {
 		this.iSSN = iSSN;
 		this.dateOfPublication = dateOfPublication;
 		this.boardOfEditors = new ArrayList<EditorOfJournal>();
-		this.volumes = new ArrayList<Volume>();
+		this.volumes = RetrieveDatabase.getVolumes(iSSN);
 	}
 	
 

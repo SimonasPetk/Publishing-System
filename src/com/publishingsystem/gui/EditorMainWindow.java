@@ -29,6 +29,7 @@ import com.publishingsystem.mainclasses.Editor;
 import com.publishingsystem.mainclasses.EditorOfJournal;
 import com.publishingsystem.mainclasses.Hash;
 import com.publishingsystem.mainclasses.Journal;
+import com.publishingsystem.mainclasses.PublishedArticle;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.ReviewerOfSubmission;
 import com.publishingsystem.mainclasses.Submission;
@@ -44,6 +45,8 @@ import javax.swing.JTextPane;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.swing.JList;
 import javax.swing.AbstractListModel;
@@ -436,24 +439,42 @@ public class EditorMainWindow {
 	}
 	
 	public void acceptSubmission(Submission s) {
-	    /*
-	    Journal jour = s.getArticle().getJournal();
+	    // get the journal the submission will go in
+	    Journal submissionsJournal = s.getArticle().getJournal();
 	    
-        // get the unpublished edition
-	    Edition ed = RetrieveDatabase.getNextEdition(s.getArticle().getJournal().getISSN());
+	    // get the most recent volume in this journal
+	    Volume vol = RetrieveDatabase.getRecentVolume(submissionsJournal.getISSN());
+	    
+        // get the most recent edition in this journal
+	    Edition ed = RetrieveDatabase.getRecentEdition(vol);
+
+	    // set up date formats
+        Date now = new Date(System.currentTimeMillis());
+        DateFormat dfMonth = new SimpleDateFormat("mm");
+        DateFormat dfYear = new SimpleDateFormat("yyyy");
+
+        // currently, ed is the edition the submission will be added to
+        int edId = ed.getEditionId();
         
-        if (ed == null) {
-            // there was either no unpublished edition or the unpublished edition was full
-            // a new edition must be created
-            int volNum = 
-            Database.addEdition(volNum, (new Date(System.currentTimeMillis()).get));
-            
-            // add the submission to this new article
-	    } else {
-	        // add the submission as an article to the edition
-	    }
+	    if (ed == null || ed.maxArticlesReached()) { // if this month's edition is full or this month's edition is published (ed is null)
+	        // need a new edition for next month
+	        if (vol.maxEditionsReached() || ed.getEditionMonth() == 12) { // if this year's volume is full or the month is December
+	            // need a new year for next year
+	            // create next year's volume
+	            int newVolId = Database.addVolume(submissionsJournal.getISSN(), Integer.valueOf(dfYear.format(now)) + 1);
+	            // create january's edition
+	            edId = Database.addEdition(newVolId, 01);
+	        } else {
+	            // create next month's edition
+	            edId = Database.addEdition(vol.getVolumeId(), Integer.valueOf(dfMonth.format(now)) + 1);
+            }
+	    }	            
         
-	    // else, add the submission to PublishedArticles in the unpublished edition
-*/
+	    // add submission to database as published article
+	    int paID = Database.addPublishedArticle(edId, s.getArticle().getArticleId());
+	    System.out.println(paID);
+	    
+	    // display message to user
+	    JOptionPane.showMessageDialog(null, "Submission has been accepted and will be published soon.", "Success", 1);
 	}
 }
