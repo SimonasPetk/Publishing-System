@@ -140,7 +140,10 @@ public class ArticlesWindow {
 
 					int rowPressed = tblArticles.rowAtPoint(e.getPoint());
 
-					editorPane.setText(allArticles.get(rowPressed).getSummary());
+					editorPane.setText( allArticles.get(rowPressed).getTitle() + "\n\n" 
+										+ allArticles.get(rowPressed).getAuthorsOfArticle() + "\n\n" 
+										+ allArticles.get(rowPressed).getSummary());
+					articleIndexSelected = rowPressed;
 				} else {
 					editorPane.setText(""); // perhaps there is a method like .clear() or smth similar
 				}
@@ -157,11 +160,13 @@ public class ArticlesWindow {
 		btnDownloadPdf.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				
 				if (articleIndexSelected != -1) {
 					try {
 						PublishedArticle article = allArticles.get(articleIndexSelected);
-						ArrayList<byte[]> versions = RetrieveDatabase.getPDF(article.getArticleId());
-						for (byte[] pdf : versions) {
+						byte[] pdf = RetrieveDatabase.getPDFReader(article.getPdf().getPdfId());
+						
+						if((int) pdf.length > 0) {
 							JFileChooser f = new JFileChooser();
 							f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 							f.showSaveDialog(null);
@@ -170,6 +175,8 @@ public class ArticlesWindow {
 							OutputStream out = new FileOutputStream(f.getSelectedFile() + ".pdf");
 							out.write(pdf); // PDF ID
 							out.close();
+						} else {
+							JOptionPane.showMessageDialog(null, "This article doesn't have a PDF", "Error in download", 0);
 						}
 					} catch (FileNotFoundException fnf) {
 
