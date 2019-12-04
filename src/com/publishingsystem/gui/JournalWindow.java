@@ -214,14 +214,16 @@ public class JournalWindow {
 	                new RegistrationWindow(Role.CHIEFEDITOR);
 			    } else {
 			        if (roles[0] == null) {
-			            // Existing academic (may be just an author and reviewer), need to be registered as an editor
-    		            roles[0] = new Editor(roles[1].getAcademicId(),
-	    	                                  roles[1].getTitle(),
-		                                      roles[1].getForename(),
-		                                      roles[1].getSurname(),
-		                                      roles[1].getEmailId(),
-		                                      roles[1].getUniversity(),
-		                                      roles[1].getHash());		            
+			        	if(roles[1] != null) {
+							roles[0] = new Author(-1, roles[1].getTitle(), roles[1].getForename(), roles[1].getSurname(), roles[1].getEmailId(),
+									roles[1].getUniversity(), null);
+							roles[0].setAcademicId(roles[1].getAcademicId());
+						}
+						else if(roles[2] != null) {
+							roles[0] = new Author(-1, roles[2].getTitle(), roles[2].getForename(), roles[2].getSurname(), roles[2].getEmailId(),
+									roles[2].getUniversity(), null);
+							roles[0].setAcademicId(roles[2].getAcademicId());
+						}     
                         new AddJournal(roles);
 			        } else {
 			            // Existing academic and editor of another article

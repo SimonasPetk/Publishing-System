@@ -96,16 +96,16 @@ public class SubmitArticle {
 		numReviewsOfCoAuthors = new ArrayList<Integer>();
 		Author a = null;
 		if (roles[1] == null) {
-			Academic aca = null;
-			for (Academic role : roles) {
-				if (roles != null) {
-					aca = role;
-					break;
-				}
+			if(roles[0] != null) {
+				a = new Author(-1, roles[0].getTitle(), roles[0].getForename(), roles[0].getSurname(), roles[0].getEmailId(),
+						roles[0].getUniversity(), null);
+				a.setAcademicId(roles[0].getAcademicId());
 			}
-			a = new Author(-1, aca.getTitle(), aca.getForename(), aca.getSurname(), aca.getEmailId(),
-					aca.getUniversity(), null);
-			a.setAcademicId(aca.getAcademicId());
+			else if(roles[2] != null) {
+				a = new Author(-1, roles[2].getTitle(), roles[2].getForename(), roles[2].getSurname(), roles[2].getEmailId(),
+						roles[2].getUniversity(), null);
+				a.setAcademicId(roles[2].getAcademicId());
+			}
 			roles[1] = a;
 		} else {
 			a = (Author) roles[1];
@@ -118,8 +118,7 @@ public class SubmitArticle {
 		this.numReviewsOfCoAuthors.add(numReview);
 		this.coAuthorsModel.clear();
 		for (Author author : coAuthors) {
-			coAuthorsModel
-					.addElement(author.getForename() + " " + author.getSurname() + " (" + author.getEmailId() + ")");
+			coAuthorsModel.addElement(author.getForename() + " " + author.getSurname() + " (" + author.getEmailId() + ")");
 		}
 	}
 
@@ -174,8 +173,6 @@ public class SubmitArticle {
 		coAuthorsModel = new DefaultListModel<>();
 		listOfAuthors = new JList<>(coAuthorsModel);
 		listOfAuthors.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		coAuthorsModel.addElement(
-				mainAuthor.getForename() + " " + mainAuthor.getSurname() + " (" + mainAuthor.getEmailId() + ")");
 		scrPaneAuthors.setViewportView(listOfAuthors);
 
 		String[] listOfAuthors = new String[coAuthors.size()];

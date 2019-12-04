@@ -17,6 +17,10 @@ public class Submission{
 		this.versions.add(pdf);
 	}
 	
+	public void setStatus(SubmissionStatus s) {
+		this.status = s;
+	}
+	
 	public void setReviewersOfSubmission(ArrayList<ReviewerOfSubmission> ros) {
 		this.reviewersOfSubmission = ros;
 	}

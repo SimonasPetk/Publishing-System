@@ -667,7 +667,19 @@ public class Database {
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 			Submission submission = ros.getSubmission();
+			ArrayList<Criticism> criticisms = ros.getReview().getCriticisms();
+			for(Criticism c : criticisms) {
+				String query = "UPDATE CRITICISMS SET ANSWER = ? WHERE criticismID = ?";
+				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+					preparedStmt.setString(1, c.getAnswer());
+					preparedStmt.setInt(2, c.getCriticismId());
 
+					preparedStmt.execute();
+				}catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+			}
+			
 			int numResponded = 0;
 			String query = " SELECT COUNT(*) AS NUMRESPONDED FROM REVIEWS R, CRITICISMS C "
 					+ "WHERE C.SUBMISSIONID = R.SUBMISSIONID "
@@ -685,23 +697,11 @@ public class Database {
 			}
 
 			if(numResponded == 3) {
+				submission.setStatus(SubmissionStatus.RESPONSESRECEIVED);
 				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setString(1, SubmissionStatus.RESPONSESRECEIVED.asString());
 					preparedStmt.setInt(2, submission.getSubmissionId());
-
-					preparedStmt.execute();
-				}catch (SQLException ex) {
-					ex.printStackTrace();
-				}
-			}
-
-			ArrayList<Criticism> criticisms = ros.getReview().getCriticisms();
-			for(Criticism c : criticisms) {
-				query = "UPDATE CRITICISMS SET ANSWER = ? WHERE criticismID = ?";
-				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setString(1, c.getAnswer());
-					preparedStmt.setInt(2, c.getCriticismId());
 
 					preparedStmt.execute();
 				}catch (SQLException ex) {
@@ -943,10 +943,10 @@ public class Database {
             statement.execute("USE "+DATABASE+";");
             
             String query = "INSERT INTO VOLUMES "
-                         + "VALUES (null, " + year + ", 0, " + issn + ");";
+                         + "VALUES (null, " + year + ", " + issn + ");";
             statement.execute(query);
             
-            query = "SELECT last_insert_id() AS last_id FROM VOLUMEs;";
+            query = "SELECT last_insert_id() AS last_id FROM VOLUMES;";
             ResultSet res = statement.executeQuery(query);
             if (res.next()) {
                 result = res.getInt(1);

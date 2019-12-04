@@ -27,8 +27,11 @@ import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 
 import java.awt.Button;
+import java.awt.Dimension;
+
 import javax.swing.JButton;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.SwingConstants;
@@ -71,11 +74,16 @@ public class TransferChiefEditorRole {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(EditorOfJournal chiefEoj, JFrame chiefWindow, Academic[] roles) {
+		int width = 600;
+		int height = 300;
 		frmTransferChiefEditorRole = new JFrame();
 		frmTransferChiefEditorRole.setTitle("Retire as chief editor");
-		frmTransferChiefEditorRole.setBounds(100, 100, 557, 416);
-		// RetireAsChiefEditor window = new RetireAsChiefEditor(null);
+		frmTransferChiefEditorRole.setBounds(100, 100, width, height);
 		frmTransferChiefEditorRole.setVisible(true);
+		
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Dimension screenSize = toolkit.getScreenSize();
+		frmTransferChiefEditorRole.setLocation(screenSize.width / 2 - width / 2, screenSize.height / 2 - height / 2);
 
 		JLabel lblRetireAsChief = new JLabel("Please choose the editor to replace you");
 		lblRetireAsChief.setHorizontalAlignment(SwingConstants.CENTER);
@@ -152,20 +160,36 @@ public class TransferChiefEditorRole {
 		});
 
 		GroupLayout groupLayout = new GroupLayout(frmTransferChiefEditorRole.getContentPane());
-		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup().addGap(188).addComponent(btnUpdate).addGap(35)
-						.addComponent(btnCancel).addGap(162))
-				.addGroup(Alignment.TRAILING,
-						groupLayout.createSequentialGroup().addGap(100)
-								.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE).addGap(100))
-				.addGroup(groupLayout.createSequentialGroup().addGap(50)
-						.addComponent(lblRetireAsChief, GroupLayout.DEFAULT_SIZE, 432, Short.MAX_VALUE).addGap(50)));
-		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup().addContainerGap().addComponent(lblRetireAsChief)
-						.addGap(27).addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 183, Short.MAX_VALUE).addGap(18)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(btnCancel)
-								.addComponent(btnUpdate))
-						.addGap(38)));
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(205)
+					.addComponent(btnUpdate)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnCancel)
+					.addGap(211))
+				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+					.addGap(19)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 559, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(22, Short.MAX_VALUE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(51)
+					.addComponent(lblRetireAsChief, GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+					.addGap(49))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(21)
+					.addComponent(lblRetireAsChief)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnUpdate)
+						.addComponent(btnCancel))
+					.addGap(38))
+		);
 		frmTransferChiefEditorRole.getContentPane().setLayout(groupLayout);
 	}
 }

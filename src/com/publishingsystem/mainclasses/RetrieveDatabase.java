@@ -91,13 +91,15 @@ public class RetrieveDatabase extends Database {
 					+ "AND E.EDID = P.EDID "
 					+ "AND E.PUBLISHED = 0 "
 					+ "AND V.ISSN = ? "
-					+ "GROUP BY VOLID, EDID;";
+					+ "GROUP BY VOLID, EDID";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, issn);
 				ResultSet res = preparedStmt.executeQuery();
 				while(res.next()) {
 					Edition e = new Edition(-1, res.getInt("EDID"));
-					for(int i = 0; i < res.getInt("NUMPUBARTICLES"); i++) {
+					int pubA = res.getInt("NUMPUBARTICLES");
+					System.out.println("NUMBER OF PUB A ISSSSS "+pubA);
+					for(int i = 0; i < pubA; i++) {
 						e.addPublishedArticle(new PublishedArticle(-1, new Article(-1, null, null, null), null, null));
 					}
 					e.setVolume(new Volume(-1, res.getInt("VOLID")));
@@ -249,9 +251,9 @@ public class RetrieveDatabase extends Database {
 				Reviewer reviewer = null;
 				while (res.next()) {
 					if (reviewer == null) {
+						System.out.println("TITLE"+title);
 						reviewer = new Reviewer(res.getInt("ACADEMICID"), res.getInt("REVIEWERID"), title, forename,
 								surname, emailId, university, null);
-						reviewer.setAcademicId(academicId);
 					}
 					if (res.getInt("SUBMISSIONID") != 0) {
 						Article a = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
@@ -556,6 +558,35 @@ public class RetrieveDatabase extends Database {
 		}
 		return null;
 	}
+	
+	public static byte[] getPDFReader(int pdfID) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE " + DATABASE + ";");
+			statement.close();
+			String query = "SELECT PDF.PDFTEXT FROM PDF WHERE PDFID = ?";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, pdfID);
+				ResultSet res = preparedStmt.executeQuery();
+				byte[] pdf = null;
+				
+				if(res.next()) {
+					Blob blob = res.getBlob("PDFTEXT");
+					int blobLength = (int) blob.length();
+					pdf = blob.getBytes(1, blobLength);
+					return pdf;
+				}
+				
+				return null;
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
+	
 
 	public static Journal getJournal(int issn) {
 		Journal result = null;
@@ -583,7 +614,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT V.VOLID, V.YEAR, E.EDID, E.MONTH, P.PUBLISHEDARTICLEID, P.ARTICLEID, P.PAGERANGE, A.TITLE, A.SUMMARY, PDF.PDFID, PDF.NUMPAGES "
+			String query = "SELECT V.VOLID, V.YEAR, E.PUBLISHED, E.EDID, E.MONTH, P.PUBLISHEDARTICLEID, P.ARTICLEID, A.TITLE, A.SUMMARY, PDF.PDFID, PDF.NUMPAGES "
 					+ "FROM VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, PDF "
 					+ "WHERE V.ISSN = ? AND V.VOLID = E.VOLID AND E.EDID = P.EDID AND P.ARTICLEID = A.ARTICLEID AND A.PDFID = PDF.PDFID;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
@@ -594,6 +625,7 @@ public class RetrieveDatabase extends Database {
 				ArrayList<PublishedArticle> articlesPublished = new ArrayList<PublishedArticle>();
 				Volume vol = null;
 				Edition ed = null;
+				PDF pdf = null;
 				int volNumber = 1;   
 				int edNumber = 1;
 				int cPages = 0;
@@ -603,6 +635,8 @@ public class RetrieveDatabase extends Database {
 					
 					cPages = res.getInt("NUMPAGES") + pPages;
 					String pageRange = Integer.toString(pPages) + " - " + Integer.toString(cPages);
+					
+					pdf = new PDF(res.getInt("PDFID"), null, null);
 					
 					if (res.getBoolean("PUBLISHED")) {
 						if (vol == null || vol.getVolumeId() != res.getInt("VOLID")) {
@@ -616,17 +650,19 @@ public class RetrieveDatabase extends Database {
 							
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
-								PublishedArticle PublishedArticle = new PublishedArticle(
+								PublishedArticle publishedArticle = new PublishedArticle(
 										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
-								articlesPublished.add(PublishedArticle);
+								publishedArticle.setPDF(pdf);
+								articlesPublished.add(publishedArticle);
 								
 							} else {
 
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
-								PublishedArticle PublishedArticle = new PublishedArticle(
+								PublishedArticle publishedArticle = new PublishedArticle(
 										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
-								articlesPublished.add(PublishedArticle);
+								publishedArticle.setPDF(pdf);
+								articlesPublished.add(publishedArticle);
 							}
 						} else {
 							if (ed == null || ed.getEditionId() != res.getInt("EDID")) {
@@ -635,13 +671,15 @@ public class RetrieveDatabase extends Database {
 								edNumber++;
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
-								PublishedArticle PublishedArticle = new PublishedArticle(
+								PublishedArticle publishedArticle = new PublishedArticle(
 										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
-								articlesPublished.add(PublishedArticle);
+								publishedArticle.setPDF(pdf);
+								articlesPublished.add(publishedArticle);
 							} else {
 
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
+								article.setPDF(pdf);
 								PublishedArticle PublishedArticle = new PublishedArticle(
 										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
 								articlesPublished.add(PublishedArticle);
@@ -659,6 +697,35 @@ public class RetrieveDatabase extends Database {
 
 		return null;
 	}
+	
+	public static ArrayList<AuthorOfArticle> getAuthors(int articleID) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE " + DATABASE + ";");
+			String query = "SELECT AUT.AUTHORNAME, AOA.MAINAUTHOR, AUT.EMAILADDRESS "
+					+ "FROM AUTHOROFARTICLE AOA, AUTHORS AUT "
+					+ "WHERE AOA.ARTICLEID = ? AND AOA.AUTHORID = AUT.AUTHORID;";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, articleID);
+				System.out.println(preparedStmt);
+				ResultSet res = preparedStmt.executeQuery();
+				ArrayList<AuthorOfArticle> authors = new ArrayList<AuthorOfArticle>();
+				
+				while (res.next()) {
+					Author au = new Author(-1, null, res.getString("AUTHORNAME"), null, res.getString("EMAILADDRESS"), null, null);
+					AuthorOfArticle aoa = new AuthorOfArticle(null, au, res.getBoolean("MAINAUTHOR"));
+					authors.add(aoa);
+				}
+				
+				return authors;
+			} 
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
+
 
 	// SELECT J.ISSN, V.VOLNUM, E.EDNUM, P.ARTICLEID, A.ARTICLEID, AUT.AUTHORID,
 	// AUTS.AUTHORNAME FROM JOURNALS J, VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P,
@@ -945,7 +1012,7 @@ public class RetrieveDatabase extends Database {
             // select the most recent volume for this journal
             String query = "SELECT volId, year "
                     + "FROM VOLUMES "
-                    + "WHERE ISSN = " + issn + " AND published = 0 "
+                    + "WHERE ISSN = " + issn +" "
                     + "ORDER BY volId DESC LIMIT 1;";
             ResultSet res = statement.executeQuery(query);
             if (res.next()) {

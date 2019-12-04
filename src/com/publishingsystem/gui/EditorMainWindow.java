@@ -1,4 +1,5 @@
 package com.publishingsystem.gui;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -33,12 +34,14 @@ import com.publishingsystem.mainclasses.PublishedArticle;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.Review;
 import com.publishingsystem.mainclasses.ReviewerOfSubmission;
+import com.publishingsystem.mainclasses.Role;
 import com.publishingsystem.mainclasses.Submission;
 import com.publishingsystem.mainclasses.Verdict;
 import com.publishingsystem.mainclasses.Volume;
 
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.Window;
 
 import javax.swing.JTextArea;
@@ -114,12 +117,17 @@ public class EditorMainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Academic[] roles) {
+		int width = 1080;
+		int height = 740;
 		frmDashboard = new JFrame();
 		frmDashboard.setTitle("Editor's Dashboard");
-		frmDashboard.setBounds(100, 100, 1000, 795);
+		frmDashboard.setBounds(100, 100, width, height);
 		frmDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmDashboard.setVisible(true);
 		
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Dimension screenSize = toolkit.getScreenSize();
+		frmDashboard.setLocation(screenSize.width / 2 - width / 2, screenSize.height / 2 - height / 2);
 		
 		for(EditorOfJournal eoj : this.editor.getEditorOfJournals()) {
 			boolean hasClash = RetrieveDatabase.editorOfJournalHasClash(eoj);
@@ -127,8 +135,10 @@ public class EditorMainWindow {
 			if(hasClash && !eoj.isTempRetired()) {
 				if(eoj.isChiefEditor() && RetrieveDatabase.getEditorsOfJournal(eoj.getJournal()).size() == 1) {
 					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName()+"\nPlease add a new editor for this Journal who will be the Chief Editor.");
+					new TransferChiefEditorRole(eoj, frmDashboard , roles);
 				}else if(eoj.isChiefEditor()) {
 					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName()+"\nPlease select a new Chief Editor for this Journal.");
+					new RegistrationWindow(Role.EDITOR, eoj, eoj.getJournal());
 				}else {
 					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName());	
 				}
@@ -334,9 +344,6 @@ public class EditorMainWindow {
 	                });
                 }else {
                 	selectedSubmissionRow = -1;
-                	DefaultListModel listModel = (DefaultListModel) list.getModel();
-                    listModel.removeAllElements();
-                    
                     JOptionPane.showMessageDialog(null, "You cannot process this submission as you have been retired from the board of editors for the journal to which it is submitted.", "Cannot process", 0);
                 }
 			}
