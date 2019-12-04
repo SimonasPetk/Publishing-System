@@ -251,9 +251,9 @@ public class RetrieveDatabase extends Database {
 				Reviewer reviewer = null;
 				while (res.next()) {
 					if (reviewer == null) {
+						System.out.println("TITLE"+title);
 						reviewer = new Reviewer(res.getInt("ACADEMICID"), res.getInt("REVIEWERID"), title, forename,
 								surname, emailId, university, null);
-						reviewer.setAcademicId(academicId);
 					}
 					if (res.getInt("SUBMISSIONID") != 0) {
 						Article a = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
