@@ -516,6 +516,30 @@ public class Database {
 				}catch (SQLException ex) {
 					ex.printStackTrace();
 				}
+				
+				boolean submissionExists = false;
+				query = "SELECT 1 FROM SUBMISSIONS WHERE ARTICLEID = ?";
+				try(PreparedStatement preparedStmt1 = con.prepareStatement(query)){
+					preparedStmt1.setInt(1, articleId);
+					ResultSet res = preparedStmt1.executeQuery();
+					if(res.next())
+						submissionExists = true;
+				}catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+				
+				if(!submissionExists) {
+					query = "DELETE Art.*, Aoa.*, A.* "
+							+ "ARTICLES Art INNER JOIN AUTHOROFARTICLE Aoa ON Art.ARTICLEID = Aoa.ARTICLEID "
+							+ "INNER JOIN AUTHORS A ON Aoa.AUTHORID = A.AUTHORID "
+							+ "WHERE Art.NUMREVIEWS = 3 AND Art.ARTICLEID = ?";
+					try(PreparedStatement preparedStmt1 = con.prepareStatement(query)){
+						preparedStmt1.setInt(1, articleId);
+						preparedStmt1.execute();
+					}catch (SQLException ex) {
+						ex.printStackTrace();
+					}
+				}
 			}
 			
 		}catch (SQLException ex) {
@@ -898,7 +922,7 @@ public class Database {
             String query = "INSERT INTO EDITIONS "
                          + "VALUES (null, " + volNum + ", 0, " + month + ");";
             statement.execute(query);
-            
+         
             query = "SELECT last_insert_id() AS last_id FROM EDITIONS;";
             ResultSet res = statement.executeQuery(query);
             if (res.next()) {
@@ -996,22 +1020,31 @@ public class Database {
 		 }
 	}
     
-	public static void rejectSubmission(int submissionId) {
+	public static void rejectSubmission(Submission s) {
 		 try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			String query = "DELETE S.*, P.*, Ros.*, Rev.*, C.*, Art.*, Aoa.*, A.* "
-					+ "FROM SUBMISSIONS S INNER JOIN PDF P ON S.SUBMISSIONID = P.SUBMISSIONID "
-					+ "INNER JOIN REVIEWEROFSUBMISSION Ros ON S.SUBMISSIONID = Ros.SUBMISSIONID "
+			
+			String query = "DELETE Art.*, Aoa.*, A.* "
+					+ "ARTICLES Art INNER JOIN AUTHOROFARTICLE Aoa ON Art.ARTICLEID = Aoa.ARTICLEID "
+					+ "INNER JOIN AUTHORS A ON Aoa.AUTHORID = A.AUTHORID "
+					+ "WHERE Art.NUMREVIEWS = 3 AND Art.ARTICLEID = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, s.getArticle().getArticleId());
+				preparedStmt.execute();
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			
+			query = "DELETE S.*, Ros.*, Rev.*, C.* "
+					+ "FROM SUBMISSIONS S INNER JOIN REVIEWEROFSUBMISSION Ros ON S.SUBMISSIONID = Ros.SUBMISSIONID "
 					+ "INNER JOIN REVIEWS Rev ON Rev.SUBMISSIONID = Ros.SUBMISSIONID "
 					+ "INNER JOIN CRITICISMS C ON C.SUBMISSIONID = Rev.SUBMISSIONID "
-					+ "INNER JOIN ARTICLES Art ON S.ARTICLEID = Art.ARTICLEID "
-					+ "INNER JOIN AUTHOROFARTICLE Aoa ON Art.ARTICLEID = Aoa.ARTICLEID "
-					+ "INNER JOIN AUTHORS A ON Aoa.AUTHORID = A.AUTHORID "
-					+ "WHERE S.SUBMISSIONID = ?";
+					+ "WHERE S.SUBMISSIONID = ?";;
+			
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.setInt(1, submissionId);
+				preparedStmt.setInt(1, s.getSubmissionId());
 				preparedStmt.execute();
 			}catch (SQLException ex) {
 				ex.printStackTrace();

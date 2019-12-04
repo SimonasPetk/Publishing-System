@@ -61,57 +61,62 @@ public class ChooseArticlesToReview {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Reviewer reviewer, int articleId, ReviewerMainWindow rmw) {
+		int width = 600;
+		int height = 300;
 		ArticlesToReview = new JFrame();
 		ArticlesToReview.setTitle("Choose What to Review");
-		ArticlesToReview.setBounds(100, 100, 683, 402);
+		ArticlesToReview.setBounds(100, 100, width, height);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-		JLabel lblNewLabel = new JLabel("Choose What Articles You Want to Review");
+		JLabel lblNewLabel = new JLabel("Choose Articles You Want to Review");
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
-
-		JLabel lblArticlesChosen = new JLabel("Number of Articles Chosen:");
-		lblArticlesChosen.setFont(new Font("Tahoma", Font.PLAIN, 15));
-
-		JLabel lblNumberOfArticles = new JLabel("Update this according to the number of articles");
-		lblNumberOfArticles.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 		JButton btnSelectArticles = new JButton("Select articles");
 		btnSelectArticles.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GroupLayout groupLayout = new GroupLayout(ArticlesToReview.getContentPane());
-		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING,
-						groupLayout.createSequentialGroup().addGap(50)
-								.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 383, Short.MAX_VALUE).addGap(50))
-				.addGroup(groupLayout.createSequentialGroup().addGap(200)
-						.addComponent(btnSelectArticles, GroupLayout.PREFERRED_SIZE, 65, Short.MAX_VALUE).addGap(200))
-				.addGroup(groupLayout.createSequentialGroup().addGap(30)
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
-								.addGroup(groupLayout.createSequentialGroup().addComponent(lblArticlesChosen)
-										.addPreferredGap(ComponentPlacement.RELATED).addComponent(lblNumberOfArticles)))
-						.addGap(30)));
-		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup().addContainerGap().addComponent(lblNewLabel).addGap(15)
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 233, GroupLayout.PREFERRED_SIZE)
-						.addGap(10)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblArticlesChosen)
-								.addComponent(lblNumberOfArticles))
-						.addGap(10).addComponent(btnSelectArticles).addContainerGap(48, Short.MAX_VALUE)));
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(163)
+					.addComponent(btnSelectArticles, GroupLayout.PREFERRED_SIZE, 283, Short.MAX_VALUE)
+					.addGap(154))
+				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+					.addGap(30)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 536, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(34, Short.MAX_VALUE))
+				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+					.addGap(50)
+					.addComponent(lblNewLabel, GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE)
+					.addGap(50))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(15)
+					.addComponent(lblNewLabel)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 184, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnSelectArticles, GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+					.addGap(12))
+		);
 
 		ArrayList<Submission> submissionsToReview = RetrieveDatabase.getSubmissions(reviewer);
 		DefaultTableModel str_model = new DefaultTableModel();
-		str_model.addColumn("Article ID");
+		str_model.addColumn("No.");
 		str_model.addColumn("Title");
 		str_model.addColumn("Select");
+		int counter = 1;
 		for (Submission s : submissionsToReview) {
 			Object[] submissionString = new Object[4];
-			submissionString[0] = s.getArticle().getArticleId();
+			submissionString[0] = String.valueOf(counter);
 			submissionString[1] = s.getArticle().getTitle();
 			submissionString[2] = false;
 			str_model.addRow(submissionString);
+			counter++;
 		}
 
 		tblToReview = new JTable(str_model) {
@@ -139,6 +144,11 @@ public class ChooseArticlesToReview {
 		tblToReview.getColumnModel().getColumn(0).setResizable(false);
 		tblToReview.getColumnModel().getColumn(1).setResizable(false);
 		tblToReview.getColumnModel().getColumn(2).setResizable(false);
+		tblToReview.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
+		tblToReview.getColumnModel().getColumn(0).setPreferredWidth(1);
+		tblToReview.getColumnModel().getColumn(1).setPreferredWidth(300);
+		tblToReview.getColumnModel().getColumn(2).setPreferredWidth(50);
+		tblToReview.setFont(new Font("Tahoma", Font.PLAIN, 16));
 
 		btnSelectArticles.addMouseListener(new MouseAdapter() {
 			@Override

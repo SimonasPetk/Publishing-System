@@ -152,7 +152,7 @@ public class AuthorMainWindow {
 				return columnEditables[column];
 			}
 		};;
-		tblSubmittedModel.addColumn("Article ID");
+		tblSubmittedModel.addColumn("No.");
 		tblSubmittedModel.addColumn("Main Author");
 		tblSubmittedModel.addColumn("Title");
 		tblSubmittedModel.addColumn("Status");
@@ -161,7 +161,7 @@ public class AuthorMainWindow {
 			AuthorOfArticle aoa = authorOfArticles.get(i);
 			Article article = aoa.getArticle();
 			String[] articles = new String[4];
-			articles[0] = "  " + String.valueOf(article.getArticleId());
+			articles[0] = "  " + String.valueOf(i+1);
 			articles[1] = aoa.isMainAuthor() ? "Yes" : "No";
 			articles[2] = article.getTitle();
 			articles[3] = article.getSubmission().getStatus().getStatus();

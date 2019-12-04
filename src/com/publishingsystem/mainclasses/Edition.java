@@ -30,6 +30,14 @@ public class Edition {
 	    this.published = true;
 	}
 	
+	public static int getMaxarticles() {
+		return maxArticles;
+	}
+
+	public static int getMinarticles() {
+		return minArticles;
+	}
+
 	public void addPublishedArticles(ArrayList<PublishedArticle> articles) {
 	    for (PublishedArticle a : articles) {
 	        a.setEdition(this);

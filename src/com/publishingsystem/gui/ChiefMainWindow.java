@@ -164,11 +164,15 @@ public class ChiefMainWindow {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				if(editionToBePublished != -1) {
-					Database.publishEdition(editions.get(editionToBePublished).getEditionId());
-					JOptionPane.showMessageDialog(null, "Edition published", "Publishing Edition", 1);
-					editions.remove(editionToBePublished);
-					refreshEditionTable();
-					editionToBePublished = -1;
+					Edition edition = editions.get(editionToBePublished);
+					if(edition.getArticles().size() > Edition.getMinarticles()) {
+						Database.publishEdition(edition.getEditionId());
+						JOptionPane.showMessageDialog(null, "Edition published", "Publishing Edition", 1);
+						editions.remove(editionToBePublished);
+						refreshEditionTable();
+						editionToBePublished = -1;
+					}else
+						JOptionPane.showMessageDialog(null, "Please wait till the minimum number of articles inside an edition are added", "Error", 0);
 					
 				}else
 					JOptionPane.showMessageDialog(null, "Please select an edition to publish", "Error", 0);

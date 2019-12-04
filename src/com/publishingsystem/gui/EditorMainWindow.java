@@ -185,8 +185,17 @@ public class EditorMainWindow {
 		            } else if (verdictCount[3] == 3) {
 		                // 3 strong reject = reject
 		                JOptionPane.showMessageDialog(null, "Submission has received 3 Strong Rejects and has been rejected.", "Rejected", 1);
+		                Database.rejectSubmission(selectedSubmission);
 		                remove = true;
-		            } else if ((verdictCount[0] > 0 && verdictCount[3] > 0) || ((verdictCount[0] == 1 || verdictCount[3] == 1) && verdictCount[1] > 0 && verdictCount[2] > 0)) {
+		            }else if(verdictCount[0] == 1  && verdictCount[1] > 0 && verdictCount[2] > 0) {
+		            	JOptionPane.showMessageDialog(null, "Submission has received 1 Strong Accept and has been accepted.", "Accepted", 1);
+		            	acceptSubmission(selectedSubmission);
+		            	remove = true;
+		            }else if(verdictCount[3] == 1 && verdictCount[1] > 0 && verdictCount[2] > 0) {
+		            	JOptionPane.showMessageDialog(null, "Submission has received 1 Strong Reject and has been rejected.", "Rejected", 1);
+		            	Database.rejectSubmission(selectedSubmission);
+		            	remove = true;
+		            }else if (verdictCount[0] > 0 && verdictCount[3] > 0) {
 		                // at least 1 strong accept and 1 strong reject + any = discuss
 		                    // Strong Accept, Strong Reject, Strong Accept
 		                    // Strong Accept, Strong Reject, Weak Accept
@@ -207,6 +216,7 @@ public class EditorMainWindow {
 		                } else if (selectedFunction == 1) {
 		                    // editor has selected to reject the submission
 		                    JOptionPane.showMessageDialog(null, "Submission has been rejected.", "Rejected", 1);
+		                    Database.rejectSubmission(selectedSubmission);
 		                    remove = true;
 		                }
 		            }else {
@@ -220,6 +230,7 @@ public class EditorMainWindow {
 		                } else {
 		                    // 1 weak accept, 2 weak rejects = reject
 		                    JOptionPane.showMessageDialog(null, "Submission has received more Weak Rejects than Weak Accepts and has been rejected.", "Rejected", 1);
+		                    Database.rejectSubmission(selectedSubmission);
 		                    remove = true;
 		                }
 		            }
