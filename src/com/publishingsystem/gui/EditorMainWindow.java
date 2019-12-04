@@ -268,20 +268,21 @@ public class EditorMainWindow {
                 System.out.println(selectedSubmissionId);
                 
                 // get verdicts
-                ArrayList<Verdict[]> listVerdicts = RetrieveDatabase.getVerdicts(selectedSubmissionId);
-                for (Verdict[] ver : listVerdicts) System.out.println("[" + ver[0] + ", " + ver[1] + "]");
-                
-                int i = 0;
-                for (Verdict[] ver : listVerdicts) {
-                    finalVerdicts[i] = ver[1];
-                    i++;
-                }
+                Verdict[] verdicts = RetrieveDatabase.getVerdicts(selectedSubmissionId);
+                System.out.println(verdicts);
 
+                // convert to strings
+                String[] strVerdicts = new String[3];
+                for (int i=0; i<3; i++) {
+                    if (verdicts[i] == null) strVerdicts[i] = "No Verdict";
+                    else strVerdicts[i] = verdicts[i].toString();
+                }
+                
                 // display verdicts
                 list.setModel(new AbstractListModel() {
-                    String[] values = new String[] {finalVerdicts[0].toString(),
-                                                    finalVerdicts[1].toString(),
-                                                    finalVerdicts[2].toString()};
+                    String[] values = new String[] {strVerdicts[0],
+                                                    strVerdicts[1],
+                                                    strVerdicts[2]};
                     public int getSize() {
                         return values.length;
                     }

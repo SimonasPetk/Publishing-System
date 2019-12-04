@@ -818,46 +818,31 @@ public class RetrieveDatabase extends Database {
 	}
 
 	/**
-	 * getVerdicts
+	 * getFinalVerdicts
 	 *
-	 * Get the initial and final verdicts of the three reviews of submissionID. If
-	 * there are less than 3 reviews or there is no final verdict, Verdict.NOVERDICT
-	 * will be recorded
-	 *
+	 * Get the final verdicts of the three reviews of submissionID. 
+	 * If there are less than 3 final verdicts, nulls will be returned instead
+	 * 
 	 * @param submissionID The ID of the submission
-	 * @return 3 pairs of 2 Verdicts (0th is initial, 1st is final)
+	 * @return Array of final verdicts
 	 */
-	public static ArrayList<Verdict[]> getVerdicts(int submissionID) {
-		ArrayList<Verdict[]> results = new ArrayList<Verdict[]>();
+	public static Verdict[] getVerdicts(int submissionID) {
+		Verdict[] results = new Verdict[3];
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
 
-			// Get initial and final verdicts of submissionID
-			String query = "SELECT initialVerdict, finalVerdict FROM REVIEWS WHERE submissionID = " + submissionID
-					+ ";";
+			String query = "SELECT finalVerdict "
+			             + "FROM REVIEWS WHERE submissionID = " + submissionID + ";";
 			ResultSet res = statement.executeQuery(query);
 
-			// Add to results
 			int i = 0;
 			while (res.next()) {
-				String initialVerdict = res.getString(1);
-				String finalVerdict = res.getString(2);
-				System.out.println("init: " + initialVerdict);
-				System.out.println("final: " + finalVerdict);
-				if (finalVerdict == null) {
-					// Keep finalVerdict as NOVERDICT
-					results.add(new Verdict[] { Verdict.valueOf(initialVerdict), Verdict.NOVERDICT });
-				} else {
-					results.add(new Verdict[] { Verdict.valueOf(initialVerdict), Verdict.valueOf(finalVerdict) });
-				}
+				String finalVerdict = res.getString(1);
+				System.out.println("final verdict " + i + ": " + finalVerdict);
+				if (finalVerdict == null) results[i] = null;
+				else results[i] = Verdict.valueOf(finalVerdict);
 				i = i + 1;
-			}
-
-			// Add NOVERDICTS if there are not 3 reviews
-			while (i < 3) {
-				results.add(new Verdict[] { Verdict.NOVERDICT, Verdict.NOVERDICT });
-				i++;
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -1033,7 +1018,7 @@ public class RetrieveDatabase extends Database {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
 
-            String query = "SELECT volNum, year "
+            String query = "SELECT volId, year "
                          + "FROM VOLUMES "
                          + "WHERE issn = " + issn + ";";
             ResultSet res = statement.executeQuery(query);
