@@ -117,15 +117,17 @@ public class ReviewerMainWindow {
 		str_model.addColumn("Title");
 		str_model.addColumn("Reviewed");
 		str_model.addColumn("Responses Recieved");
+		str_model.addColumn("Revised PDF Recieved");
 		int counter = 1;
 		for (ReviewerOfSubmission ros : submissionsChosenToReview) {
 			Submission s = ros.getSubmission();
 			Review r = ros.getReview();
-			Object[] submissionString = new Object[4];
+			Object[] submissionString = new Object[5];
 			submissionString[0] = counter;
 			submissionString[1] = s.getArticle().getTitle();
 			submissionString[2] = r == null ? "No" : "Yes";
 			submissionString[3] = r == null ? "" : (r.responsesRecieved() ? "Yes" : "No");
+			submissionString[4] = RetrieveDatabase.getNumPDF(s.getSubmissionId()) == 2 ? "Yes" : "No";
 			str_model.addRow(submissionString);
 		}
 	}
@@ -424,30 +426,33 @@ public class ReviewerMainWindow {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				String v = String.valueOf(cmbVerdict.getSelectedItem()).replaceAll("\\s+", "");
-				if (v.equals("SELECT")) {
-					JOptionPane.showMessageDialog(null, "Please select a final verdict", "Error in submission", 0);
-				} else {
-					ReviewerOfSubmission ros = submissionsChosenToReview.get(submissionRowSelectedToReview);
-					ros.getReview().setFinalVerdict(Verdict.valueOf(v));
-					Database.setVerdict(ros);
-					submissionsChosenToReview.remove(submissionRowSelectedToReview);
-					refreshChooseToReviewTable();
-					pnlVerdict.setVisible(false);
-					panel_review.setVisible(false);
-					panelMainReview.setVisible(false);
-					textAreaArticleTitle.setText("");
-					textAreaArticleSummary.setText("");
-					lblArticle.setText("Article: ");
-					if (RetrieveDatabase.getNumberOfReviewsToBeDone(reviewer.getReviewerId()) == 0
-							&& submissionsChosenToReview.size() == 0) {
-						Database.deleteReviewer(reviewer.getReviewerId());
-						frmReviewDashboard.dispose();
-						roles[2] = null;
-						JOptionPane.showMessageDialog(null,
-								"Thank you for completing all your Reviewer responsibilities.");
-						new JournalWindow(roles);
+				ReviewerOfSubmission ros = submissionsChosenToReview.get(submissionRowSelectedToReview);
+				if(RetrieveDatabase.getNumPDF(ros.getSubmission().getSubmissionId()) == 2) {
+					if (v.equals("SELECT")) {
+						JOptionPane.showMessageDialog(null, "Please select a final verdict", "Error in submission", 0);
+					} else {
+						ros.getReview().setFinalVerdict(Verdict.valueOf(v));
+						Database.setVerdict(ros);
+						submissionsChosenToReview.remove(submissionRowSelectedToReview);
+						refreshChooseToReviewTable();
+						pnlVerdict.setVisible(false);
+						panel_review.setVisible(false);
+						panelMainReview.setVisible(false);
+						textAreaArticleTitle.setText("");
+						textAreaArticleSummary.setText("");
+						lblArticle.setText("Article: ");
+						if (RetrieveDatabase.getNumberOfReviewsToBeDone(reviewer.getReviewerId()) == 0
+								&& submissionsChosenToReview.size() == 0) {
+							Database.deleteReviewer(reviewer.getReviewerId());
+							frmReviewDashboard.dispose();
+							roles[2] = null;
+							JOptionPane.showMessageDialog(null,
+									"Thank you for completing all your Reviewer responsibilities.");
+							new JournalWindow(roles);
+						}
 					}
-				}
+				}else
+					JOptionPane.showMessageDialog(null, "The author has yet to submit a revised version. \nPlease wait till the revised version is submitted.", "Error in submission", 1);
 			}
 		});
 
@@ -476,17 +481,24 @@ public class ReviewerMainWindow {
 		if (submissionsChosenToReview.size() == 0)
 			panelChosenToReview.setVisible(false);
 
-		DefaultTableModel str_model1 = new DefaultTableModel();
+		DefaultTableModel str_model1 = new DefaultTableModel() {
+			boolean[] columnEditables = new boolean[] { false, false, false, false, false};
+
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		};;
 		tblChooseToReview = new JTable(str_model1);
 		refreshChooseToReviewTable();
 		tblChooseToReview.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
 		tblChooseToReview.getColumnModel().getColumn(0).setPreferredWidth(1);
-		tblChooseToReview.getColumnModel().getColumn(1).setPreferredWidth(200);
-		tblChooseToReview.getColumnModel().getColumn(2).setPreferredWidth(10);
-		tblChooseToReview.getColumnModel().getColumn(3).setPreferredWidth(200);
+		tblChooseToReview.getColumnModel().getColumn(1).setPreferredWidth(100);
+		tblChooseToReview.getColumnModel().getColumn(2).setPreferredWidth(100);
+		tblChooseToReview.getColumnModel().getColumn(3).setPreferredWidth(100);
+		tblChooseToReview.getColumnModel().getColumn(4).setPreferredWidth(100);
 		tblChooseToReview.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		tblChooseToReview.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		tblChooseToReview.setEnabled(false);
+		
 		scrChosenToReview.setViewportView(tblChooseToReview);
 		tblChooseToReview.addMouseListener(new MouseAdapter() {
 			@Override

@@ -241,9 +241,9 @@ public class AuthorMainWindow {
 			public void mousePressed(MouseEvent e) {
 				Submission s =selectedAoa.getArticle().getSubmission();
 				int numPDF = RetrieveDatabase.getNumPDF(s.getSubmissionId());
-				int dialogResult = JOptionPane.showConfirmDialog (null, "You will only be able to upload a revised submission once. Are you sure?","Warning", 0);
-				if(dialogResult == JOptionPane.YES_OPTION){
-					if(numPDF == 1) {
+				if(numPDF == 1) {
+					int dialogResult = JOptionPane.showConfirmDialog (null, "You will only be able to upload a revised submission once. Are you sure?","Warning", 0);
+					if(dialogResult == JOptionPane.YES_OPTION){
 						if (pdfPath == null) {
 							FileDialog fd = new FileDialog(new JFrame());
 							fd.setVisible(true);
@@ -260,9 +260,9 @@ public class AuthorMainWindow {
 						} else {
 							JOptionPane.showMessageDialog(null, "PDF already uploaded", "Error in submission", 0);
 						}
-					}else {
-						JOptionPane.showMessageDialog(null, "You have already uploaded the revised PDF", "Error in submission", 0);
 					}
+				}else {
+					JOptionPane.showMessageDialog(null, "You have already uploaded the revised PDF", "Error in submission", 0);
 				}
 			}
 		});
