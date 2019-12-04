@@ -13,7 +13,7 @@ public class Edition {
 	
 	
 	public Edition(int editionMonth, int editionId) {
-	    this.articles = RetrieveDatabase.getPublishedArticles(editionId);
+	    this.articles = new ArrayList<PublishedArticle>();
 		this.editionMonth = editionMonth;
 		this.editionNumber = -1;
 		this.editionId = editionId;
@@ -29,18 +29,16 @@ public class Edition {
 		this.volume = vol;
 	    this.published = true;
 	}
-
-	
-	public void addPublishedArticle(PublishedArticle a) {
-	    a.setEdition(this);
-	    this.articles.add(a);
-	}
 	
 	public void addPublishedArticles(ArrayList<PublishedArticle> articles) {
 	    for (PublishedArticle a : articles) {
 	        a.setEdition(this);
 	        this.articles.add(a);
 	    }
+	}
+	
+	public void addPublishedArticle(PublishedArticle article) {
+	    this.articles.add(article);
 	}
 	
 	public void setEditionMonth(int editionMonth) {

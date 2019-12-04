@@ -929,7 +929,7 @@ public class Database {
                          + "VALUES (null, " + year + ", " + issn + ");";
             statement.execute(query);
             
-            query = "SELECT last_insert_id() AS last_id FROM VOLUMEs;";
+            query = "SELECT last_insert_id() AS last_id FROM VOLUMES;";
             ResultSet res = statement.executeQuery(query);
             if (res.next()) {
                 result = res.getInt(1);

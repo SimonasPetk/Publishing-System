@@ -91,13 +91,15 @@ public class RetrieveDatabase extends Database {
 					+ "AND E.EDID = P.EDID "
 					+ "AND E.PUBLISHED = 0 "
 					+ "AND V.ISSN = ? "
-					+ "GROUP BY VOLID, EDID;";
+					+ "GROUP BY VOLID, EDID";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, issn);
 				ResultSet res = preparedStmt.executeQuery();
 				while(res.next()) {
 					Edition e = new Edition(-1, res.getInt("EDID"));
-					for(int i = 0; i < res.getInt("NUMPUBARTICLES"); i++) {
+					int pubA = res.getInt("NUMPUBARTICLES");
+					System.out.println("NUMBER OF PUB A ISSSSS "+pubA);
+					for(int i = 0; i < pubA; i++) {
 						e.addPublishedArticle(new PublishedArticle(-1, new Article(-1, null, null, null), null, null));
 					}
 					e.setVolume(new Volume(-1, res.getInt("VOLID")));
