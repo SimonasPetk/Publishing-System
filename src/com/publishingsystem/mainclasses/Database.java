@@ -785,6 +785,23 @@ public class Database {
 		}
 		return false;
 	}
+	
+	public static void changePassword(int academicId, String hash, String salt) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
+			String query = "UPDATE ACADEMICS SET hash = '" + hash + "', salt = '" + salt + "' WHERE academicID = " + academicId;
+			System.out.println(query);
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.execute(query);
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+	}
 
 	public static boolean validateCredentials(String email, String password) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {

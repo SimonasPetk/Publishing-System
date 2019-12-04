@@ -352,7 +352,7 @@ public class AuthorMainWindow {
 		mntmChangePassword.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				new ChangePassword();
+				new ChangePassword(author.getEmailId());
 			}
 		});
 		menu.add(mntmChangePassword);

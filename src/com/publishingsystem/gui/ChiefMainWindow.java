@@ -319,7 +319,7 @@ public class ChiefMainWindow {
 		menuItem.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				new ChangePassword();
+				new ChangePassword(editor.getEmailId());
 			}
 		});
 		mnMenu.add(menuItem);

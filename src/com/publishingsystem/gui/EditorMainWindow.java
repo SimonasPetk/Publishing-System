@@ -384,7 +384,7 @@ public class EditorMainWindow {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				System.out.print(0);
-				new ChangePassword();
+				new ChangePassword(editor.getEmailId());
 				
 			}
 		});
