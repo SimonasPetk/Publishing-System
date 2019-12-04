@@ -352,6 +352,7 @@ public class AuthorMainWindow {
 		frmAuthorsDashboard.setJMenuBar(menuBar);
 
 		JMenu name = new JMenu("Welcome back " + author.getForename());
+		name.setEnabled(false);
 		menuBar.add(name);
 
 		JMenu menu = new JMenu("Menu");

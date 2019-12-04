@@ -112,7 +112,8 @@ public class ArticlesWindow {
 			tableContents[i][1] = currentArticle.getAuthorsOfArticle().toString();
 			tableContents[i][2] = Integer.toString(currentArticle.getEdition().getVolume().getVolumeNumber()) + "."
 								  + Integer.toString(currentArticle.getEdition().getEditionNumber());
-			tableContents[i][3] = currentArticle.getPdf().getDate();
+			tableContents[i][3] = Integer.toString(currentArticle.getEdition().getVolume().getYear()) + "/" 
+								  +  Integer.toString(currentArticle.getEdition().getEditionMonth());
 			tableContents[i][4] = currentArticle.getPageRange();
 		}
 
