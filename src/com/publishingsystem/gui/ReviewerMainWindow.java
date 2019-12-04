@@ -487,7 +487,7 @@ public class ReviewerMainWindow {
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
 			}
-		};;
+		};
 		tblChooseToReview = new JTable(str_model1);
 		refreshChooseToReviewTable();
 		tblChooseToReview.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -583,7 +583,13 @@ public class ReviewerMainWindow {
 			JPanel panel_1 = new JPanel();
 			panel.add(panel_1, BorderLayout.SOUTH);
 
-			DefaultTableModel str_model = new DefaultTableModel();
+			DefaultTableModel str_model = new DefaultTableModel() {
+				boolean[] columnEditables = new boolean[] { false, false, false};
+
+				public boolean isCellEditable(int row, int column) {
+					return columnEditables[column];
+				}
+			};
 
 			tblToReview = new JTable(str_model);
 			refreshToReviewTable();

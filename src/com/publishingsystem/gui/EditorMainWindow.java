@@ -1,4 +1,5 @@
 package com.publishingsystem.gui;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -40,6 +41,7 @@ import com.publishingsystem.mainclasses.Volume;
 
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.Window;
 
 import javax.swing.JTextArea;
@@ -115,12 +117,17 @@ public class EditorMainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Academic[] roles) {
+		int width = 1080;
+		int height = 740;
 		frmDashboard = new JFrame();
 		frmDashboard.setTitle("Editor's Dashboard");
-		frmDashboard.setBounds(100, 100, 1000, 795);
+		frmDashboard.setBounds(100, 100, width, height);
 		frmDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmDashboard.setVisible(true);
 		
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Dimension screenSize = toolkit.getScreenSize();
+		frmDashboard.setLocation(screenSize.width / 2 - width / 2, screenSize.height / 2 - height / 2);
 		
 		for(EditorOfJournal eoj : this.editor.getEditorOfJournals()) {
 			boolean hasClash = RetrieveDatabase.editorOfJournalHasClash(eoj);

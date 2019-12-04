@@ -145,7 +145,13 @@ public class AuthorMainWindow {
 		JScrollPane scrSubmitted = new JScrollPane();
 
 		ArrayList<AuthorOfArticle> authorOfArticles = author.getAuthorOfArticles();
-		tblSubmittedModel = new DefaultTableModel();
+		tblSubmittedModel = new DefaultTableModel(){
+			boolean[] columnEditables = new boolean[] { false, false, false, false };
+
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		};;
 		tblSubmittedModel.addColumn("Article ID");
 		tblSubmittedModel.addColumn("Main Author");
 		tblSubmittedModel.addColumn("Title");
@@ -168,24 +174,7 @@ public class AuthorMainWindow {
 		tblSubmitted.getColumnModel().getColumn(2).setPreferredWidth(200);
 		tblSubmitted.getColumnModel().getColumn(3).setPreferredWidth(500);
 		tblSubmitted.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		tblSubmitted.setEnabled(false);
 		scrSubmitted.setViewportView(tblSubmitted);
-
-		tblSubmitted.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				int r = tblSubmitted.rowAtPoint(e.getPoint());
-				if (r >= 0 && r < tblSubmitted.getRowCount()) {
-					tblSubmitted.setRowSelectionInterval(r, r);
-				} else {
-					tblSubmitted.clearSelection();
-				}
-
-				int rowindex = tblSubmitted.getSelectedRow();
-				if (rowindex < 0)
-					return;
-			}
-		});
 
 		JPanel panelArticleReviews = new JPanel();
 		panelArticleReviews.setVisible(false);
@@ -340,6 +329,7 @@ public class AuthorMainWindow {
 						JOptionPane.showMessageDialog(null, "No reviews recieved yet.");
 					}
 				} else {
+					JOptionPane.showMessageDialog(null, "Cannot view reviews as you are not the main author of this article.", "Error in fetching reviews",0);
 					panelArticleReviews.setVisible(false);
 				}
 			}
