@@ -31,6 +31,7 @@ import com.publishingsystem.mainclasses.Hash;
 import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.PublishedArticle;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
+import com.publishingsystem.mainclasses.Review;
 import com.publishingsystem.mainclasses.ReviewerOfSubmission;
 import com.publishingsystem.mainclasses.Submission;
 import com.publishingsystem.mainclasses.Verdict;
@@ -50,14 +51,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.swing.JList;
 import javax.swing.AbstractListModel;
+import javax.swing.DefaultListModel;
 
 public class EditorMainWindow {
 
 	private JFrame frmDashboard;
 	private JTable tblEditor;
+	private DefaultTableModel tblEditorModel;
 	private Editor editor;
 	private ArrayList<Submission> allSubmissions;
-	private int selectedSubmissionId;
+	private int selectedSubmissionRow;
 	private Verdict[] finalVerdicts;
 
 	/**
@@ -82,17 +85,29 @@ public class EditorMainWindow {
 	 */
 	public EditorMainWindow(Academic[] roles) {
         // For every journal the editor is an editor of, get all in progress submissions for them
-	    allSubmissions = new ArrayList<Submission>();
-	    selectedSubmissionId = -1;
+	   
+	    selectedSubmissionRow = -1;
 	    finalVerdicts = new Verdict[3];
-	    for (EditorOfJournal jour : ((Editor)roles[0]).getEditorOfJournals()) {
-	        System.out.println(jour);
-	        ArrayList<Submission> thisJournalsSubmissions = RetrieveDatabase.getSubmissionsToJournal(jour.getJournal().getISSN());
-	        allSubmissions.addAll(thisJournalsSubmissions);
-	    }
+	    
 	
 	    this.editor = (Editor)roles[0];
+	    allSubmissions = RetrieveDatabase.getSubmissionsForEditor(editor.getEditorId());
 		initialize(roles);
+	}
+	
+	public void refreshEditorTable() {
+		DefaultTableModel model = ((DefaultTableModel) tblEditor.getModel());
+		model.setRowCount(0);
+		for (int i = 0; i < allSubmissions.size(); i++) {
+			Submission s = allSubmissions.get(i);
+			String[] editorString = new String[4];
+			editorString[0] = String.valueOf(i+1);
+			editorString[1] = s.getArticle().getJournal().getJournalName();
+			editorString[2] = s.getArticle().getTitle();
+			editorString[3] = s.getStatus().getStatus();
+
+			model.addRow(editorString);
+		}
 	}
 
 	/**
@@ -140,71 +155,71 @@ public class EditorMainWindow {
 	    btnAcceptArticle.addMouseListener(new MouseAdapter() {
 	        @Override
 	        public void mouseClicked(MouseEvent arg0) {
-                // there isn't 3 final verdicts yet, error
-	            if (finalVerdicts[2] == Verdict.NOVERDICT) {
-	                JOptionPane.showMessageDialog(null, "Three final verdicts haven't been submitted yet", "Error", 0);
-                    return;
-	            }
-	            
-	            // get submission object
-	            Submission selectedSubmission = null;
-	            for (Submission sub : allSubmissions) {
-	                if (sub.getSubmissionId() == selectedSubmissionId) {
-	                    selectedSubmission = sub;
-	                    break;
-	                }
-	            }
-	            
-	            // check if article should be accepted
-	            int[] verdictCount = getVerdictCount(finalVerdicts);
-	            if (verdictCount[0] == 3) {
-	                // 3 strong accept = accept
-	                acceptSubmission(selectedSubmission);
-	                return;
-	            } else if (verdictCount[3] == 3) {
-	                // 3 strong reject = reject
-	                JOptionPane.showMessageDialog(null, "Submission has received 3 Strong Rejects and has been rejected.", "Rejected", 1);
-	                return;
-	            } else if (verdictCount[0] > 0 && verdictCount[3] > 0) {
-	                // at least 1 strong accept and 1 strong reject + any = discuss
-	                    // Strong Accept, Strong Reject, Strong Accept
-	                    // Strong Accept, Strong Reject, Weak Accept
-	                    // Strong Accept, Strong Reject, Weak Reject
-	                    // Strong Accept, Strong Reject, Strong Reject
-	                
-	                // editor must make a decision to accept/reject the article or cancel processing of the submission now
-	                String[] options = {"Accept", "Reject", "Cancel"};
-	                int selectedFunction = JOptionPane.showOptionDialog(null, 
-	                        "Cannot automatically calculate whether the article should be accepted or rejected. Please make a decision.", 
-	                        "No Decision",
-	                        JOptionPane.INFORMATION_MESSAGE, 0, null, options, options[0]);
-	                System.out.println(selectedFunction);
-	                if (selectedFunction == 0) {
-	                    // editor has selected to accept the submission
-	                    acceptSubmission(selectedSubmission);
+	        	if(selectedSubmissionRow != -1) {
+	                // there isn't 3 final verdicts yet, error
+		            if (finalVerdicts[0] == null && finalVerdicts[1] == null && finalVerdicts[2] == null) {
+		                JOptionPane.showMessageDialog(null, "Three final verdicts haven't been submitted yet", "Error", 0);
 	                    return;
-	                } else if (selectedFunction == 1) {
-	                    // editor has selected to reject the submission
-	                    JOptionPane.showMessageDialog(null, "Submission has been rejected.", "Rejected", 1);
-	                    return;
-	                } else {
-	                    // editor has chosen to cancel processing the article now, leave it in the list of submissions
-	                    return;
-	                }
-	            } else {
-	                // no strong, only weak = majority decision
-  	                    // weak accept, weak reject, weak accept
-                        // weak accept, weak reject, weak reject
-	                if (verdictCount[1] > verdictCount[2]) {
-	                    // 2 weak accepts, 1 weak reject = accept
-	                    acceptSubmission(selectedSubmission);
-	                    return;
-	                } else {
-	                    // 1 weak accept, 2 weak rejects = reject
-	                    JOptionPane.showMessageDialog(null, "Submission has received more Weak Rejects than Weak Accepts and has been rejected.", "Rejected", 1);
-	                    return;
-	                }
-	            }
+		            }
+		            
+		            boolean remove = false;
+		            // get submission object
+		            Submission selectedSubmission = allSubmissions.get(selectedSubmissionRow);
+		            
+		            // check if article should be accepted
+		            int[] verdictCount = getVerdictCount(finalVerdicts);
+		            if (verdictCount[0] == 3) {
+		                // 3 strong accept = accept
+		                acceptSubmission(selectedSubmission);
+		                remove = true;
+		            } else if (verdictCount[3] == 3) {
+		                // 3 strong reject = reject
+		                JOptionPane.showMessageDialog(null, "Submission has received 3 Strong Rejects and has been rejected.", "Rejected", 1);
+		                remove = true;
+		            } else if ((verdictCount[0] > 0 && verdictCount[3] > 0) || ((verdictCount[0] == 1 || verdictCount[3] == 1) && verdictCount[1] > 0 && verdictCount[2] > 0)) {
+		                // at least 1 strong accept and 1 strong reject + any = discuss
+		                    // Strong Accept, Strong Reject, Strong Accept
+		                    // Strong Accept, Strong Reject, Weak Accept
+		                    // Strong Accept, Strong Reject, Weak Reject
+		                    // Strong Accept, Strong Reject, Strong Reject
+		                
+		                // editor must make a decision to accept/reject the article or cancel processing of the submission now
+		                String[] options = {"Accept", "Reject", "Cancel"};
+		                int selectedFunction = JOptionPane.showOptionDialog(null, 
+		                        "Cannot automatically calculate whether the article should be accepted or rejected. Please make a decision.", 
+		                        "No Decision",
+		                        JOptionPane.INFORMATION_MESSAGE, 0, null, options, options[0]);
+		                System.out.println(selectedFunction);
+		                if (selectedFunction == 0) {
+		                    // editor has selected to accept the submission
+		                    acceptSubmission(selectedSubmission);
+		                    remove = true;
+		                } else if (selectedFunction == 1) {
+		                    // editor has selected to reject the submission
+		                    JOptionPane.showMessageDialog(null, "Submission has been rejected.", "Rejected", 1);
+		                    remove = true;
+		                }
+		            }else {
+		                // no strong, only weak = majority decision
+	  	                    // weak accept, weak reject, weak accept
+	                        // weak accept, weak reject, weak reject
+		                if (verdictCount[1] > verdictCount[2]) {
+		                    // 2 weak accepts, 1 weak reject = accept
+		                    acceptSubmission(selectedSubmission);
+		                    remove = true;
+		                } else {
+		                    // 1 weak accept, 2 weak rejects = reject
+		                    JOptionPane.showMessageDialog(null, "Submission has received more Weak Rejects than Weak Accepts and has been rejected.", "Rejected", 1);
+		                    remove = true;
+		                }
+		            }
+		            if(remove) {
+		            	allSubmissions.remove(selectedSubmissionRow);
+		            	selectedSubmissionRow = -1;
+		            	refreshEditorTable();
+		            }
+	        	}else
+	        		JOptionPane.showMessageDialog(null, "No submission selected.", "Error", 0);
 	        }
 	    });
 		btnAcceptArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -227,17 +242,16 @@ public class EditorMainWindow {
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 604, Short.MAX_VALUE)
+							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 628, Short.MAX_VALUE)
 							.addGap(18))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(lblArticlesList)
 							.addGap(509)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-							.addComponent(lblFinalVerdicts, GroupLayout.PREFERRED_SIZE, 179, GroupLayout.PREFERRED_SIZE)
-							.addComponent(list, GroupLayout.PREFERRED_SIZE, 342, GroupLayout.PREFERRED_SIZE))
-						.addComponent(btnAcceptArticle))
+						.addComponent(btnAcceptArticle)
+						.addComponent(list, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblFinalVerdicts, GroupLayout.PREFERRED_SIZE, 179, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
@@ -254,71 +268,81 @@ public class EditorMainWindow {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnAcceptArticle))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
+							.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
 							.addGap(20))))
 		);
 		
-		tblEditor = new JTable();
-		tblEditor.setEnabled(false);
+		
+		tblEditorModel = new DefaultTableModel(){
+			boolean[] columnEditables = new boolean[] { false, false, false, false };
+
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
+			}
+		};
+		tblEditorModel.addColumn("No.");
+		tblEditorModel.addColumn("Journal");
+		tblEditorModel.addColumn("Article Title");
+		tblEditorModel.addColumn("Status");
+		
+		tblEditor = new JTable(tblEditorModel);
+		refreshEditorTable();
+		tblEditor.getTableHeader().setFont(new Font("Tahoma", Font.PLAIN, 16));
+		tblEditor.getColumnModel().getColumn(0).setPreferredWidth(1);
+		tblEditor.getColumnModel().getColumn(1).setPreferredWidth(100);
+		tblEditor.getColumnModel().getColumn(2).setPreferredWidth(100);
+		tblEditor.getColumnModel().getColumn(3).setPreferredWidth(400);
+		tblEditor.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		tblEditor.addMouseListener(new MouseAdapter() {
 			@Override
             public void mouseClicked(MouseEvent arg0) {
                 // get id of selected submission
-			    selectedSubmissionId = (int)tblEditor.getValueAt(tblEditor.rowAtPoint(arg0.getPoint()), 0);
-                System.out.println(selectedSubmissionId);
+			    selectedSubmissionRow = tblEditor.rowAtPoint(arg0.getPoint());
+                System.out.println(selectedSubmissionRow);
                 
-                // get verdicts
-                Verdict[] verdicts = RetrieveDatabase.getVerdicts(selectedSubmissionId);
-                System.out.println(verdicts);
-
-                // convert to strings
-                String[] strVerdicts = new String[3];
-                for (int i=0; i<3; i++) {
-                    if (verdicts[i] == null) strVerdicts[i] = "No Verdict";
-                    else strVerdicts[i] = verdicts[i].toString();
+                Submission s = allSubmissions.get(selectedSubmissionRow);
+                
+                boolean canProcess = true;
+                for(EditorOfJournal eoj : editor.getEditorOfJournals()) {
+                	if(eoj.getJournal().getISSN() == s.getArticle().getJournal().getISSN() && eoj.isTempRetired())
+                		canProcess = false;
                 }
                 
-                // display verdicts
-                list.setModel(new AbstractListModel() {
-                    String[] values = new String[] {strVerdicts[0],
-                                                    strVerdicts[1],
-                                                    strVerdicts[2]};
-                    public int getSize() {
-                        return values.length;
-                    }
-                    public Object getElementAt(int index) {
-                        return values[index];
-                    }
-                });
+                if(canProcess) {
+	                // get verdicts
+	                finalVerdicts = RetrieveDatabase.getVerdicts(s.getSubmissionId());
+	                System.out.println(finalVerdicts);
+	
+	                // convert to strings
+	                String[] strVerdicts = new String[3];
+	                for (int i=0; i<3; i++) {
+	                    if (finalVerdicts[i] == null) strVerdicts[i] = "No Verdict";
+	                    else strVerdicts[i] = finalVerdicts[i].toString();
+	                }
+	                
+	                // display verdicts
+	                list.setModel(new AbstractListModel() {
+	                    String[] values = new String[] {strVerdicts[0],
+	                                                    strVerdicts[1],
+	                                                    strVerdicts[2]};
+	                    public int getSize() {
+	                        return values.length;
+	                    }
+	                    public Object getElementAt(int index) {
+	                        return values[index];
+	                    }
+	                });
+                }else {
+                	selectedSubmissionRow = -1;
+                	DefaultListModel listModel = (DefaultListModel) list.getModel();
+                    listModel.removeAllElements();
+                    
+                    JOptionPane.showMessageDialog(null, "You cannot process this submission as you have been retired from the board of editors for the journal to which it is submitted.", "Cannot process", 0);
+                }
 			}
 		});
 				
-	    Object[][] tableContents = new Object[allSubmissions.size()][5];
-        for (int i=0; i<allSubmissions.size(); i++ ) {
-            Submission currentSubmission = allSubmissions.get(i);
-            tableContents[i][0] = currentSubmission.getArticle().getArticleId();
-            tableContents[i][1] = currentSubmission.getArticle().getTitle();
 
-            ArrayList<AuthorOfArticle> authorsOfArticle = currentSubmission.getArticle().getAuthorsOfArticle();
-            System.out.println(authorsOfArticle);
-            System.out.println(authorsOfArticle.size());
-            String authors = "";
-            for (AuthorOfArticle aoa : authorsOfArticle) {
-                System.out.println("aoa: " + aoa);
-                authors = authors + aoa.getAuthor().getForename() + " " + aoa.getAuthor().getSurname() + "\n";
-            }
-            tableContents[i][2] = authors;
-
-            tableContents[i][3] = currentSubmission.getArticle().getJournal().getJournalName();
-            tableContents[i][4] = currentSubmission.getStatus();
-        }
-        
-		tblEditor.setModel(new DefaultTableModel(
-			tableContents,
-			new String[] {
-				"ID", "Articles", "Authors", "Journal", "Status"
-			}
-		));
 		scrollPane.setViewportView(tblEditor);
 		frmDashboard.getContentPane().setLayout(groupLayout);
 		
@@ -443,16 +467,27 @@ public class EditorMainWindow {
 	    // get the journal the submission will go in
 	    Journal submissionsJournal = s.getArticle().getJournal();
 	    
-	    // get the most recent volume in this journal
-	    Volume vol = RetrieveDatabase.getRecentVolume(submissionsJournal.getISSN());
-	    
-        // get the most recent edition in this journal
-	    Edition ed = RetrieveDatabase.getRecentEdition(vol);
-
 	    // set up date formats
         Date now = new Date(System.currentTimeMillis());
         DateFormat dfMonth = new SimpleDateFormat("mm");
         DateFormat dfYear = new SimpleDateFormat("yyyy");
+        
+	    // get the most recent volume in this journal
+	    Volume vol = RetrieveDatabase.getRecentVolume(submissionsJournal.getISSN());
+	    if(vol == null) {
+	    	int year =  Integer.valueOf(dfYear.format(now));
+	    	int volId = Database.addVolume(submissionsJournal.getISSN(), year);
+	    	vol = new Volume(year, volId);
+	    }
+	    
+        // get the most recent edition in this journal
+	    Edition ed = RetrieveDatabase.getRecentEdition(vol);
+	    
+	    if(ed == null) {
+	    	int month =  Integer.valueOf(dfMonth.format(now));
+	    	int edId = Database.addEdition(vol.getVolumeId(), month);
+	    	ed = new Edition(month, edId);
+	    }
 
         // currently, ed is the edition the submission will be added to
         int edId = ed.getEditionId();
@@ -473,6 +508,7 @@ public class EditorMainWindow {
         
 	    // add submission to database as published article
 	    int paID = Database.addPublishedArticle(edId, s.getArticle().getArticleId());
+	    Database.acceptSubmission(s);
 	    System.out.println(paID);
 	    
 	    // display message to user

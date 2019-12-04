@@ -629,7 +629,7 @@ public class Database {
 			if(numFinalVerdicts == 3) {
 				query = "UPDATE SUBMISSIONS SET status = ? WHERE submissionID = ?";
 				try(PreparedStatement ps = con.prepareStatement(query)){
-					ps.setString(1, SubmissionStatus.COMPLETED.asString());
+					ps.setString(1, SubmissionStatus.FINALVERDICT.asString());
 					ps.setInt(2, submission.getSubmissionId());
 					ps.execute();
 				}catch (SQLException ex) {
@@ -714,18 +714,19 @@ public class Database {
 		}
 	}
 
-	public static void addRevisedSubmission(PDF pdf, byte[] pdfBytes) {
+	public static void addRevisedSubmission(PDF pdf, byte[] pdfBytes, int numPages) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 
 			Submission s = pdf.getSubmission();
-			String query = "INSERT INTO PDF values (null, ?, ?, ?)";
+			String query = "INSERT INTO PDF values (null, ?, ?, ?, ?)";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, s.getSubmissionId());
 				preparedStmt.setDate(2, pdf.getDate());
 				preparedStmt.setBlob(3, PDFConverter.getPDFBlob(pdfBytes));
+				preparedStmt.setInt(4, numPages);
 				preparedStmt.execute();
 
 				ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from PDF");
@@ -966,6 +967,33 @@ public class Database {
             ex.printStackTrace();
         }
         return result;
+	}
+	
+	
+	public static void acceptSubmission(Submission s) {
+		 try (Connection con = DriverManager.getConnection(CONNECTION)) {
+				Statement statement = con.createStatement();
+				statement.execute("USE "+DATABASE+";");
+				statement.close();
+				String query = "DELETE S.*, Ros.*, Rev.*, C.* "
+						+ "FROM SUBMISSIONS S INNER JOIN REVIEWEROFSUBMISSION Ros ON S.SUBMISSIONID = Ros.SUBMISSIONID "
+						+ "INNER JOIN REVIEWS Rev ON Rev.SUBMISSIONID = Ros.SUBMISSIONID "
+						+ "INNER JOIN CRITICISMS C ON C.SUBMISSIONID = Rev.SUBMISSIONID "
+						+ "WHERE S.SUBMISSIONID = ?";;
+				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+					preparedStmt.setInt(1, s.getSubmissionId());
+					preparedStmt.execute();
+				}
+				
+				query = "UPDATE ARTICLES A SET PDFID = (SELECT PDFID FROM PDF WHERE SUBMISSIONID = ? ORDER BY PDFID DESC LIMIT 1) WHERE A.ARTICLEID = ?";
+				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+					preparedStmt.setInt(1, s.getSubmissionId());
+					preparedStmt.setInt(2, s.getArticle().getArticleId());
+					preparedStmt.execute();
+				}
+		 }catch (SQLException ex) {
+			ex.printStackTrace();
+		 }
 	}
     
 	public static void rejectSubmission(int submissionId) {

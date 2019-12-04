@@ -509,6 +509,28 @@ public class RetrieveDatabase extends Database {
 		}
 		return null;
 	}
+	
+	public static int getNumPDF(int submissionID) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE " + DATABASE + ";");
+			statement.close();
+			String query = "SELECT COUNT(PDFID) AS NUMPDF FROM PDF WHERE SUBMISSIONID = ?";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, submissionID);
+				ResultSet res = preparedStmt.executeQuery();
+
+				if (res.next()) {
+					return res.getInt("NUMPDF");
+				}
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return 0;
+	}
 
 	public static ArrayList<byte[]> getPDF(int submissionID) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
@@ -816,6 +838,33 @@ public class RetrieveDatabase extends Database {
 		}
 		return results;
 	}
+	
+	public static ArrayList<Submission> getSubmissionsForEditor(int editorId) {
+		ArrayList<Submission> submissions = new ArrayList<Submission>();
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE " + DATABASE + ";");
+			String query = "SELECT S.SUBMISSIONID, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY, J.ISSN, J.NAME, J.DATEOFPUBLICATION FROM SUBMISSIONS S, ARTICLES Art, JOURNALS J, EDITOROFJOURNAL Eoj WHERE S.ARTICLEID = Art.ARTICLEID AND Art.ISSN = J.ISSN AND J.ISSN = Eoj.ISSN AND Eoj.EDITORID = ?";;
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, editorId);
+				System.out.println(preparedStmt);
+				ResultSet res = preparedStmt.executeQuery();
+				while(res.next()) {
+					Journal journal = new Journal(res.getInt("ISSN"), res.getString("NAME"), res.getDate("DATEOFPUBLICATION"));
+					Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), journal);
+					Submission s = new Submission(res.getInt("SUBMISSIONID"), article, SubmissionStatus.valueOf(res.getString("STATUS")), null);
+					submissions.add(s);
+				}
+				return submissions;
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
 
 	/**
 	 * getFinalVerdicts
@@ -864,10 +913,10 @@ public class RetrieveDatabase extends Database {
             statement.execute("USE "+DATABASE+";");
 
             // select the most recent edition from this volume
-            String query = "SELECT TOP 1 edId, month "
+            String query = "SELECT edId, month "
                          + "FROM EDITIONS "
-                         + "WHERE volId = " + vol.getVolumeId() + "AND published = 0 "
-                         + "ORDER BY volId DESC;";
+                         + "WHERE volId = " + vol.getVolumeId() + " AND published = 0 "
+                         + "ORDER BY volId DESC LIMIT 1";
             ResultSet res = statement.executeQuery(query);
             if (res.next()) {
                 int edId = res.getInt(1);
@@ -894,16 +943,14 @@ public class RetrieveDatabase extends Database {
             statement.execute("USE "+DATABASE+";");
 
             // select the most recent volume for this journal
-            String query = "SELECT TOP 1 volId, year "
+            String query = "SELECT volId, year "
                     + "FROM VOLUMES "
                     + "WHERE ISSN = " + issn + " AND published = 0 "
-                    + "ORDER BY volId DESC;";
+                    + "ORDER BY volId DESC LIMIT 1;";
             ResultSet res = statement.executeQuery(query);
             if (res.next()) {
-                int volId = res.getInt(1);
-                Date resYear = res.getDate(2);
-                DateFormat df = new SimpleDateFormat("yyyy");
-                int year = Integer.valueOf(df.format(resYear));
+                int volId = res.getInt("VOLID");
+                int year = res.getInt("YEAR");
                 result = new Volume(year, volId);
             }
 	    } catch (SQLException ex) {
@@ -953,14 +1000,13 @@ public class RetrieveDatabase extends Database {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
 
-            String query = "SELECT publishedArticleID, articleID "
-                         + "FROM PUBLISHEDARTICLES "
-                         + "WHERE edID = " + edId + ";";
+            String query = "SELECT P.publishedArticleID, P.articleID, A.TITLE, A.SUMMARY "
+                         + "FROM PUBLISHEDARTICLES P, ARTICLES A "
+                         + "WHERE P.ARTICLEID = A.ARTICLEID AND edID = " + edId + ";";
             ResultSet res = statement.executeQuery(query);
             while (res.next()) {
                 int publishedArticleId = res.getInt(1);
-                int resArticleId = res.getInt(2);
-                Article article = getArticle(resArticleId);
+                Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
                 results.add(new PublishedArticle(publishedArticleId, article));
             }
         } catch (SQLException ex) {
@@ -988,9 +1034,8 @@ public class RetrieveDatabase extends Database {
             ResultSet res = statement.executeQuery(query);
             while (res.next()) {
                 int edId = res.getInt(1);
-                Date resMonth = res.getDate(2);
-                DateFormat df = new SimpleDateFormat("mm");
-                int month = Integer.valueOf(df.format(resMonth));
+                int month = res.getInt(2);
+
                 boolean published = res.getBoolean(3);
 
                 Edition nextResult = new Edition(month, edId);

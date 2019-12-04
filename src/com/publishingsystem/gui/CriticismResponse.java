@@ -119,11 +119,8 @@ public class CriticismResponse {
 				if (!allAnswered)
 					JOptionPane.showMessageDialog(null, "Please answer all criticisms", "Error in response", 0);
 				else {
-					Calendar calendar = Calendar.getInstance();
-					PDF revisedPDF = new PDF(-1, new java.sql.Date(calendar.getTime().getTime()), ros.getSubmission());
 					ros.getReview().answer(answers);
 					Database.addResponse(ros);
-					Database.addRevisedSubmission(revisedPDF, PDFConverter.getByteArrayFromFile(pdfPath));
 					amw.enable();
 					amw.refreshReviewTable();
 					frmRespondToCriticism.dispose();
@@ -138,32 +135,6 @@ public class CriticismResponse {
 		JLabel lblCriticisms = new JLabel("Criticisms");
 		lblCriticisms.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
-		JLabel lblPdfIsNot = new JLabel("PDF is not yet uploaded");
-
-		JButton btnAddUpdatedPdf = new JButton("Add Updated PDF ");
-		btnAddUpdatedPdf.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				if (pdfPath == null) {
-					FileDialog fd = new FileDialog(new JFrame());
-					fd.setVisible(true);
-					File[] f = fd.getFiles();
-
-					if (f.length > 0) {
-						pdfPath = fd.getFiles()[0].getAbsolutePath();
-						System.out.println(pdfPath);
-						lblPdfIsNot.setText("PDF is successfully uploaded");
-					} else {
-						lblPdfIsNot.setText("Try Again! PDF did not upload!");
-					}
-				} else {
-					JOptionPane.showMessageDialog(null, "PDF already uploaded", "Error in submission", 0);
-				}
-			}
-		});
-		btnAddUpdatedPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		lblPdfIsNot.setLabelFor(btnAddUpdatedPdf);
-
 		JLabel lblPleaseSubmitYour = new JLabel("Please submit your accordingly updated article version in PDF format");
 
 		JScrollPane scrollPane_1 = new JScrollPane();
@@ -173,46 +144,66 @@ public class CriticismResponse {
 		JScrollPane scrollPane = new JScrollPane();
 
 		GroupLayout groupLayout = new GroupLayout(frmRespondToCriticism.getContentPane());
-		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup().addGap(136)
-						.addComponent(btnSubmitResponse, GroupLayout.PREFERRED_SIZE, 218, Short.MAX_VALUE).addGap(164))
-				.addGroup(groupLayout.createSequentialGroup().addContainerGap().addComponent(btnAddUpdatedPdf)
-						.addPreferredGap(ComponentPlacement.RELATED).addComponent(lblPdfIsNot)
-						.addContainerGap(305, Short.MAX_VALUE))
-				.addGroup(groupLayout.createSequentialGroup().addContainerGap()
-						.addComponent(lblPleaseSubmitYour, GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE)
-						.addContainerGap())
-				.addGroup(groupLayout.createSequentialGroup().addGap(150)
-						.addComponent(lblYourArticleReviews, GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
-						.addGap(150))
-				.addGroup(groupLayout.createSequentialGroup().addContainerGap()
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(scrollPane_1, GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE)
-								.addComponent(lblReview))
-						.addContainerGap())
-				.addGroup(groupLayout.createSequentialGroup().addContainerGap().addComponent(lblCriticisms)
-						.addContainerGap(449, Short.MAX_VALUE))
-				.addGroup(groupLayout.createSequentialGroup().addContainerGap()
-						.addComponent(scrollPane_2, GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE).addContainerGap())
-				.addGroup(
-						groupLayout.createSequentialGroup().addContainerGap()
-								.addComponent(lblTypographicalErr, GroupLayout.PREFERRED_SIZE, 173,
-										GroupLayout.PREFERRED_SIZE)
-								.addContainerGap(335, Short.MAX_VALUE))
-				.addGroup(groupLayout.createSequentialGroup().addContainerGap()
-						.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE).addContainerGap()));
-		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout
-				.createSequentialGroup().addContainerGap().addComponent(lblYourArticleReviews).addGap(10)
-				.addComponent(lblReview).addPreferredGap(ComponentPlacement.RELATED)
-				.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
-				.addComponent(lblTypographicalErr, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
-				.addGap(18).addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 53, GroupLayout.PREFERRED_SIZE)
-				.addGap(18).addComponent(lblCriticisms).addPreferredGap(ComponentPlacement.RELATED)
-				.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE).addGap(18)
-				.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(btnAddUpdatedPdf)
-						.addComponent(lblPdfIsNot))
-				.addGap(5).addComponent(lblPleaseSubmitYour).addGap(10).addComponent(btnSubmitResponse).addGap(10)));
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(136)
+					.addComponent(btnSubmitResponse, GroupLayout.PREFERRED_SIZE, 234, Short.MAX_VALUE)
+					.addGap(164))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblPleaseSubmitYour, GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE)
+					.addContainerGap())
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(150)
+					.addComponent(lblYourArticleReviews, GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
+					.addGap(150))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane_1)
+						.addComponent(lblReview))
+					.addContainerGap())
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblCriticisms)
+					.addContainerGap(466, Short.MAX_VALUE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(scrollPane_2)
+					.addContainerGap())
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblTypographicalErr, GroupLayout.PREFERRED_SIZE, 173, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(355, Short.MAX_VALUE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblYourArticleReviews)
+					.addGap(10)
+					.addComponent(lblReview)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 99, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
+					.addComponent(lblTypographicalErr, GroupLayout.PREFERRED_SIZE, 19, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addComponent(scrollPane_2, GroupLayout.PREFERRED_SIZE, 53, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addComponent(lblCriticisms)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE)
+					.addGap(39)
+					.addComponent(lblPleaseSubmitYour)
+					.addGap(10)
+					.addComponent(btnSubmitResponse)
+					.addGap(10))
+		);
 
 		JTextArea textAreaSummary = new JTextArea(ros.getReview().getSummary());
 		textAreaSummary.setLineWrap(true);
