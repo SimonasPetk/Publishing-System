@@ -14,6 +14,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.Article;
+import com.publishingsystem.mainclasses.AuthorOfArticle;
 import com.publishingsystem.mainclasses.Journal;
 import com.publishingsystem.mainclasses.PublishedArticle;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
@@ -109,17 +110,16 @@ public class ArticlesWindow {
 		for (int i = 0; i < allArticles.size(); i++) {
 			PublishedArticle currentArticle = allArticles.get(i);
 			tableContents[i][0] = currentArticle.getTitle();
-			tableContents[i][1] = currentArticle.getAuthorsOfArticle().toString();
-			tableContents[i][2] = Integer.toString(currentArticle.getEdition().getVolume().getVolumeNumber()) + "."
+			tableContents[i][1] = Integer.toString(currentArticle.getEdition().getVolume().getVolumeNumber()) + "."
 								  + Integer.toString(currentArticle.getEdition().getEditionNumber());
-			tableContents[i][3] = Integer.toString(currentArticle.getEdition().getVolume().getYear()) + "/" 
+			tableContents[i][2] = Integer.toString(currentArticle.getEdition().getVolume().getYear()) + "/" 
 								  +  Integer.toString(currentArticle.getEdition().getEditionMonth());
-			tableContents[i][4] = currentArticle.getPageRange();
+			tableContents[i][3] = currentArticle.getPageRange();
 		}
 
 		tblArticles.setModel(new DefaultTableModel(tableContents,
-				new String[] { "Title ", "Authors", "Volume.Edition", "Date Published", "Page Range" }) {
-			boolean[] columnEditables = new boolean[] { false, false, false, false, false };
+				new String[] { "Title ", "Volume.Edition", "Date Published", "Page Range" }) {
+			boolean[] columnEditables = new boolean[] { false, false, false, false };
 
 			public boolean isCellEditable(int row, int column) {
 				return columnEditables[column];
@@ -139,10 +139,28 @@ public class ArticlesWindow {
 				if (e.getClickCount() == 2) {
 
 					int rowPressed = tblArticles.rowAtPoint(e.getPoint());
+					String authors = null;
+					String mainAuthor = null;
+					int articleID = allArticles.get(rowPressed).getArticleId();
+					ArrayList<AuthorOfArticle> authorsList = RetrieveDatabase.getAuthors(articleID);
+					
+					for (AuthorOfArticle author : authorsList) {
+						
+						if (author.isMainAuthor()) {
+							
+							mainAuthor += "Main Author: " + author.getAuthor().getForename() 
+										  + " email: " + author.getAuthor().getEmailId();
+						} else {
+						
+							authors += " " + author.getAuthor().getForename();
+						}					
+					}
 
 					editorPane.setText( allArticles.get(rowPressed).getTitle() + "\n\n" 
-										+ allArticles.get(rowPressed).getAuthorsOfArticle() + "\n\n" 
+										+ mainAuthor + " "
+										+ authors + "\n\n" 
 										+ allArticles.get(rowPressed).getSummary());
+				
 					articleIndexSelected = rowPressed;
 				} else {
 					editorPane.setText(""); // perhaps there is a method like .clear() or smth similar
