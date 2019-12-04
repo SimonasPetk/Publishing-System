@@ -5,7 +5,7 @@ public class Author extends Academic{
 	protected ArrayList<AuthorOfArticle> authorOfArticles;
 	protected int authorId;
 	
-	public Author(int authorId, String title ,String forename, String surname, String emailId, String university, Hash hash) {
+	public Author(int authorId, String title, String forename, String surname, String emailId, String university, Hash hash) {
 		super(title, forename, surname, emailId, university, hash);
 		this.authorId = authorId;
 		authorOfArticles = new ArrayList<AuthorOfArticle>();

@@ -101,6 +101,7 @@ public class ArticlesWindow {
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		JEditorPane editorPane = new JEditorPane();
+		editorPane.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		editorPane.setEditable(false);
 		scrollPane_1.setViewportView(editorPane);
 
@@ -136,45 +137,41 @@ public class ArticlesWindow {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				if (e.getClickCount() == 2) {
-
-					int rowPressed = tblArticles.rowAtPoint(e.getPoint());
-					String authors = null;
-					String mainAuthor = null;
-					int articleID = allArticles.get(rowPressed).getArticleId();
-					ArrayList<AuthorOfArticle> authorsList = RetrieveDatabase.getAuthors(articleID);
-					
-					for (AuthorOfArticle author : authorsList) {
-						
-						if (author.isMainAuthor()) {
-							
-							mainAuthor += "Main Author: " + author.getAuthor().getForename() 
-										  + " email: " + author.getAuthor().getEmailId();
-						} else {
-						
-							authors += " " + author.getAuthor().getForename();
-						}					
-					}
-
-					editorPane.setText( allArticles.get(rowPressed).getTitle() + "\n\n" 
-										+ mainAuthor + " "
-										+ authors + "\n\n" 
-										+ allArticles.get(rowPressed).getSummary());
+				int rowPressed = tblArticles.rowAtPoint(e.getPoint());
+				String authors = "";
+				String mainAuthor = "";
+				int articleID = allArticles.get(rowPressed).getArticleId();
+				ArrayList<AuthorOfArticle> authorsList = RetrieveDatabase.getAuthors(articleID);
 				
-					articleIndexSelected = rowPressed;
-				} else {
-					editorPane.setText(""); // perhaps there is a method like .clear() or smth similar
+				for (AuthorOfArticle author : authorsList) {
+					
+					if (author.isMainAuthor()) {
+						
+						mainAuthor += "Main Author: " + author.getAuthor().getForename() 
+									  + " email: " + author.getAuthor().getEmailId();
+					} else {
+					
+						authors += " " + author.getAuthor().getForename();
+					}					
 				}
+
+				editorPane.setText( allArticles.get(rowPressed).getTitle() + "\n\n" 
+									+ mainAuthor + "\n"
+									+ authors + "\n\n" 
+									+ allArticles.get(rowPressed).getSummary());
+			
+				articleIndexSelected = rowPressed;
 			}
 		});
 
 		JLabel lblJournalName = new JLabel(selJournal.getJournalName());
 		lblJournalName.setFont(new Font("Tahoma", Font.PLAIN, 20));
 
-		JLabel lblAbstract = new JLabel("Abstract:");
+		JLabel lblAbstract = new JLabel("Article:");
 		lblAbstract.setFont(new Font("Tahoma", Font.PLAIN, 20));
 
 		JButton btnDownloadPdf = new JButton("Download PDF");
+		btnDownloadPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		btnDownloadPdf.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
