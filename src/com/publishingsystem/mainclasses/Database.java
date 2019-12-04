@@ -42,9 +42,10 @@ public class Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "UPDATE EDITOROFJOURNAL SET TempRetired = 1 WHERE editorID = ?";
+			String query = "UPDATE EDITOROFJOURNAL SET TempRetired = 1 WHERE editorID = ? and ISSN = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, eoj.getEditor().getEditorId());
+				preparedStmt.setInt(2, eoj.getJournal().getISSN());
 				preparedStmt.execute();
 			}
 			
@@ -57,9 +58,10 @@ public class Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "UPDATE EDITOROFJOURNAL SET TempRetired = 0 WHERE editorID = ?";
+			String query = "UPDATE EDITOROFJOURNAL SET TempRetired = 0 WHERE editorID = ? AND ISSN = ?";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.setInt(1, eoj.getEditor().getEditorId());
+				preparedStmt.setInt(1, eoj.getJournal().getISSN());
 				preparedStmt.execute();
 			}
 			
@@ -122,9 +124,12 @@ public class Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "UPDATE EDITOROFJOURNAL SET ChiefEditor = 0 WHERE editorID = " + eoj.getEditor().getEditorId() + " AND ISSN = "+eoj.getJournal().getISSN();
-			statement.execute(query);
-			statement.close();
+			String query = "UPDATE EDITOROFJOURNAL SET ChiefEditor = 0 WHERE editorID = ? and ISSN = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, eoj.getEditor().getEditorId());
+				preparedStmt.setInt(2, eoj.getJournal().getISSN());
+				preparedStmt.execute();
+			}
 			
 		}catch (SQLException ex) {
 			ex.printStackTrace();
@@ -329,7 +334,7 @@ public class Database {
 					query = "INSERT INTO AUTHORS values (null, ?, ?, ?, ?)";
 					try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 						preparedStmt.setInt(1, a.getAcademicId());
-						preparedStmt.setString(2, a.getForename()+a.getSurname());
+						preparedStmt.setString(2, a.getForename()+" "+a.getSurname());
 						preparedStmt.setString(3, a.getUniversity());
 						preparedStmt.setString(4, a.getEmailId());
 						preparedStmt.execute();

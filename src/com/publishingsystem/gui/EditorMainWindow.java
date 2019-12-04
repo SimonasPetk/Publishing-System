@@ -131,14 +131,18 @@ public class EditorMainWindow {
 		
 		for(EditorOfJournal eoj : this.editor.getEditorOfJournals()) {
 			boolean hasClash = RetrieveDatabase.editorOfJournalHasClash(eoj);
-			
+			System.out.println("EDITOR HAS CLASH?" + hasClash);
 			if(hasClash && !eoj.isTempRetired()) {
 				if(eoj.isChiefEditor() && RetrieveDatabase.getEditorsOfJournal(eoj.getJournal()).size() == 1) {
 					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName()+"\nPlease add a new editor for this Journal who will be the Chief Editor.");
-					new TransferChiefEditorRole(eoj, frmDashboard , roles);
+					new RegistrationWindow(Role.EDITOR, eoj, eoj.getJournal(), frmDashboard);
+					Database.tempRetireEditor(eoj);
+					eoj.temporaryRetire();
 				}else if(eoj.isChiefEditor()) {
 					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName()+"\nPlease select a new Chief Editor for this Journal.");
-					new RegistrationWindow(Role.EDITOR, eoj, eoj.getJournal());
+					new TransferChiefEditorRole(eoj, frmDashboard , roles);
+					Database.tempRetireEditor(eoj);
+					eoj.temporaryRetire();
 				}else {
 					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName());	
 				}

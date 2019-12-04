@@ -55,34 +55,38 @@ public class RegistrationWindow {
 	 * Create the application.
 	 */
 	public RegistrationWindow(Role r) {
-		initialize(r, null, null, null, null);
+		initialize(r, null, null, null, null, null);
 	}
 
 	public RegistrationWindow(Role r, SubmitArticle submitArticleGUI) {
-		initialize(r, submitArticleGUI, null, null, null);
+		initialize(r, submitArticleGUI, null, null, null, null);
 	}
 
 	public RegistrationWindow(Role r, AddJournal addJournalGUI) {
-		initialize(r, null, addJournalGUI, null, null);
+		initialize(r, null, addJournalGUI, null, null, null);
 	}
 
 	public RegistrationWindow(Role r, EditorOfJournal e) {
-		initialize(r, null, null, e, null);
+		initialize(r, null, null, e, null, null);
 	}
 
 	public RegistrationWindow(Role r, Journal j) {
-		initialize(r, null, null, null, j);
+		initialize(r, null, null, null, j, null);
 	}
 
 	public RegistrationWindow(Role r, EditorOfJournal e, Journal j) {
-		initialize(r, null, null, e, j);
+		initialize(r, null, null, e, j, null);
+	}
+	
+	public RegistrationWindow(Role r, EditorOfJournal e, Journal j, JFrame cmw) {
+		initialize(r, null, null, e, j, cmw);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Role r, SubmitArticle submitArticleGUI, AddJournal addJournalGUI, EditorOfJournal addition,
-			Journal editorsJournal) {
+			Journal editorsJournal, JFrame cmw) {
 		frmRegistrationForm = new JFrame();
 		frmRegistrationForm.setTitle("Registration Form");
 		frmRegistrationForm.setBounds(500, 100, 653, 559);
@@ -240,7 +244,6 @@ public class RegistrationWindow {
 									JOptionPane.showMessageDialog(null,
 											"Email is already in use. They will be added as a co-author.");
 								} else if (r == Role.EDITOR) {
-									validCredentials = false;
 									JOptionPane.showMessageDialog(null,
 											"Email is already in use. They will be added as an editor.");
 								}
@@ -252,6 +255,7 @@ public class RegistrationWindow {
 
 				// Display message, open SubmitArticle and close this form if the details are
 				// valid
+			
 				if (validCredentials) {
 					JOptionPane.showMessageDialog(null, "Registration Successul", "Registration Form", 1);
 					int academicID = RetrieveDatabase.getAcademicIdByEmail(email);
@@ -272,21 +276,23 @@ public class RegistrationWindow {
 						new AddJournal(roles);
 						break;
 					case EDITOR:
-						if (Database.academicExists(email)) {
-							Database.addAcademicToEditors(academicID, editorsJournal.getISSN());
-						} else {
-							Editor editor = new Editor(academicID, title, forenames, surname, email, university,
-									pwdHash);
-							ArrayList<Editor> editors = new ArrayList<Editor>();
-							editors.add(editor);
-							addition.setEditor(editor);
-							addition.addEditorAsChiefEditor();
-							System.out.println("Editor path followed");
-						}
+						Database.addAcademicToEditors(academicID, editorsJournal.getISSN());
+						
 						break;
 					default:
 					}
 					frmRegistrationForm.dispose();
+					Editor editor = new Editor(RetrieveDatabase.getEditorIdFromAcademicId(academicID), title, forenames, surname, email, university,
+							pwdHash);
+					if(cmw != null) {
+						JOptionPane.showMessageDialog(null, "Successfully added new chief editor", "Registration Form", 1);
+						
+						Database.setChiefEditor(new EditorOfJournal(editorsJournal, editor, true));
+						Database.removeChiefEditor(addition);
+						cmw.dispose();
+						new JournalWindow(null);
+					}
+						
 				}
 			}
 		});

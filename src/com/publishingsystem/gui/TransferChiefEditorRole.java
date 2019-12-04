@@ -77,7 +77,7 @@ public class TransferChiefEditorRole {
 		int width = 600;
 		int height = 300;
 		frmTransferChiefEditorRole = new JFrame();
-		frmTransferChiefEditorRole.setTitle("Retire as chief editor");
+		frmTransferChiefEditorRole.setTitle("Transfer as chief editor");
 		frmTransferChiefEditorRole.setBounds(100, 100, width, height);
 		frmTransferChiefEditorRole.setVisible(true);
 		
@@ -102,7 +102,6 @@ public class TransferChiefEditorRole {
 							eoj.setChiefEditor(true);
 							Database.setChiefEditor(eoj);
 							chiefEoj.setChiefEditor(false);
-						
 							JOptionPane.showMessageDialog(null, "Transfer Successful", "Transfer", 1);
 							chiefWindow.dispose();
 							new JournalWindow(roles);
