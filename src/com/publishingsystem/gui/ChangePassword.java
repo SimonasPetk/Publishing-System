@@ -6,8 +6,15 @@ import javax.swing.JFrame;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.SwingConstants;
+
+import com.publishingsystem.mainclasses.Database;
+import com.publishingsystem.mainclasses.Hash;
+import com.publishingsystem.mainclasses.RetrieveDatabase;
+
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -21,6 +28,7 @@ public class ChangePassword {
 	private JPasswordField pwdOldPassword;
 	private JPasswordField pwdNewPassword;
 
+
 	/**
 	 * Launch the application.
 	 */
@@ -28,7 +36,7 @@ public class ChangePassword {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ChangePassword window = new ChangePassword();
+					ChangePassword window = new ChangePassword(null);
 					window.frmChangePassword.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -40,14 +48,14 @@ public class ChangePassword {
 	/**
 	 * Create the application.
 	 */
-	public ChangePassword() {
-		initialize();
+	public ChangePassword(String email) {
+		initialize(email);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize(String email) {
 		frmChangePassword = new JFrame();
 		frmChangePassword.setTitle("Change Password");
 		frmChangePassword.setBounds(300, 300, 450, 300);
@@ -67,9 +75,30 @@ public class ChangePassword {
 		btnChange.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-
-				// Show a pop up message that it was successfully changed
-				frmChangePassword.dispose();
+				//6deb6a0a154217bdc7722b34e0e8eb5ee3e6ca402628d780a296c7a1c9cea868,  85DA708FAAF5062C505440642B30D059
+				String oldPassword = pwdOldPassword.getText();
+				String newPassword = pwdNewPassword.getText();
+				System.out.println(oldPassword);
+				System.out.println(newPassword);
+				System.out.println(email);
+				System.out.println("That was it");
+				if (Database.validateCredentials(email, oldPassword)) {
+					int academicId = RetrieveDatabase.getAcademicIdByEmail(email);
+					System.out.println(newPassword.length());
+					System.out.println(academicId);
+					if (newPassword.length() > 0) {
+						Hash passwordToUpdate = new Hash(newPassword);
+						Database.changePassword(academicId, passwordToUpdate.getHash(), passwordToUpdate.getSalt());
+						JOptionPane.showMessageDialog(null, "Your password has now been changed", "Success", 1);
+						frmChangePassword.dispose();
+					}
+					else {
+						JOptionPane.showMessageDialog(null, "Please enter a new password", "Error", 0);
+					}
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "Your password is incorrect", "Incorrect Password", 0);
+				}
 			}
 		});
 		btnChange.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -79,6 +108,7 @@ public class ChangePassword {
 
 		pwdNewPassword = new JPasswordField();
 		pwdNewPassword.setFont(new Font("Tahoma", Font.PLAIN, 15));
+
 		GroupLayout groupLayout = new GroupLayout(frmChangePassword.getContentPane());
 		groupLayout
 				.setHorizontalGroup(

@@ -607,7 +607,7 @@ public class ReviewerMainWindow {
 		menuItem_1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				new ChangePassword();
+				new ChangePassword(reviewer.getEmailId());
 			}
 		});
 		menu.add(menuItem_1);
