@@ -27,7 +27,6 @@ public class CreateDatabase extends Database{
 		return "CREATE TABLE VOLUMES ("
 				+ "volID INT PRIMARY KEY AUTO_INCREMENT,"
 				+ "year INT, "
-				+ "published BOOLEAN, "
 				+ "ISSN INT REFERENCES JOURNALS(ISSN))";
 	}
 
