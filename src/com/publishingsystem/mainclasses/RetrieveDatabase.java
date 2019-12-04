@@ -650,19 +650,19 @@ public class RetrieveDatabase extends Database {
 							
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
-								article.setPDF(pdf);
-								PublishedArticle PublishedArticle = new PublishedArticle(
+								PublishedArticle publishedArticle = new PublishedArticle(
 										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
-								articlesPublished.add(PublishedArticle);
+								publishedArticle.setPDF(pdf);
+								articlesPublished.add(publishedArticle);
 								
 							} else {
 
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
-								article.setPDF(pdf);
-								PublishedArticle PublishedArticle = new PublishedArticle(
+								PublishedArticle publishedArticle = new PublishedArticle(
 										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
-								articlesPublished.add(PublishedArticle);
+								publishedArticle.setPDF(pdf);
+								articlesPublished.add(publishedArticle);
 							}
 						} else {
 							if (ed == null || ed.getEditionId() != res.getInt("EDID")) {
@@ -671,10 +671,10 @@ public class RetrieveDatabase extends Database {
 								edNumber++;
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
-								article.setPDF(pdf);
-								PublishedArticle PublishedArticle = new PublishedArticle(
+								PublishedArticle publishedArticle = new PublishedArticle(
 										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
-								articlesPublished.add(PublishedArticle);
+								publishedArticle.setPDF(pdf);
+								articlesPublished.add(publishedArticle);
 							} else {
 
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
@@ -702,20 +702,18 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT AUT.AUTHORNAME, AOA.MAINAUTHOR, AUT.EMAILADDRESS s"
+			String query = "SELECT AUT.AUTHORNAME, AOA.MAINAUTHOR, AUT.EMAILADDRESS "
 					+ "FROM AUTHOROFARTICLE AOA, AUTHORS AUT "
-					+ "WHERE AOA.ARTICLEID = ?, AOA.AUTHORID = AUT.AUTHORID;";
+					+ "WHERE AOA.ARTICLEID = ? AND AOA.AUTHORID = AUT.AUTHORID;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, articleID);
 				System.out.println(preparedStmt);
 				ResultSet res = preparedStmt.executeQuery();
 				ArrayList<AuthorOfArticle> authors = new ArrayList<AuthorOfArticle>();
-				Author au = null;
-				AuthorOfArticle aoa = null;
 				
 				while (res.next()) {
-					au = new Author(-1, null, res.getString("AUTHORNAME"), null, res.getString("EMAILADDRESS"), null, null);
-					aoa = new AuthorOfArticle(null, au, res.getBoolean("MAINAUTHOR"));
+					Author au = new Author(-1, null, res.getString("AUTHORNAME"), null, res.getString("EMAILADDRESS"), null, null);
+					AuthorOfArticle aoa = new AuthorOfArticle(null, au, res.getBoolean("MAINAUTHOR"));
 					authors.add(aoa);
 				}
 				
