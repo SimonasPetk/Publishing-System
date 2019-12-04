@@ -127,6 +127,28 @@ public class ChiefMainWindow {
 		frmChiefEditorsDashboard.setVisible(true);
 		
 		chiefEditorOfJournals.removeIf(c -> !c.isChiefEditor());
+		for(EditorOfJournal eoj : this.editor.getEditorOfJournals()) {
+			boolean hasClash = RetrieveDatabase.editorOfJournalHasClash(eoj);
+			
+			if(hasClash && !eoj.isTempRetired()) {
+				if(eoj.isChiefEditor() && RetrieveDatabase.getEditorsOfJournal(eoj.getJournal()).size() == 1) {
+					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName()+"\nPlease add a new editor for this Journal who will be the Chief Editor.");
+					new TransferChiefEditorRole(eoj, frmChiefEditorsDashboard , roles);
+				}else if(eoj.isChiefEditor()) {
+					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName()+"\nPlease select a new Chief Editor for this Journal.");
+					new RegistrationWindow(Role.EDITOR, eoj, eoj.getJournal());
+				}else {
+					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName());	
+				}
+				Database.tempRetireEditor(eoj);
+				eoj.temporaryRetire();
+			}else if(!hasClash && eoj.isTempRetired()){
+				JOptionPane.showMessageDialog(null, "Your temporary retirement from "+eoj.getJournal().getJournalName()+" has been suspended.");
+				Database.reInitiateEditor(eoj);
+				eoj.reInitiate();
+			}
+				
+		}
 		
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = toolkit.getScreenSize();

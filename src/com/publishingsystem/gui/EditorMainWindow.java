@@ -33,6 +33,7 @@ import com.publishingsystem.mainclasses.PublishedArticle;
 import com.publishingsystem.mainclasses.RetrieveDatabase;
 import com.publishingsystem.mainclasses.Review;
 import com.publishingsystem.mainclasses.ReviewerOfSubmission;
+import com.publishingsystem.mainclasses.Role;
 import com.publishingsystem.mainclasses.Submission;
 import com.publishingsystem.mainclasses.Verdict;
 import com.publishingsystem.mainclasses.Volume;
@@ -127,8 +128,10 @@ public class EditorMainWindow {
 			if(hasClash && !eoj.isTempRetired()) {
 				if(eoj.isChiefEditor() && RetrieveDatabase.getEditorsOfJournal(eoj.getJournal()).size() == 1) {
 					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName()+"\nPlease add a new editor for this Journal who will be the Chief Editor.");
+					new TransferChiefEditorRole(eoj, frmDashboard , roles);
 				}else if(eoj.isChiefEditor()) {
 					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName()+"\nPlease select a new Chief Editor for this Journal.");
+					new RegistrationWindow(Role.EDITOR, eoj, eoj.getJournal());
 				}else {
 					JOptionPane.showMessageDialog(null, "You have been temporarily retired from "+eoj.getJournal().getJournalName());	
 				}
@@ -334,9 +337,6 @@ public class EditorMainWindow {
 	                });
                 }else {
                 	selectedSubmissionRow = -1;
-                	DefaultListModel listModel = (DefaultListModel) list.getModel();
-                    listModel.removeAllElements();
-                    
                     JOptionPane.showMessageDialog(null, "You cannot process this submission as you have been retired from the board of editors for the journal to which it is submitted.", "Cannot process", 0);
                 }
 			}
