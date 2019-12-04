@@ -583,7 +583,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT V.VOLID, V.YEAR, E.EDID, E.MONTH, P.PUBLISHEDARTICLEID, P.ARTICLEID, A.TITLE, A.SUMMARY, PDF.PDFID, PDF.NUMPAGES "
+			String query = "SELECT V.VOLID, V.YEAR, E.PUBLISHED, E.EDID, E.MONTH, P.PUBLISHEDARTICLEID, P.ARTICLEID, A.TITLE, A.SUMMARY, PDF.PDFID, PDF.NUMPAGES "
 					+ "FROM VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, PDF "
 					+ "WHERE V.ISSN = ? AND V.VOLID = E.VOLID AND E.EDID = P.EDID AND P.ARTICLEID = A.ARTICLEID AND A.PDFID = PDF.PDFID;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
