@@ -973,8 +973,9 @@ public class Database {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			String query = "DELETE S.*, Ros.*, Rev.*, C.*, Art.*, Aoa.*, A.* "
-					+ "FROM SUBMISSIONS S INNER JOIN REVIEWEROFSUBMISSION Ros ON S.SUBMISSIONID = Ros.SUBMISSIONID "
+			String query = "DELETE S.*, P.*, Ros.*, Rev.*, C.*, Art.*, Aoa.*, A.* "
+					+ "FROM SUBMISSIONS S INNER JOIN PDF P ON S.SUBMISSIONID = P.SUBMISSIONID "
+					+ "INNER JOIN REVIEWEROFSUBMISSION Ros ON S.SUBMISSIONID = Ros.SUBMISSIONID "
 					+ "INNER JOIN REVIEWS Rev ON Rev.SUBMISSIONID = Ros.SUBMISSIONID "
 					+ "INNER JOIN CRITICISMS C ON C.SUBMISSIONID = Rev.SUBMISSIONID "
 					+ "INNER JOIN ARTICLES Art ON S.ARTICLEID = Art.ARTICLEID "
