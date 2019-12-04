@@ -118,8 +118,7 @@ public class SubmitArticle {
 		this.numReviewsOfCoAuthors.add(numReview);
 		this.coAuthorsModel.clear();
 		for (Author author : coAuthors) {
-			coAuthorsModel
-					.addElement(author.getForename() + " " + author.getSurname() + " (" + author.getEmailId() + ")");
+			coAuthorsModel.addElement(author.getForename() + " " + author.getSurname() + " (" + author.getEmailId() + ")");
 		}
 	}
 
@@ -174,8 +173,6 @@ public class SubmitArticle {
 		coAuthorsModel = new DefaultListModel<>();
 		listOfAuthors = new JList<>(coAuthorsModel);
 		listOfAuthors.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		coAuthorsModel.addElement(
-				mainAuthor.getForename() + " " + mainAuthor.getSurname() + " (" + mainAuthor.getEmailId() + ")");
 		scrPaneAuthors.setViewportView(listOfAuthors);
 
 		String[] listOfAuthors = new String[coAuthors.size()];
