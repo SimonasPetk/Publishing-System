@@ -556,6 +556,35 @@ public class RetrieveDatabase extends Database {
 		}
 		return null;
 	}
+	
+	public static byte[] getPDFReader(int pdfID) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE " + DATABASE + ";");
+			statement.close();
+			String query = "SELECT PDF.PDFTEXT FROM PDF WHERE PDFID = ?";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, pdfID);
+				ResultSet res = preparedStmt.executeQuery();
+				byte[] pdf = null;
+				
+				if(res.next()) {
+					Blob blob = res.getBlob("PDFTEXT");
+					int blobLength = (int) blob.length();
+					pdf = blob.getBytes(1, blobLength);
+					return pdf;
+				}
+				
+				return null;
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
+	
 
 	public static Journal getJournal(int issn) {
 		Journal result = null;
@@ -594,6 +623,7 @@ public class RetrieveDatabase extends Database {
 				ArrayList<PublishedArticle> articlesPublished = new ArrayList<PublishedArticle>();
 				Volume vol = null;
 				Edition ed = null;
+				PDF pdf = null;
 				int volNumber = 1;   
 				int edNumber = 1;
 				int cPages = 0;
@@ -603,6 +633,8 @@ public class RetrieveDatabase extends Database {
 					
 					cPages = res.getInt("NUMPAGES") + pPages;
 					String pageRange = Integer.toString(pPages) + " - " + Integer.toString(cPages);
+					
+					pdf = new PDF(res.getInt("PDFID"), null, null);
 					
 					if (res.getBoolean("PUBLISHED")) {
 						if (vol == null || vol.getVolumeId() != res.getInt("VOLID")) {
@@ -616,6 +648,7 @@ public class RetrieveDatabase extends Database {
 							
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
+								article.setPDF(pdf);
 								PublishedArticle PublishedArticle = new PublishedArticle(
 										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
 								articlesPublished.add(PublishedArticle);
@@ -624,6 +657,7 @@ public class RetrieveDatabase extends Database {
 
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
+								article.setPDF(pdf);
 								PublishedArticle PublishedArticle = new PublishedArticle(
 										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
 								articlesPublished.add(PublishedArticle);
@@ -635,6 +669,7 @@ public class RetrieveDatabase extends Database {
 								edNumber++;
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
+								article.setPDF(pdf);
 								PublishedArticle PublishedArticle = new PublishedArticle(
 										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
 								articlesPublished.add(PublishedArticle);
@@ -642,6 +677,7 @@ public class RetrieveDatabase extends Database {
 
 								Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"),
 										res.getString("SUMMARY"), getJournal(issn));
+								article.setPDF(pdf);
 								PublishedArticle PublishedArticle = new PublishedArticle(
 										res.getInt("PUBLISHEDARTICLEID"), article, pageRange, ed);
 								articlesPublished.add(PublishedArticle);

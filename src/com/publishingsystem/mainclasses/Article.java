@@ -51,11 +51,6 @@ public class Article {
 		this.pdf = pdf;
 	}
 	
-	public PDF getPDF() {
-		return this.pdf;
-	}
-
-	
 	public void setArticleId(int id) {
 		this.articleId = id;
 	}
