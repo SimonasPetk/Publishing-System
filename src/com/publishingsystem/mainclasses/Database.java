@@ -517,6 +517,7 @@ public class Database {
 				query = "SELECT 1 FROM SUBMISSIONS WHERE ARTICLEID = ?";
 				try (PreparedStatement preparedStmt1 = con.prepareStatement(query)) {
 					preparedStmt1.setInt(1, articleId);
+					preparedStmt1.execute();
 					ResultSet res = preparedStmt1.executeQuery();
 					if (res.next())
 						submissionExists = true;
@@ -528,6 +529,7 @@ public class Database {
 				query = "SELECT 1 FROM PUBLISHEDARTICLES WHERE ARTICLEID = ?";
 				try (PreparedStatement preparedStmt1 = con.prepareStatement(query)) {
 					preparedStmt1.setInt(1, articleId);
+					preparedStmt1.execute();
 					ResultSet res = preparedStmt1.executeQuery();
 					if (res.next())
 						publishedArticleExists = true;
@@ -1118,16 +1120,11 @@ public class Database {
 			printStatements.execute("USE " + DATABASE + ";");
 			printStatements.executeQuery("SELECT * FROM ACADEMICS");
 			printStatements.close();
-<<<<<<< HEAD
+
 			CreateDatabase.printAllRecords("ACADEMICS");
 			CreateDatabase.printAllRecords("EDITOROFJOURNAL");
 			//removeChiefEditor(4);
 		}catch (SQLException ex) {
-=======
-
-			// removeChiefEditor(4);
-		} catch (SQLException ex) {
->>>>>>> 6fa6e9228a87cd1e8093a29a55743ca3544f112b
 			ex.printStackTrace();
 		}
 
