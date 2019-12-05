@@ -244,8 +244,7 @@ public class RegistrationWindow {
 							} else {
 								if (r == Role.COAUTHOR) {
 									// Co-author already registered, add the registered account
-									Academic[] roles = RetrieveDatabase.getRoles(email);
-									submitArticleGUI.addCoAuthor((Author) roles[1], 0);
+									submitArticleGUI.addCoAuthor(new Author(-1, title, forenames, surname, email, university, pwdHash));
 									validCredentials = false;
 									JOptionPane.showMessageDialog(null,
 											"Email is already in use. They will be added as a co-author.");
@@ -263,25 +262,38 @@ public class RegistrationWindow {
 				// valid
 			
 				if (validCredentials) {
-					JOptionPane.showMessageDialog(null, "Registration Successul", "Registration Form", 1);
 					int academicID = RetrieveDatabase.getAcademicIdByEmail(email);
 					switch (r) {
 					case AUTHOR:
-						Author author = new Author(academicID, title, forenames, surname, email, university, pwdHash);
+						Author author = new Author(-1, title, forenames, surname, email, university, pwdHash);
+						JOptionPane.showMessageDialog(null, "Registration Successul", "Registration Form", 1);
 						new SubmitArticle(author);
 						break;
 					case COAUTHOR:
-						Author coAuthor = new Author(academicID, title, forenames, surname, email, university, pwdHash);
-						submitArticleGUI.addCoAuthor(coAuthor, 0);
+						Author coAuthor = new Author(-1, title, forenames, surname, email, university, pwdHash);
+						boolean authorExists = false;
+						for(Author a : submitArticleGUI.getCoAuthors()) {
+							if(a.getEmailId().equals(email))
+								authorExists = true;
+						}
+						if(!authorExists) {
+							submitArticleGUI.addCoAuthor(coAuthor);
+							JOptionPane.showMessageDialog(null, "Registration Successul", "Registration Form", 1);
+						}
+						else
+							JOptionPane.showMessageDialog(null,
+									"CoAuthor already added");
 						break;
 					case CHIEFEDITOR:
-						Editor chiefEditor = new Editor(academicID, title, forenames, surname, email, university,
+						JOptionPane.showMessageDialog(null, "Registration Successul", "Registration Form", 1);
+						Editor chiefEditor = new Editor(-1, title, forenames, surname, email, university,
 								pwdHash);
 						Academic[] roles = { chiefEditor, null, null }; // New on the system, their only role will be
 																		// chiefEditor
 						new AddJournal(roles);
 						break;
 					case EDITOR:
+						JOptionPane.showMessageDialog(null, "Registration Successul", "Registration Form", 1);
 						Editor editor = new Editor(-1, title, forenames, surname, email, university,
 								pwdHash);
 						Database.registerEditor(editor);

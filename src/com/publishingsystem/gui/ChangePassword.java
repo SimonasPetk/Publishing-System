@@ -87,10 +87,13 @@ public class ChangePassword {
 					System.out.println(newPassword.length());
 					System.out.println(academicId);
 					if (newPassword.length() > 0) {
-						Hash passwordToUpdate = new Hash(newPassword);
-						Database.changePassword(academicId, passwordToUpdate.getHash(), passwordToUpdate.getSalt());
-						JOptionPane.showMessageDialog(null, "Your password has now been changed", "Success", 1);
-						frmChangePassword.dispose();
+						if(newPassword.length() > 7) {
+							Hash passwordToUpdate = new Hash(newPassword);
+							Database.changePassword(academicId, passwordToUpdate.getHash(), passwordToUpdate.getSalt());
+							JOptionPane.showMessageDialog(null, "Your password has now been changed", "Success", 1);
+							frmChangePassword.dispose();
+						}else
+							JOptionPane.showMessageDialog(null, "New password has to be at least 8 characters long", "Success", 1);
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Please enter a new password", "Error", 0);
