@@ -52,6 +52,7 @@ import java.awt.GridLayout;
 import javax.swing.JTextField;
 import java.awt.Insets;
 import javax.swing.SwingConstants;
+import javax.swing.ListSelectionModel;
 
 public class ArticlesWindow {
 
@@ -109,6 +110,7 @@ public class ArticlesWindow {
 		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
 		tblArticles = new JTable();
+		tblArticles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		ArrayList<PublishedArticle> allArticles = RetrieveDatabase.getArticles(selJournal.getISSN());
 		Object[][] tableContents = new Object[allArticles.size()][5];
 		for (int i = 0; i < allArticles.size(); i++) {
