@@ -504,7 +504,7 @@ public class EditorMainWindow {
 	    	int volId = Database.addVolume(submissionsJournal.getISSN(), year);
 	    	vol = new Volume(year, volId);
 	    }
-	    
+	    vol.setEditions(RetrieveDatabase.getEditions(vol.getVolumeId()));
         // get the most recent edition in this journal
 	    Edition ed = RetrieveDatabase.getRecentEdition(vol);
 	    
@@ -516,7 +516,7 @@ public class EditorMainWindow {
 
         // currently, ed is the edition the submission will be added to
         int edId = ed.getEditionId();
-        
+        ed.addPublishedArticles(RetrieveDatabase.getPublishedArticles(ed.getEditionId()));
 	    if (ed == null || ed.maxArticlesReached()) { // if this month's edition is full or this month's edition is published (ed is null)
 	        // need a new edition for next month
 	        if (vol.maxEditionsReached() || ed.getEditionMonth() == 12) { // if this year's volume is full or the month is December
