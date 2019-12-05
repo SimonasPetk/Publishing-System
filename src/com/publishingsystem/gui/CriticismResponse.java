@@ -206,11 +206,13 @@ public class CriticismResponse {
 		);
 
 		JTextArea textAreaSummary = new JTextArea(ros.getReview().getSummary());
+		textAreaSummary.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		textAreaSummary.setLineWrap(true);
 		textAreaSummary.setEditable(false);
 		scrollPane_1.setViewportView(textAreaSummary);
 
 		JTextArea textAreaTypeErrors = new JTextArea(ros.getReview().getTypingErrors());
+		textAreaTypeErrors.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		textAreaTypeErrors.setLineWrap(true);
 		textAreaTypeErrors.setEditable(false);
 		scrollPane_2.setViewportView(textAreaTypeErrors);
@@ -238,11 +240,13 @@ public class CriticismResponse {
 			panel_1.setLayout(new GridLayout(0, 1, 0, 0));
 
 			JLabel lblNewLabel = new JLabel("	" + "Q" + qCount + ":" + criticisms.get(i).getCriticism());
+			lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
 			lblNewLabel.setHorizontalAlignment(SwingConstants.LEFT);
 			panel_1.add(lblNewLabel);
 
 			counter++;
 			JTextArea textArea = new JTextArea();
+			textArea.setFont(new Font("Tahoma", Font.PLAIN, 15));
 			textArea.setLineWrap(true);
 			textArea.setLayout(null);
 			textAreaAnswers.add(textArea);
