@@ -1011,17 +1011,18 @@ public class Database {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
 			statement.close();
-			String query = "INSERT INTO PUBLISHEDARTICLES " + "VALUES (null, ?, ?)";
+			String query = "INSERT INTO PUBLISHEDARTICLES VALUES (null, ?, ?)";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, articleId);
 				preparedStmt.setInt(2, edId);
+				preparedStmt.execute();
+			}
 
-				query = "SELECT last_insert_id() AS last_id FROM PUBLISHEDARTICLES;";
-				try (PreparedStatement preparedStmt1 = con.prepareStatement(query)) {
-					ResultSet res = preparedStmt1.executeQuery();
-					if (res.next()) {
-						result = res.getInt(1);
-					}
+			query = "SELECT last_insert_id() AS last_id FROM PUBLISHEDARTICLES;";
+			try (PreparedStatement preparedStmt1 = con.prepareStatement(query)) {
+				ResultSet res = preparedStmt1.executeQuery();
+				if (res.next()) {
+					result = res.getInt(1);
 				}
 			}
 		} catch (SQLException ex) {
@@ -1098,6 +1099,9 @@ public class Database {
 		while (list.hasMoreElements())
 			System.out.println(list.nextElement());
 		System.out.println();
+		
+		CreateDatabase.printAllRecords("PUBLISHEDARTICLES");
+		System.out.print(addPublishedArticle(1,1));
 
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
