@@ -827,7 +827,6 @@ public class Database {
 					dbHash = res.getString(2);
 					dbSalt = res.getString(3);
 				}
-				System.out.println(academicID + ", " + dbHash + ", " + dbSalt);
 
 				if (academicID != -1) {
 					// Generate hash based on fetched salt and entered password
