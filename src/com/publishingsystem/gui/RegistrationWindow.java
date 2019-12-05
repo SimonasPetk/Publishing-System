@@ -240,7 +240,7 @@ public class RegistrationWindow {
 							if (r != Role.COAUTHOR && r != Role.EDITOR) {
 								// Email taken so cannot be used
 								validCredentials = false;
-								JOptionPane.showMessageDialog(null, "Email is already in use, Please Log in", "Registration Form", 0);
+								JOptionPane.showMessageDialog(null, "Email is already in use", "Registration Form", 0);
 							} else {
 								if (r == Role.COAUTHOR) {
 									// Co-author already registered, add the registered account
