@@ -268,33 +268,7 @@ public class CreateDatabase extends Database{
 		System.out.println(System.getProperty("jdbc.drivers"));
 		System.out.println("\nDrivers loaded by DriverManager:");
 		Enumeration<Driver> list = DriverManager.getDrivers();
-		//dropTables();
-	    //createTables();
-        try (Connection con = DriverManager.getConnection(CONNECTION)) {
-		    printAllRecords("JOURNALS");
-			printAllRecords("EDITORS");
-			printAllRecords("VOLUMES");
-			printAllRecords("EDITIONS");
-			printAllRecords("EDITOROFJOURNAL");
-			printAllRecords("ACADEMICS");
-            printAllRecords("PUBLISHEDARTICLES");
-		} catch (SQLException ex) {
-		    ex.printStackTrace();
-		}		
-//    try (Connection con = DriverManager.getConnection(CONNECTION)) {
-//          Statement statement = con.createStatement();
-//          statement.execute("USE "+DATABASE+";");
-//    		try (Connection con = DriverManager.getConnection(CONNECTION)) {
-//          Statement statement = con.createStatement();
-//          statement.execute("USE "+DATABASE+";");
-//         
-//          statement.execute("INSERT INTO ARTICLES VALUES (1, 12345, 1, 'Title of Article', 'This is a brief summary of this article.');");
-//          statement.execute("INSERT INTO VOLUMES VALUES (null, null, 12345);");
-//          statement.execute("INSERT INTO EDITIONS VALUES (null, 1, null);");
-//          statement.execute("INSERT INTO PUBLISHEDARTICLES VALUES (null, 52, 1);");*/
-//			printAllRecords("ACADEMICS");
-//		} catch (SQLException ex) {
-//		    ex.printStackTrace();
-//		}
+		dropTables();
+	    createTables();
     }
 }

@@ -136,7 +136,7 @@ public class EditorJournals {
 							} else {
 								Database.retireEditor(eoj);
 							}
-							if (eoj.getEditor().getEditorOfJournals().size() == 0) {
+							if (eoj.getEditor().getEditorOfJournals().size() == 1) {
 								editorWindow.dispose();
 								new JournalWindow(null);
 							}

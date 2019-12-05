@@ -399,7 +399,7 @@ public class EditorMainWindow {
 		mntmLogOut.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				new LoginScreen();
+				new JournalWindow(null);
 				frmDashboard.dispose();
 				//System.exit(0);
 			}
