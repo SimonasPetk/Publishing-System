@@ -29,9 +29,12 @@ public class Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
-			String query = "UPDATE EDITOROFJOURNAL SET ChiefEditor = 1 WHERE editorID = " + eoj.getEditor().getEditorId() + " AND ISSN = "+eoj.getJournal().getISSN();
-			statement.execute(query);
-			statement.close();
+			String query = "UPDATE EDITOROFJOURNAL SET ChiefEditor = 1 WHERE editorID = ? AND ISSN = ?;";
+			 try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, eoj.getEditor().getEditorId());
+				preparedStmt.setInt(2, eoj.getJournal().getISSN());
+				preparedStmt.execute();
+			 }
 			
 		}catch (SQLException ex) {
 			ex.printStackTrace();
@@ -784,10 +787,13 @@ public class Database {
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
-			String query = "UPDATE ACADEMICS SET hash = '" + hash + "', salt = '" + salt + "' WHERE academicID = " + academicId;
-			System.out.println(query);
+			String query = "UPDATE ACADEMICS SET hash = ?, salt = ? WHERE academicID = ?;";
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-				preparedStmt.execute(query);
+				preparedStmt.setString(1, hash);
+				preparedStmt.setString(2, salt);
+				preparedStmt.setInt(3, academicId);
+				preparedStmt.execute();
+			
 			}catch (SQLException ex) {
 				ex.printStackTrace();
 			}
