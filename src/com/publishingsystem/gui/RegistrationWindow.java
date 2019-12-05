@@ -92,14 +92,6 @@ public class RegistrationWindow {
 		frmRegistrationForm.setBounds(500, 100, 653, 559);
 		
 		frmRegistrationForm.setVisible(true);
-		
-		frmRegistrationForm.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				new JournalWindow(null);
-				frmRegistrationForm.dispose();
-			}
-		});
 
 		JLabel lblYourTitle = new JLabel("Title:");
 		lblYourTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -248,7 +240,7 @@ public class RegistrationWindow {
 							if (r != Role.COAUTHOR && r != Role.EDITOR) {
 								// Email taken so cannot be used
 								validCredentials = false;
-								JOptionPane.showMessageDialog(null, "Email is already in use", "Registration Form", 0);
+								JOptionPane.showMessageDialog(null, "Email is already in use, Please Log in", "Registration Form", 0);
 							} else {
 								if (r == Role.COAUTHOR) {
 									// Co-author already registered, add the registered account
