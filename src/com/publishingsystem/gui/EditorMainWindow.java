@@ -172,7 +172,7 @@ public class EditorMainWindow {
 	        public void mouseClicked(MouseEvent arg0) {
 	        	if(selectedSubmissionRow != -1) {
 	                // there isn't 3 final verdicts yet, error
-		            if (finalVerdicts[0] == null && finalVerdicts[1] == null && finalVerdicts[2] == null) {
+		            if (finalVerdicts[0] == null || finalVerdicts[1] == null || finalVerdicts[2] == null) {
 		                JOptionPane.showMessageDialog(null, "Three final verdicts haven't been submitted yet", "Error", 0);
 	                    return;
 		            }
