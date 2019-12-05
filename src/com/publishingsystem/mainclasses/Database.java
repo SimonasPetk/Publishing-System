@@ -533,7 +533,18 @@ public class Database {
 					ex.printStackTrace();
 				}
 				
-				if(!submissionExists) {
+				boolean publishedArticleExists = false;
+				query = "SELECT 1 FROM PUBLISHEDARTICLES WHERE ARTICLEID = ?";
+				try(PreparedStatement preparedStmt1 = con.prepareStatement(query)){
+					preparedStmt1.setInt(1, articleId);
+					ResultSet res = preparedStmt1.executeQuery();
+					if(res.next())
+						publishedArticleExists = true;
+				}catch (SQLException ex) {
+					ex.printStackTrace();
+				}
+				
+				if(!submissionExists && !publishedArticleExists) {
 					query = "DELETE Art.*, Aoa.*, A.* "
 							+ "ARTICLES Art INNER JOIN AUTHOROFARTICLE Aoa ON Art.ARTICLEID = Aoa.ARTICLEID "
 							+ "INNER JOIN AUTHORS A ON Aoa.AUTHORID = A.AUTHORID "
