@@ -151,7 +151,7 @@ public class SubmitArticle {
 		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 		txtfldTitle = new JTextField();
-		txtfldTitle.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		txtfldTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		txtfldTitle.setColumns(10);
 
 		JScrollPane scrPaneAbstract = new JScrollPane();
@@ -159,6 +159,7 @@ public class SubmitArticle {
 		JLabel lblAbstract = new JLabel("Abstract:");
 		lblAbstract.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		JEditorPane editPaneAbstract = new JEditorPane();
+		editPaneAbstract.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		scrPaneAbstract.setViewportView(editPaneAbstract);
 
 		// Authors of article
@@ -172,6 +173,7 @@ public class SubmitArticle {
 
 		coAuthorsModel = new DefaultListModel<>();
 		listOfAuthors = new JList<>(coAuthorsModel);
+		listOfAuthors.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		listOfAuthors.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrPaneAuthors.setViewportView(listOfAuthors);
 
@@ -212,6 +214,7 @@ public class SubmitArticle {
 		btnUploadPdf.setFont(new Font("Tahoma", Font.PLAIN, 15));
 
 		JList listOfJournals = new JList();
+		listOfJournals.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		listOfJournals.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		scrollPane.setViewportView(listOfJournals);
 		listOfJournals.addMouseListener(new MouseAdapter() {
