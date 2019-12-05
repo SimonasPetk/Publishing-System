@@ -22,7 +22,8 @@ public class TestRun {
 		e1.registerEditors(j, editors);
 		
 		//Adding to DB
-		Database.registerEditors(editors);
+		for(Editor editor : editors)
+			Database.registerEditor(editor);
 		Database.addJournal(j);
 		Database.addJournal(j1);
 		

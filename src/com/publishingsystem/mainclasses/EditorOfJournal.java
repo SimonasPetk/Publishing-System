@@ -55,16 +55,4 @@ public class EditorOfJournal {
 	public void setChiefEditor(boolean chiefEditor) {
 		this.chiefEditor = chiefEditor;
 	}
-	
-	
-	public void addEditorAsChiefEditor() {
-		System.out.println(journal);
-		System.out.println(editor);
-		System.out.println("Hello this is both the editor and the journal");
-		ArrayList<Editor> editors = new ArrayList<Editor>();
-		editors.add(editor);
-		Database.registerEditors(editors);
-		Database.updateEditorOfJournal(editors, journal);
-		journal.addEditorToBoard(this);
-	}
 }
