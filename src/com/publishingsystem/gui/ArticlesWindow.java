@@ -113,8 +113,8 @@ public class ArticlesWindow {
 		for (int i = 0; i < allArticles.size(); i++) {
 			PublishedArticle currentArticle = allArticles.get(i);
 			tableContents[i][0] = currentArticle.getTitle();
-			tableContents[i][1] = Integer.toString(currentArticle.getEdition().getVolume().getVolumeNumber()) + "."
-								  + Integer.toString(currentArticle.getEdition().getEditionNumber());
+			tableContents[i][1] = "vol. " + Integer.toString(currentArticle.getEdition().getVolume().getVolumeNumber()) + ", "
+								  + "no. " + Integer.toString(currentArticle.getEdition().getEditionNumber());
 			tableContents[i][2] = Integer.toString(currentArticle.getEdition().getVolume().getYear()) + "/" 
 								  +  Integer.toString(currentArticle.getEdition().getEditionMonth());
 			tableContents[i][3] = currentArticle.getPageRange();

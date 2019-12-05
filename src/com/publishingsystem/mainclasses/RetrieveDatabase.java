@@ -628,7 +628,7 @@ public class RetrieveDatabase extends Database {
 				PDF pdf = null;
 				int volNumber = 1;   
 				int edNumber = 1;
-				int cPages = 0;
+				int cPages = 1;
 				int pPages = 0;
 				
 				while (res.next()) {
