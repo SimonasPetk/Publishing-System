@@ -31,12 +31,6 @@ public class RetrieveDatabase extends Database {
 				while (res.next()) {
 					Academic temp = new Author(-1, res.getString(2), res.getString(3), res.getString(4),
 							res.getString(5), res.getString(6), new Hash(res.getString(7)));
-					System.out.println(res.getInt(1));
-					System.out.println(res.getString(2));
-					System.out.println(res.getString(3));
-					System.out.println(res.getString(4));
-					System.out.println(res.getString(5));
-					System.out.println(res.getString(6));
 					temp.setAcademicId(res.getInt(1));
 					allAcademics.add(temp);
 				}
@@ -98,7 +92,6 @@ public class RetrieveDatabase extends Database {
 				while(res.next()) {
 					Edition e = new Edition(-1, res.getInt("EDID"));
 					int pubA = res.getInt("NUMPUBARTICLES");
-					System.out.println("NUMBER OF PUB A ISSSSS "+pubA);
 					for(int i = 0; i < pubA; i++) {
 						e.addPublishedArticle(new PublishedArticle(-1, new Article(-1, null, null, null), null, null));
 					}
@@ -251,7 +244,6 @@ public class RetrieveDatabase extends Database {
 				Reviewer reviewer = null;
 				while (res.next()) {
 					if (reviewer == null) {
-						System.out.println("TITLE"+title);
 						reviewer = new Reviewer(res.getInt("ACADEMICID"), res.getInt("REVIEWERID"), title, forename,
 								surname, emailId, university, null);
 					}
@@ -619,7 +611,6 @@ public class RetrieveDatabase extends Database {
 					+ "WHERE V.ISSN = ? AND V.VOLID = E.VOLID AND E.EDID = P.EDID AND P.ARTICLEID = A.ARTICLEID AND A.PDFID = PDF.PDFID;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, issn);
-				System.out.println(preparedStmt);
 				ResultSet res = preparedStmt.executeQuery();
 
 				ArrayList<PublishedArticle> articlesPublished = new ArrayList<PublishedArticle>();
@@ -702,17 +693,16 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT AUT.AUTHORNAME, AOA.MAINAUTHOR, AUT.EMAILADDRESS "
+			String query = "SELECT AUT.AUTHORNAME, AOA.MAINAUTHOR, AUT.EMAILADDRESS, AUT.UNIVERSITY "
 					+ "FROM AUTHOROFARTICLE AOA, AUTHORS AUT "
 					+ "WHERE AOA.ARTICLEID = ? AND AOA.AUTHORID = AUT.AUTHORID;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, articleID);
-				System.out.println(preparedStmt);
 				ResultSet res = preparedStmt.executeQuery();
 				ArrayList<AuthorOfArticle> authors = new ArrayList<AuthorOfArticle>();
 				
 				while (res.next()) {
-					Author au = new Author(-1, null, res.getString("AUTHORNAME"), null, res.getString("EMAILADDRESS"), null, null);
+					Author au = new Author(-1, null, res.getString("AUTHORNAME"), null, res.getString("EMAILADDRESS"), res.getString("UNIVERSITY"), null);
 					AuthorOfArticle aoa = new AuthorOfArticle(null, au, res.getBoolean("MAINAUTHOR"));
 					authors.add(aoa);
 				}
@@ -854,7 +844,6 @@ public class RetrieveDatabase extends Database {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
 			String query = "SELECT academicID FROM ACADEMICS WHERE emailAddress = '" + email + "';";
-			System.out.println(query);
 			ResultSet res = statement.executeQuery(query);
 			if (res.next())
 				result = res.getInt(1);
@@ -914,7 +903,6 @@ public class RetrieveDatabase extends Database {
 			String query = "SELECT S.SUBMISSIONID, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY, J.ISSN, J.NAME, J.DATEOFPUBLICATION FROM SUBMISSIONS S, ARTICLES Art, JOURNALS J, EDITOROFJOURNAL Eoj WHERE S.ARTICLEID = Art.ARTICLEID AND Art.ISSN = J.ISSN AND J.ISSN = Eoj.ISSN AND Eoj.EDITORID = ?";;
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, editorId);
-				System.out.println(preparedStmt);
 				ResultSet res = preparedStmt.executeQuery();
 				while(res.next()) {
 					Journal journal = new Journal(res.getInt("ISSN"), res.getString("NAME"), res.getDate("DATEOFPUBLICATION"));
@@ -955,7 +943,6 @@ public class RetrieveDatabase extends Database {
 			int i = 0;
 			while (res.next()) {
 				String finalVerdict = res.getString(1);
-				System.out.println("final verdict " + i + ": " + finalVerdict);
 				if (finalVerdict == null) results[i] = null;
 				else results[i] = Verdict.valueOf(finalVerdict);
 				i = i + 1;
@@ -1192,6 +1179,5 @@ public class RetrieveDatabase extends Database {
 	    CreateDatabase.printAllRecords("VOLUMES");
 	    CreateDatabase.printAllRecords("EDITIONS");
 	    ArrayList<Edition> results = RetrieveDatabase.getEditions(1);
-	    System.out.println(results);
 	}
 }

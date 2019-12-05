@@ -297,10 +297,11 @@ public class ArticlesWindow {
 					if (author.isMainAuthor()) {
 						
 						mainAuthor += author.getAuthor().getForename() 
-									  + " email: " + author.getAuthor().getEmailId();
+									  + " University:" + author.getAuthor().getUniversity() 
+									  + " Email: " + author.getAuthor().getEmailId();
 					} else {
 					
-						authors += author.getAuthor().getForename() + " ";
+						authors += author.getAuthor().getForename() + " University:" + author.getAuthor().getUniversity() ;
 					}					
 				}
 
