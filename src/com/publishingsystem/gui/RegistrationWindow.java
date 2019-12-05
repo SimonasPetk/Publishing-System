@@ -159,7 +159,7 @@ public class RegistrationWindow {
 						|| password.isEmpty()) {
 					validCredentials = false;
 					JOptionPane.showMessageDialog(null, "Please fill in all of the fields", "Registration Form", 0);
-				} else {
+				}else {
 					char[] characters = (forenames + surname + university).toCharArray();
 					int i = 0;
 					// Added a case for '.' as some people may have initials in their university, or
@@ -170,6 +170,8 @@ public class RegistrationWindow {
 							validCredentials = false;
 						i++;
 					}
+					
+					
 					char[] emailCharacters = email.toCharArray();
 					int x = 0;
 					// must be exactly one @
@@ -227,6 +229,10 @@ public class RegistrationWindow {
 						validCredentials = false;
 						errorMessage = "Invalid email";
 					}
+					if(password.length() < 8) {
+						validCredentials = false;
+						errorMessage = "Password has to be atleast 8 characters long";
+					}
 					if (!validCredentials) {
 						JOptionPane.showMessageDialog(null, errorMessage, "Registration Form", 0);
 					} else {
@@ -276,7 +282,10 @@ public class RegistrationWindow {
 						new AddJournal(roles);
 						break;
 					case EDITOR:
-						Database.addAcademicToEditors(academicID, editorsJournal.getISSN());
+						Editor editor = new Editor(-1, title, forenames, surname, email, university,
+								pwdHash);
+						Database.registerEditor(editor);
+						Database.addAcademicToEditors(editor.getEditorId(), editorsJournal.getISSN());
 						
 						break;
 					default:

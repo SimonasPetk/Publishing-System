@@ -155,35 +155,11 @@ public class Database {
 		return editorId;
 	}
 	
-	public static void addAcademicToEditors(int academicId, int issn) {
+	public static void addAcademicToEditors(int editorId, int issn) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
-			Statement statement = con.createStatement();
-			statement.execute("USE "+DATABASE+";");
-			statement.close();
-			String query2 = "SELECT * FROM EDITORS WHERE academicID = " + academicId;
-			int editorId = -1;
-			try(PreparedStatement preparedStmt1 = con.prepareStatement(query2)){
-				ResultSet res2 = preparedStmt1.executeQuery();
-				while (res2.next()) {
-					editorId = res2.getInt("editorID");
-				}
-			}
-			if (editorId == -1) {
-				String query = "INSERT INTO EDITORS values (null, ?)";
-				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setInt(1, academicId);
-					preparedStmt.execute();
-					try(PreparedStatement preparedStmt3 = con.prepareStatement(query2)) {
-						ResultSet res3 = preparedStmt3.executeQuery();
-						while (res3.next()) {
-							editorId = res3.getInt("editorID");
-						}
-					}
-				}
-			}
-			String query3 = "INSERT INTO EDITOROFJOURNAL values (" + editorId + "," + issn + ",0,0)";
-			System.out.println(query3);
-			try(PreparedStatement preparedStmt = con.prepareStatement(query3)){
+			String query = "INSERT INTO EDITOROFJOURNAL values (" + editorId + "," + issn + ",0,0)";
+
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 				preparedStmt.execute();
 			}
 		}catch (SQLException ex) {
@@ -191,70 +167,68 @@ public class Database {
 		}
 	}
 	
-	public static void registerEditors(ArrayList<Editor> editors) {
+	public static void registerEditor(Editor e) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
 			Statement statement = con.createStatement();
 			statement.execute("USE "+DATABASE+";");
 			statement.close();
 
-			for(Editor e : editors) {
-				boolean academicExists = false;
-				String query = "SELECT 1 FROM ACADEMICS WHERE emailAddress = ?";
+			boolean academicExists = false;
+			String query = "SELECT 1 FROM ACADEMICS WHERE emailAddress = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setString(1, e.getEmailId());
+				ResultSet res = preparedStmt.executeQuery();
+				if (res.next())
+					academicExists = true;
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			
+			if(!academicExists) {
+				query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-					preparedStmt.setString(1, e.getEmailId());
-					ResultSet res = preparedStmt.executeQuery();
-					if (res.next())
-						academicExists = true;
-				}catch (SQLException ex) {
-					ex.printStackTrace();
-				}
-				
-				if(!academicExists) {
-					query = "INSERT INTO ACADEMICS values (null, ?, ?, ?, ?, ?, ?, ?)";
-					try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-						preparedStmt.setString(1, e.getTitle());
-						preparedStmt.setString(2, e.getForename());
-						preparedStmt.setString(3, e.getSurname());
-						preparedStmt.setString(4, e.getUniversity());
-						preparedStmt.setString(5, e.getEmailId());
-						preparedStmt.setString(6, e.getHash().getHash());
-						preparedStmt.setString(7, e.getHash().getSalt());
-	
-						preparedStmt.execute();
-	
-						ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ACADEMICS");
-						while(rs.next())
-							e.setAcademicId(Integer.valueOf(rs.getString("last_id")));
-					}
-				}
+					preparedStmt.setString(1, e.getTitle());
+					preparedStmt.setString(2, e.getForename());
+					preparedStmt.setString(3, e.getSurname());
+					preparedStmt.setString(4, e.getUniversity());
+					preparedStmt.setString(5, e.getEmailId());
+					preparedStmt.setString(6, e.getHash().getHash());
+					preparedStmt.setString(7, e.getHash().getSalt());
 
-				boolean editorExists = false;
-				query = "SELECT 1 FROM EDITORS WHERE ACADEMICID = ?";
+					preparedStmt.execute();
+
+					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from ACADEMICS");
+					while(rs.next())
+						e.setAcademicId(Integer.valueOf(rs.getString("last_id")));
+				}
+			}
+
+			boolean editorExists = false;
+			query = "SELECT 1 FROM EDITORS WHERE ACADEMICID = ?";
+			try(PreparedStatement preparedStmt = con.prepareStatement(query)){
+				preparedStmt.setInt(1, e.getAcademicId());
+				ResultSet res = preparedStmt.executeQuery();
+				if (res.next())
+					editorExists = true;
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			
+			if(!editorExists) {
+				//Add editor to editor table
+				query = "INSERT INTO EDITORS values (null, ?)";
 				try(PreparedStatement preparedStmt = con.prepareStatement(query)){
 					preparedStmt.setInt(1, e.getAcademicId());
-					ResultSet res = preparedStmt.executeQuery();
-					if (res.next())
-						editorExists = true;
+					preparedStmt.execute();
+
+					ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from EDITORS");
+					while(rs.next())
+						e.setEditorId(Integer.valueOf(rs.getString("last_id")));
 				}catch (SQLException ex) {
 					ex.printStackTrace();
 				}
-				
-				if(!editorExists) {
-					//Add editor to editor table
-					query = "INSERT INTO EDITORS values (null, ?)";
-					try(PreparedStatement preparedStmt = con.prepareStatement(query)){
-						preparedStmt.setInt(1, e.getAcademicId());
-						preparedStmt.execute();
-	
-						ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from EDITORS");
-						while(rs.next())
-							e.setEditorId(Integer.valueOf(rs.getString("last_id")));
-					}catch (SQLException ex) {
-						ex.printStackTrace();
-					}
-				}
-
 			}
+
 		}catch (SQLException ex) {
 			ex.printStackTrace();
 		}
