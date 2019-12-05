@@ -1,5 +1,6 @@
 package com.publishingsystem.gui;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -30,7 +31,7 @@ import javax.swing.JButton;
 
 public class ChooseArticlesToReview {
 
-	private JFrame ArticlesToReview;
+	private JFrame articlesToReview;
 	private JTable tblToReview;
 
 	/**
@@ -41,7 +42,7 @@ public class ChooseArticlesToReview {
 			public void run() {
 				try {
 					ChooseArticlesToReview window = new ChooseArticlesToReview(null, 0, null);
-					window.ArticlesToReview.setVisible(true);
+					window.articlesToReview.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -54,18 +55,19 @@ public class ChooseArticlesToReview {
 	 */
 	public ChooseArticlesToReview(Reviewer reviewer, int articleId, ReviewerMainWindow rmw) {
 		initialize(reviewer, articleId, rmw);
-		ArticlesToReview.setVisible(true);
+		articlesToReview.setVisible(true);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Reviewer reviewer, int articleId, ReviewerMainWindow rmw) {
-		int width = 600;
-		int height = 300;
-		ArticlesToReview = new JFrame();
-		ArticlesToReview.setTitle("Choose What to Review");
-		ArticlesToReview.setBounds(100, 100, width, height);
+		int width = 610;
+		int height = 310;
+		articlesToReview = new JFrame();
+		articlesToReview.setTitle("Choose What to Review");
+		articlesToReview.setBounds(100, 100, width, height);
+		articlesToReview.setMinimumSize(new Dimension(width, height));
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -76,7 +78,7 @@ public class ChooseArticlesToReview {
 
 		JButton btnSelectArticles = new JButton("Select articles");
 		btnSelectArticles.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		GroupLayout groupLayout = new GroupLayout(ArticlesToReview.getContentPane());
+		GroupLayout groupLayout = new GroupLayout(articlesToReview.getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
@@ -169,7 +171,7 @@ public class ChooseArticlesToReview {
 						rmw.addSubmissionToReview(s);
 					}
 					rmw.refreshTables();
-					ArticlesToReview.dispose();
+					articlesToReview.dispose();
 				} else {
 					JOptionPane.showMessageDialog(null, "Too many submissions selected.\n Select at most 3 submissions",
 							"Error in reviewing submission", 0);
@@ -178,6 +180,6 @@ public class ChooseArticlesToReview {
 		});
 
 		scrollPane.setViewportView(tblToReview);
-		ArticlesToReview.getContentPane().setLayout(groupLayout);
+		articlesToReview.getContentPane().setLayout(groupLayout);
 	}
 }

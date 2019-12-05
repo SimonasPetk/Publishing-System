@@ -124,7 +124,7 @@ public class RetrieveDatabase extends Database {
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, eoj.getEditor().getEditorId());
 				preparedStmt.setInt(2, eoj.getJournal().getISSN());
-				preparedStmt.setString(3, eoj.getEditor().getUniversity());
+				preparedStmt.setString(3, eoj.getEditor().getUniversity().trim().toLowerCase());
 				ResultSet rs = preparedStmt.executeQuery();
 				if (rs.next()) {
 					return true;
@@ -157,7 +157,7 @@ public class RetrieveDatabase extends Database {
 			String title = "", forename = "", surname = "", emailId = "", university = "";
 
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
-				preparedStmt.setString(1, email);
+				preparedStmt.setString(1, email.toLowerCase());
 				ResultSet res = preparedStmt.executeQuery();
 				if (res.next()) {
 					academicId = res.getInt("academicID");
@@ -453,7 +453,7 @@ public class RetrieveDatabase extends Database {
 					+ "(SELECT SUBMISSIONID AS NUMR FROM REVIEWEROFSUBMISSION GROUP BY SUBMISSIONID HAVING COUNT(*) > 2)";
 			ArrayList<Submission> submissions = new ArrayList<Submission>();
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
-				preparedStmt.setString(1, r.getUniversity());
+				preparedStmt.setString(1, r.getUniversity().trim().toLowerCase());
 				preparedStmt.setInt(2, r.getReviewerId());
 				ResultSet res = preparedStmt.executeQuery();
 				while (res.next()) {
@@ -478,6 +478,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
+			statement.close();
 			String query = "SELECT S.SUBMISSIONID, S.STATUS, A.ARTICLEID, A.TITLE, A.SUMMARY, "
 					+ "J.ISSN, J.NAME, J.DATEOFPUBLICATION " + "FROM SUBMISSIONS S, ARTICLES A, JOURNALS J "
 					+ "WHERE S.ARTICLEID = A.ARTICLEID " + "AND A.ISSN = J.ISSN " + "AND J.ISSN = ?";
@@ -585,6 +586,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
+			statement.close();
 			String query = "SELECT ISSN, name, dateOfPublication dateOfPublication FROM JOURNALS WHERE issn = ?;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, issn);
@@ -608,6 +610,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
+			statement.close();
 			String query = "SELECT V.VOLID, V.YEAR, E.PUBLISHED, E.EDID, E.MONTH, P.PUBLISHEDARTICLEID, P.ARTICLEID, A.TITLE, A.SUMMARY, PDF.PDFID, PDF.NUMPAGES "
 					+ "FROM VOLUMES V, EDITIONS E, PUBLISHEDARTICLES P, ARTICLES A, PDF "
 					+ "WHERE V.ISSN = ? AND V.VOLID = E.VOLID AND E.EDID = P.EDID AND P.ARTICLEID = A.ARTICLEID AND A.PDFID = PDF.PDFID;";
@@ -695,6 +698,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
+			statement.close();
 			String query = "SELECT AUT.AUTHORNAME, AOA.MAINAUTHOR, AUT.EMAILADDRESS, AUT.UNIVERSITY "
 					+ "FROM AUTHOROFARTICLE AOA, AUTHORS AUT "
 					+ "WHERE AOA.ARTICLEID = ? AND AOA.AUTHORID = AUT.AUTHORID;";
@@ -729,6 +733,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
+			statement.close();
 			String query = "SELECT Aca.ACADEMICID, Aca.TITLE, Aca.FORENAME, Aca.SURNAME, Aca.UNIVERSITY, Aca.EMAILADDRESS, "
 					+ "E.EDITORID, Eoj.CHIEFEDITOR FROM ACADEMICS Aca, EDITORS E, EDITOROFJOURNAL Eoj WHERE Aca.ACADEMICID = E.ACADEMICID "
 					+ "AND E.EDITORID = Eoj.EDITORID AND Eoj.TEMPRETIRED = 0 AND Eoj.ISSN = ?;";
@@ -772,6 +777,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
+			statement.close();
 			String query = "SELECT ChiefEditor FROM EDITOROFJOURNAL WHERE editorID = ?;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, editorId);
@@ -795,6 +801,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
+			statement.close();
 			String query = "SELECT TempRetired FROM EDITOROFJOURNAL WHERE editorID= ?;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, editorId);
@@ -817,6 +824,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
+			statement.close();
 			String query = "SELECT academicID FROM EDITORS WHERE  editorID = ?;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, editorId);
@@ -835,6 +843,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
+			statement.close();
 			String query = "SELECT title, forename, surname, emailAddress, university, hash FROM ACADEMICS WHERE academicID = ?;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, academicId);
@@ -862,9 +871,10 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
+			statement.close();
 			String query = "SELECT academicID FROM ACADEMICS WHERE emailAddress = ?;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
-				preparedStmt.setString(1, email);
+				preparedStmt.setString(1, email.trim().toLowerCase());
 				ResultSet res = preparedStmt.executeQuery();
 			
 				if (res.next())
@@ -881,6 +891,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
+			statement.close();
 			String query = "SELECT title, forename, surname, emailAddress, university, hash FROM ACADEMICS WHERE academicID = ?";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, academicID);
@@ -908,6 +919,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
+			statement.close();
 			String query = "SELECT forename, surname FROM ACADEMICS WHERE academicID = ?";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, academicID);
@@ -928,6 +940,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
+			statement.close();
 			String query = "SELECT S.SUBMISSIONID, S.STATUS, Art.ARTICLEID, Art.TITLE, Art.SUMMARY, J.ISSN, J.NAME, J.DATEOFPUBLICATION FROM SUBMISSIONS S, ARTICLES Art, JOURNALS J, EDITOROFJOURNAL Eoj WHERE S.ARTICLEID = Art.ARTICLEID AND Art.ISSN = J.ISSN AND J.ISSN = Eoj.ISSN AND Eoj.EDITORID = ?";;
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, editorId);
@@ -963,7 +976,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-
+			statement.close();
 			String query = "SELECT finalVerdict "
 			             + "FROM REVIEWS WHERE submissionID = ?;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
@@ -996,7 +1009,7 @@ public class RetrieveDatabase extends Database {
 	    try (Connection con = DriverManager.getConnection(CONNECTION)) {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
-
+            statement.close();
             // select the most recent edition from this volume
             String query = "SELECT edId, month "
                          + "FROM EDITIONS "
@@ -1029,7 +1042,7 @@ public class RetrieveDatabase extends Database {
 	    try (Connection con = DriverManager.getConnection(CONNECTION)) {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
-
+            statement.close();
             // select the most recent volume for this journal
             String query = "SELECT volId, year "
                     + "FROM VOLUMES "
@@ -1062,7 +1075,7 @@ public class RetrieveDatabase extends Database {
         try (Connection con = DriverManager.getConnection(CONNECTION)) {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
-
+            statement.close();
             String query = "SELECT title, summary "
                          + "FROM ARTICLES "
                          + "WHERE articleID = ?;";
@@ -1093,7 +1106,7 @@ public class RetrieveDatabase extends Database {
         try (Connection con = DriverManager.getConnection(CONNECTION)) {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
-
+            statement.close();
             String query = "SELECT P.publishedArticleID, P.articleID, A.TITLE, A.SUMMARY "
                          + "FROM PUBLISHEDARTICLES P, ARTICLES A "
                          + "WHERE P.ARTICLEID = A.ARTICLEID AND edID = ?;";
@@ -1124,7 +1137,7 @@ public class RetrieveDatabase extends Database {
         try (Connection con = DriverManager.getConnection(CONNECTION)) {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
-
+            statement.close();
             String query = "SELECT edId, month, published "
                          + "FROM EDITIONS "
                          + "WHERE volId = ?;";
@@ -1162,7 +1175,7 @@ public class RetrieveDatabase extends Database {
         try (Connection con = DriverManager.getConnection(CONNECTION)) {
             Statement statement = con.createStatement();
             statement.execute("USE "+DATABASE+";");
-
+            statement.close();
             String query = "SELECT volId, year "
                          + "FROM VOLUMES "
                          + "WHERE issn = ?;";

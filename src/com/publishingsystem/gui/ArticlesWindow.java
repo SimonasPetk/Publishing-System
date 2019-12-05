@@ -95,6 +95,7 @@ public class ArticlesWindow {
 		frmAvailableJournalArticles = new JFrame();
 		frmAvailableJournalArticles.setTitle("View Articles");
 		frmAvailableJournalArticles.setBounds(100, 100, 1200, 766);
+		frmAvailableJournalArticles.setMinimumSize(new Dimension(1200, 766));
 		frmAvailableJournalArticles.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAvailableJournalArticles.setVisible(true);
 

@@ -122,6 +122,7 @@ public class EditorMainWindow {
 		frmDashboard = new JFrame();
 		frmDashboard.setTitle("Editor's Dashboard");
 		frmDashboard.setBounds(100, 100, width, height);
+		frmDashboard.setMinimumSize(new Dimension(width, height));
 		frmDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmDashboard.setVisible(true);
 		
@@ -171,7 +172,7 @@ public class EditorMainWindow {
 	        public void mouseClicked(MouseEvent arg0) {
 	        	if(selectedSubmissionRow != -1) {
 	                // there isn't 3 final verdicts yet, error
-		            if (finalVerdicts[0] == null && finalVerdicts[1] == null && finalVerdicts[2] == null) {
+		            if (finalVerdicts[0] == null || finalVerdicts[1] == null || finalVerdicts[2] == null) {
 		                JOptionPane.showMessageDialog(null, "Three final verdicts haven't been submitted yet", "Error", 0);
 	                    return;
 		            }
@@ -182,23 +183,22 @@ public class EditorMainWindow {
 		            
 		            // check if article should be accepted
 		            int[] verdictCount = getVerdictCount(finalVerdicts);
-		            if (verdictCount[0] == 3) {
-		                // 3 strong accept = accept
+		            if (verdictCount[0] > 0 && verdictCount[3] == 0) {
+		                // 2 Strong Accept + NOT Strong Reject = accept
+		                  // Strong Accept, Strong Accept, Strong Accept
+		                  // Strong Accept, Strong Accept, Weak Accept
+		                  // Strong Accept, Strong Accept, Weak Reject
+		            	JOptionPane.showMessageDialog(null, "Submission has received Strong Accept and has been Accepted.", "Accepted", 1);
 		                acceptSubmission(selectedSubmission);
 		                remove = true;
-		            } else if (verdictCount[3] == 3) {
-		                // 3 strong reject = reject
-		                JOptionPane.showMessageDialog(null, "Submission has received 3 Strong Rejects and has been rejected.", "Rejected", 1);
+		            } else if (verdictCount[3] > 0 && verdictCount[0] == 0) {
+		                // 2 Strong Reject + NOT Strong Accept = reject
+		                  // Strong Reject, Strong Reject, Weak Accept
+		                  // Strong Reject, Strong Reject, Weak Reject
+		                  // Strong Reject, Strong Reject, Strong Reject
+		                JOptionPane.showMessageDialog(null, "Submission has received Strong Rejects and has been rejected.", "Rejected", 1);
 		                Database.rejectSubmission(selectedSubmission);
 		                remove = true;
-		            }else if(verdictCount[0] == 1  && verdictCount[1] > 0 && verdictCount[2] > 0) {
-		            	JOptionPane.showMessageDialog(null, "Submission has received 1 Strong Accept and has been accepted.", "Accepted", 1);
-		            	acceptSubmission(selectedSubmission);
-		            	remove = true;
-		            }else if(verdictCount[3] == 1 && verdictCount[1] > 0 && verdictCount[2] > 0) {
-		            	JOptionPane.showMessageDialog(null, "Submission has received 1 Strong Reject and has been rejected.", "Rejected", 1);
-		            	Database.rejectSubmission(selectedSubmission);
-		            	remove = true;
 		            }else if (verdictCount[0] > 0 && verdictCount[3] > 0) {
 		                // at least 1 strong accept and 1 strong reject + any = discuss
 		                    // Strong Accept, Strong Reject, Strong Accept
@@ -214,7 +214,9 @@ public class EditorMainWindow {
 		                        JOptionPane.INFORMATION_MESSAGE, 0, null, options, options[0]);
 		                System.out.println(selectedFunction);
 		                if (selectedFunction == 0) {
+		                	
 		                    // editor has selected to accept the submission
+		                    JOptionPane.showMessageDialog(null, "Submission has been Accepted.", "Accepted", 1);
 		                    acceptSubmission(selectedSubmission);
 		                    remove = true;
 		                } else if (selectedFunction == 1) {
@@ -229,6 +231,7 @@ public class EditorMainWindow {
 	                        // weak accept, weak reject, weak reject
 		                if (verdictCount[1] > verdictCount[2]) {
 		                    // 2 weak accepts, 1 weak reject = accept
+		                	JOptionPane.showMessageDialog(null, "Submission has received more Weak Accepts than Weak Rejects and has been Accepted.", "Accepted", 1);
 		                    acceptSubmission(selectedSubmission);
 		                    remove = true;
 		                } else {

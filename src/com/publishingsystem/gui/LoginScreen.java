@@ -67,6 +67,7 @@ public class LoginScreen {
 		frmLogInScreen = new JFrame();
 		frmLogInScreen.setTitle("Login");
 		frmLogInScreen.setBounds(100, 100, 700, 300);
+		frmLogInScreen.setMinimumSize(new Dimension(width, height));
 		frmLogInScreen.setVisible(true);
 
 		Toolkit toolkit = Toolkit.getDefaultToolkit();

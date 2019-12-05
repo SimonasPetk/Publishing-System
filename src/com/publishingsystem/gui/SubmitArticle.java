@@ -1,5 +1,6 @@
 package com.publishingsystem.gui;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FileDialog;
 
@@ -56,7 +57,6 @@ public class SubmitArticle {
 	private JTextField txtfldTitle;
 	private String selectedJournalName;
 	private ArrayList<Author> coAuthors;
-	private ArrayList<Integer> numReviewsOfCoAuthors;
 	private String pdfPath;
 	private JScrollPane scrPaneAuthors;
 	private DefaultListModel<String> coAuthorsModel;
@@ -80,12 +80,15 @@ public class SubmitArticle {
 		});
 	}
 
+	public ArrayList<Author> getCoAuthors() {
+		return this.coAuthors;
+	}
+	
 	/**
 	 * Create the application.
 	 */
 	public SubmitArticle(Author a) {
 		coAuthors = new ArrayList<Author>();
-		numReviewsOfCoAuthors = new ArrayList<Integer>();
 		Academic[] newRoles = new Academic[3];
 		newRoles[1] = a;
 		initialize(a, newRoles);
@@ -93,7 +96,6 @@ public class SubmitArticle {
 
 	public SubmitArticle(Academic[] roles) {
 		coAuthors = new ArrayList<Author>();
-		numReviewsOfCoAuthors = new ArrayList<Integer>();
 		Author a = null;
 		if (roles[1] == null) {
 			if(roles[0] != null) {
@@ -113,9 +115,8 @@ public class SubmitArticle {
 		initialize(a, roles);
 	}
 
-	public void addCoAuthor(Author coAuthor, int numReview) {
+	public void addCoAuthor(Author coAuthor) {
 		this.coAuthors.add(coAuthor);
-		this.numReviewsOfCoAuthors.add(numReview);
 		this.coAuthorsModel.clear();
 		for (Author author : coAuthors) {
 			coAuthorsModel.addElement(author.getForename() + " " + author.getSurname() + " (" + author.getEmailId() + ")");
@@ -129,6 +130,7 @@ public class SubmitArticle {
 		frmSubmitAnArticle = new JFrame();
 		frmSubmitAnArticle.setTitle("Submit an Article");
 		frmSubmitAnArticle.setBounds(100, 100, 700, 552);
+		frmSubmitAnArticle.setMinimumSize(new Dimension(700, 552));
 		frmSubmitAnArticle.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {

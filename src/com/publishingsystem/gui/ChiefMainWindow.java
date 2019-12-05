@@ -118,11 +118,12 @@ public class ChiefMainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Academic[] roles) {
-		int width = 1080;
+		int width = 1100;
 		int height = 740;
 		frmChiefEditorsDashboard = new JFrame();
 		frmChiefEditorsDashboard.setTitle("Chief Editor's Dashboard");
 		frmChiefEditorsDashboard.setBounds(100, 100, width, height);
+		frmChiefEditorsDashboard.setMinimumSize(new Dimension(width, height));
 		frmChiefEditorsDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmChiefEditorsDashboard.setVisible(true);
 		
@@ -169,14 +170,14 @@ public class ChiefMainWindow {
 			public void mousePressed(MouseEvent e) {
 				if(editionToBePublished != -1) {
 					Edition edition = editions.get(editionToBePublished);
-//					if(edition.getArticles().size() > Edition.getMinarticles()) {
+					if(edition.getArticles().size() > Edition.getMinarticles()) {
 						Database.publishEdition(edition.getEditionId());
 						JOptionPane.showMessageDialog(null, "Edition published", "Publishing Edition", 1);
 						editions.remove(editionToBePublished);
 						refreshEditionTable();
 						editionToBePublished = -1;
-//					}else
-//						JOptionPane.showMessageDialog(null, "Please wait till the minimum number of articles inside an edition are added", "Error", 0);
+					}else
+						JOptionPane.showMessageDialog(null, "Please wait till the minimum number of articles inside an edition are added", "Error", 0);
 					
 				}else
 					JOptionPane.showMessageDialog(null, "Please select an edition to publish", "Error", 0);

@@ -62,7 +62,7 @@ public class JournalWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					JournalWindow window = new JournalWindow(RetrieveDatabase.getRoles("js@gm.com"));
+					JournalWindow window = new JournalWindow(null);
 					window.frmJournalWindow.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -89,6 +89,7 @@ public class JournalWindow {
 		frmJournalWindow = new JFrame();
 		frmJournalWindow.setTitle("View Journals");
 		frmJournalWindow.setBounds(100, 100, width, height);
+		frmJournalWindow.setMinimumSize(new Dimension(width, height));
 		frmJournalWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmJournalWindow.setVisible(true);
 		

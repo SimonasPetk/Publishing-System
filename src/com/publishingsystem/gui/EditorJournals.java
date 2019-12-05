@@ -94,6 +94,7 @@ public class EditorJournals {
 		else if(option.equals("TRANSFER"))
 			frmEditorJournals.setTitle("Transfer role to another editor");
 		frmEditorJournals.setBounds(100, 100, width, height);
+		frmEditorJournals.setMinimumSize(new Dimension(width, height));
 		// RetireAsChiefEditor window = new RetireAsChiefEditor(null);
 		frmEditorJournals.setVisible(true);
 		

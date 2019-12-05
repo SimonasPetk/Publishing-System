@@ -1,5 +1,6 @@
 package com.publishingsystem.gui;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -59,6 +60,7 @@ public class ChangePassword {
 		frmChangePassword = new JFrame();
 		frmChangePassword.setTitle("Change Password");
 		frmChangePassword.setBounds(300, 300, 450, 300);
+		frmChangePassword.setMinimumSize(new Dimension(450,300));
 		frmChangePassword.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		JLabel lblChangeYourPassword = new JLabel("Change Your Password");
@@ -87,10 +89,13 @@ public class ChangePassword {
 					System.out.println(newPassword.length());
 					System.out.println(academicId);
 					if (newPassword.length() > 0) {
-						Hash passwordToUpdate = new Hash(newPassword);
-						Database.changePassword(academicId, passwordToUpdate.getHash(), passwordToUpdate.getSalt());
-						JOptionPane.showMessageDialog(null, "Your password has now been changed", "Success", 1);
-						frmChangePassword.dispose();
+						if(newPassword.length() > 7) {
+							Hash passwordToUpdate = new Hash(newPassword);
+							Database.changePassword(academicId, passwordToUpdate.getHash(), passwordToUpdate.getSalt());
+							JOptionPane.showMessageDialog(null, "Your password has now been changed", "Success", 1);
+							frmChangePassword.dispose();
+						}else
+							JOptionPane.showMessageDialog(null, "New password has to be at least 8 characters long", "Success", 1);
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Please enter a new password", "Error", 0);

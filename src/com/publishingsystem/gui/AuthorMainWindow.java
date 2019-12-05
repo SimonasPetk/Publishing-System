@@ -129,6 +129,7 @@ public class AuthorMainWindow {
 		frmAuthorsDashboard = new JFrame();
 		frmAuthorsDashboard.setTitle("Author's Dashboard");
 		frmAuthorsDashboard.setBounds(100, 100, width, height);
+		frmAuthorsDashboard.setMinimumSize(new Dimension(width, height));
 		frmAuthorsDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmAuthorsDashboard.setVisible(true);
 
