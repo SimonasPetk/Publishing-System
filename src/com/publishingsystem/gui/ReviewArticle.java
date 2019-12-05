@@ -82,7 +82,7 @@ public class ReviewArticle {
 		frmReviewArticle = new JFrame();
 		frmReviewArticle.setTitle("Review Article");
 		frmReviewArticle.setBounds(100, 100, 545, 649);
-		frmReviewArticle.setMinimumSize(new Dimension(510, 600));
+		frmReviewArticle.setMinimumSize(new Dimension(545, 649));
 		frmReviewArticle.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmReviewArticle.setVisible(true);
 
