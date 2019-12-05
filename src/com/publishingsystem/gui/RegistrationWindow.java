@@ -298,21 +298,19 @@ public class RegistrationWindow {
 								pwdHash);
 						Database.registerEditor(editor);
 						Database.addAcademicToEditors(editor.getEditorId(), editorsJournal.getISSN());
+						if(cmw != null) {
+							JOptionPane.showMessageDialog(null, "Successfully added new chief editor", "Registration Form", 1);
+							
+							Database.removeChiefEditor(addition);
+							Database.setChiefEditor(new EditorOfJournal(addition.getJournal(), editor, true));
+							cmw.dispose();
+							new JournalWindow(null);
+						}
 						
 						break;
 					default:
 					}
 					frmRegistrationForm.dispose();
-					Editor editor = new Editor(RetrieveDatabase.getEditorIdFromAcademicId(academicID), title, forenames, surname, email, university,
-							pwdHash);
-					if(cmw != null) {
-						JOptionPane.showMessageDialog(null, "Successfully added new chief editor", "Registration Form", 1);
-						
-						Database.setChiefEditor(new EditorOfJournal(editorsJournal, editor, true));
-						Database.removeChiefEditor(addition);
-						cmw.dispose();
-						new JournalWindow(null);
-					}
 						
 				}
 			}
