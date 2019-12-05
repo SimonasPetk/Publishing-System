@@ -702,7 +702,7 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT AUT.AUTHORNAME, AOA.MAINAUTHOR, AUT.EMAILADDRESS "
+			String query = "SELECT AUT.AUTHORNAME, AOA.MAINAUTHOR, AUT.EMAILADDRESS, AUT.UNIVERSITY "
 					+ "FROM AUTHOROFARTICLE AOA, AUTHORS AUT "
 					+ "WHERE AOA.ARTICLEID = ? AND AOA.AUTHORID = AUT.AUTHORID;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
@@ -712,7 +712,7 @@ public class RetrieveDatabase extends Database {
 				ArrayList<AuthorOfArticle> authors = new ArrayList<AuthorOfArticle>();
 				
 				while (res.next()) {
-					Author au = new Author(-1, null, res.getString("AUTHORNAME"), null, res.getString("EMAILADDRESS"), null, null);
+					Author au = new Author(-1, null, res.getString("AUTHORNAME"), null, res.getString("EMAILADDRESS"), res.getString("UNIVERSITY"), null);
 					AuthorOfArticle aoa = new AuthorOfArticle(null, au, res.getBoolean("MAINAUTHOR"));
 					authors.add(aoa);
 				}
