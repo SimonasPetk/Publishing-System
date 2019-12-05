@@ -62,7 +62,7 @@ public class JournalWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					JournalWindow window = new JournalWindow(RetrieveDatabase.getRoles("js@gm.com"));
+					JournalWindow window = new JournalWindow(null);
 					window.frmJournalWindow.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

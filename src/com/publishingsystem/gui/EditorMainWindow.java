@@ -183,12 +183,18 @@ public class EditorMainWindow {
 		            
 		            // check if article should be accepted
 		            int[] verdictCount = getVerdictCount(finalVerdicts);
-		            if (verdictCount[0] == 3) {
-		                // 3 strong accept = accept
+		            if (verdictCount[0] > 2 && verdictCount[3] == 0) {
+		                // 2 Strong Accept + NOT Strong Reject = accept
+		                  // Strong Accept, Strong Accept, Strong Accept
+		                  // Strong Accept, Strong Accept, Weak Accept
+		                  // Strong Accept, Strong Accept, Weak Reject
 		                acceptSubmission(selectedSubmission);
 		                remove = true;
-		            } else if (verdictCount[3] == 3) {
-		                // 3 strong reject = reject
+		            } else if (verdictCount[3] > 2 && verdictCount[0] == 0) {
+		                // 2 Strong Reject + NOT Strong Accept = reject
+		                  // Strong Reject, Strong Reject, Weak Accept
+		                  // Strong Reject, Strong Reject, Weak Reject
+		                  // Strong Reject, Strong Reject, Strong Reject
 		                JOptionPane.showMessageDialog(null, "Submission has received 3 Strong Rejects and has been rejected.", "Rejected", 1);
 		                Database.rejectSubmission(selectedSubmission);
 		                remove = true;
