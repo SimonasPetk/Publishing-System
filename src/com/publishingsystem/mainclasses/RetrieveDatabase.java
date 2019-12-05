@@ -585,16 +585,18 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT ISSN, name, dateOfPublication dateOfPublication FROM JOURNALS WHERE issn = " + issn
-					+ ";";
-			ResultSet res = statement.executeQuery(query);
-			if (res.next()) {
-				int resISSN = res.getInt(1);
-				String resName = res.getString(2);
-				Date resDate = res.getDate(3);
-				result = new Journal(resISSN, resName, resDate);
-				ArrayList<EditorOfJournal> editors = getEditorsOfJournal(result);
-				result.setBoardOfEditors(editors);
+			String query = "SELECT ISSN, name, dateOfPublication dateOfPublication FROM JOURNALS WHERE issn = ?;";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, issn);
+				ResultSet res = preparedStmt.executeQuery();
+				if (res.next()) {
+					int resISSN = res.getInt(1);
+					String resName = res.getString(2);
+					Date resDate = res.getDate(3);
+					result = new Journal(resISSN, resName, resDate);
+					ArrayList<EditorOfJournal> editors = getEditorsOfJournal(result);
+					result.setBoardOfEditors(editors);
+				}
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -729,15 +731,18 @@ public class RetrieveDatabase extends Database {
 			statement.execute("USE " + DATABASE + ";");
 			String query = "SELECT Aca.ACADEMICID, Aca.TITLE, Aca.FORENAME, Aca.SURNAME, Aca.UNIVERSITY, Aca.EMAILADDRESS, "
 					+ "E.EDITORID, Eoj.CHIEFEDITOR FROM ACADEMICS Aca, EDITORS E, EDITOROFJOURNAL Eoj WHERE Aca.ACADEMICID = E.ACADEMICID "
-					+ "AND E.EDITORID = Eoj.EDITORID AND Eoj.TEMPRETIRED = 0 AND Eoj.ISSN = " + j.getISSN() + ";";
-			ResultSet res = statement.executeQuery(query);
+					+ "AND E.EDITORID = Eoj.EDITORID AND Eoj.TEMPRETIRED = 0 AND Eoj.ISSN = ?;";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, j.getISSN());
+				ResultSet res = preparedStmt.executeQuery();
 
-			while (res.next()) {
-				Editor editor = new Editor(res.getInt("EDITORID"), res.getString("TITLE"), res.getString("FORENAME"),
-						res.getString("SURNAME"), res.getString("UNIVERSITY"), res.getString("EMAILADDRESS"), null);
-				editor.setAcademicId(res.getInt("ACADEMICID"));
-
-				editorsOfJournal.add(new EditorOfJournal(j, editor, res.getBoolean("CHIEFEDITOR")));
+				while (res.next()) {
+					Editor editor = new Editor(res.getInt("EDITORID"), res.getString("TITLE"), res.getString("FORENAME"),
+							res.getString("SURNAME"), res.getString("UNIVERSITY"), res.getString("EMAILADDRESS"), null);
+					editor.setAcademicId(res.getInt("ACADEMICID"));
+	
+					editorsOfJournal.add(new EditorOfJournal(j, editor, res.getBoolean("CHIEFEDITOR")));
+				}
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -767,11 +772,16 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT ChiefEditor FROM EDITOROFJOURNAL WHERE editorID= '" + editorId + "';";
-			ResultSet res = statement.executeQuery(query);
-			if (res.next()) {
-				if (res.getInt(1) == 1) {
-					result = true;
+			String query = "SELECT ChiefEditor FROM EDITOROFJOURNAL WHERE editorID = ?;";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, editorId);
+				ResultSet res = preparedStmt.executeQuery();
+
+			
+				if (res.next()) {
+					if (res.getInt(1) == 1) {
+						result = true;
+					}
 				}
 			}
 		} catch (SQLException ex) {
@@ -785,11 +795,15 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT TempRetired FROM EDITOROFJOURNAL WHERE editorID= '" + editorId + "';";
-			ResultSet res = statement.executeQuery(query);
-			if (res.next()) {
-				if (res.getInt(1) == 1) {
-					result = true;
+			String query = "SELECT TempRetired FROM EDITOROFJOURNAL WHERE editorID= ?;";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, editorId);
+				ResultSet res = preparedStmt.executeQuery();
+			
+				if (res.next()) {
+					if (res.getInt(1) == 1) {
+						result = true;
+					}
 				}
 			}
 		} catch (SQLException ex) {
@@ -803,10 +817,13 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT academicID FROM EDITORS WHERE  editorID = '" + editorId + "';";
-			ResultSet res = statement.executeQuery(query);
-			if (res.next())
-				result = res.getInt(1);
+			String query = "SELECT academicID FROM EDITORS WHERE  editorID = ?;";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, editorId);
+				ResultSet res = preparedStmt.executeQuery();
+				if (res.next())
+					result = res.getInt(1);
+			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -818,19 +835,21 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT title, forename, surname, emailAddress, university, hash FROM ACADEMICS WHERE academicID = "
-					+ academicId + ";";
-			ResultSet res = statement.executeQuery(query);
-			if (res.next()) {
-				String resTitle = res.getString(1);
-				String resForenames = res.getString(2);
-				String resSurname = res.getString(3);
-				String resEmail = res.getString(4);
-				String resUniversity = res.getString(5);
-				// Hash resHash = res.getString(6);
-				Hash resHash = null;
-
-				editor = new Editor(academicId, resTitle, resForenames, resSurname, resEmail, resUniversity, resHash);
+			String query = "SELECT title, forename, surname, emailAddress, university, hash FROM ACADEMICS WHERE academicID = ?;";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, academicId);
+				ResultSet res = preparedStmt.executeQuery();
+				if (res.next()) {
+					String resTitle = res.getString(1);
+					String resForenames = res.getString(2);
+					String resSurname = res.getString(3);
+					String resEmail = res.getString(4);
+					String resUniversity = res.getString(5);
+					// Hash resHash = res.getString(6);
+					Hash resHash = null;
+	
+					editor = new Editor(academicId, resTitle, resForenames, resSurname, resEmail, resUniversity, resHash);
+				}
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -843,10 +862,14 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT academicID FROM ACADEMICS WHERE emailAddress = '" + email + "';";
-			ResultSet res = statement.executeQuery(query);
-			if (res.next())
-				result = res.getInt(1);
+			String query = "SELECT academicID FROM ACADEMICS WHERE emailAddress = ?;";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setString(1, email);
+				ResultSet res = preparedStmt.executeQuery();
+			
+				if (res.next())
+					result = res.getInt(1);
+			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
@@ -858,19 +881,21 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT title, forename, surname, emailAddress, university, hash FROM ACADEMICS WHERE academicID = "
-					+ academicID + ";";
-			ResultSet res = statement.executeQuery(query);
-			if (res.next()) {
-				String resTitle = res.getString(1);
-				String resForenames = res.getString(2);
-				String resSurname = res.getString(3);
-				String resEmail = res.getString(4);
-				String resUniversity = res.getString(5);
-				// Hash resHash = res.getString(6);
-				Hash resHash = null;
-
-				result = new Author(academicID, resTitle, resForenames, resSurname, resEmail, resUniversity, resHash);
+			String query = "SELECT title, forename, surname, emailAddress, university, hash FROM ACADEMICS WHERE academicID = ?";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, academicID);
+				ResultSet res = preparedStmt.executeQuery();
+				if (res.next()) {
+					String resTitle = res.getString(1);
+					String resForenames = res.getString(2);
+					String resSurname = res.getString(3);
+					String resEmail = res.getString(4);
+					String resUniversity = res.getString(5);
+					// Hash resHash = res.getString(6);
+					Hash resHash = null;
+	
+					result = new Author(academicID, resTitle, resForenames, resSurname, resEmail, resUniversity, resHash);
+				}
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -883,11 +908,14 @@ public class RetrieveDatabase extends Database {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
 			statement.execute("USE " + DATABASE + ";");
-			String query = "SELECT forename, surname FROM ACADEMICS WHERE academicID = " + academicID + ";";
-			ResultSet res = statement.executeQuery(query);
-			if (res.next()) {
-				results[0] = res.getString(1);
-				results[1] = res.getString(2);
+			String query = "SELECT forename, surname FROM ACADEMICS WHERE academicID = ?";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, academicID);
+				ResultSet res = preparedStmt.executeQuery();
+				if (res.next()) {
+					results[0] = res.getString(1);
+					results[1] = res.getString(2);
+				}
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -937,15 +965,18 @@ public class RetrieveDatabase extends Database {
 			statement.execute("USE " + DATABASE + ";");
 
 			String query = "SELECT finalVerdict "
-			             + "FROM REVIEWS WHERE submissionID = " + submissionID + ";";
-			ResultSet res = statement.executeQuery(query);
+			             + "FROM REVIEWS WHERE submissionID = ?;";
+			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, submissionID);
+				ResultSet res = preparedStmt.executeQuery();
 
-			int i = 0;
-			while (res.next()) {
-				String finalVerdict = res.getString(1);
-				if (finalVerdict == null) results[i] = null;
-				else results[i] = Verdict.valueOf(finalVerdict);
-				i = i + 1;
+				int i = 0;
+				while (res.next()) {
+					String finalVerdict = res.getString(1);
+					if (finalVerdict == null) results[i] = null;
+					else results[i] = Verdict.valueOf(finalVerdict);
+					i = i + 1;
+				}
 			}
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -969,14 +1000,17 @@ public class RetrieveDatabase extends Database {
             // select the most recent edition from this volume
             String query = "SELECT edId, month "
                          + "FROM EDITIONS "
-                         + "WHERE volId = " + vol.getVolumeId() + " AND published = 0 "
+                         + "WHERE volId = ? AND published = 0 "
                          + "ORDER BY volId DESC LIMIT 1";
-            ResultSet res = statement.executeQuery(query);
-            if (res.next()) {
-                int edId = res.getInt(1);
-                int month = res.getInt(2);
-                result = new Edition(month, edId);
-            }
+        	try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, vol.getVolumeId());
+				ResultSet res = preparedStmt.executeQuery();
+	            if (res.next()) {
+	                int edId = res.getInt(1);
+	                int month = res.getInt(2);
+	                result = new Edition(month, edId);
+	            }
+        	}
 	    } catch (SQLException ex) {
 	        ex.printStackTrace();
 	    }
@@ -999,13 +1033,16 @@ public class RetrieveDatabase extends Database {
             // select the most recent volume for this journal
             String query = "SELECT volId, year "
                     + "FROM VOLUMES "
-                    + "WHERE ISSN = " + issn +" "
+                    + "WHERE ISSN = ? "
                     + "ORDER BY volId DESC LIMIT 1;";
-            ResultSet res = statement.executeQuery(query);
-            if (res.next()) {
-                int volId = res.getInt("VOLID");
-                int year = res.getInt("YEAR");
-                result = new Volume(year, volId);
+            try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, issn);
+				ResultSet res = preparedStmt.executeQuery();
+	            if (res.next()) {
+	                int volId = res.getInt("VOLID");
+	                int year = res.getInt("YEAR");
+	                result = new Volume(year, volId);
+	            }
             }
 	    } catch (SQLException ex) {
 	        ex.printStackTrace();
@@ -1028,12 +1065,15 @@ public class RetrieveDatabase extends Database {
 
             String query = "SELECT title, summary "
                          + "FROM ARTICLES "
-                         + "WHERE articleID = " + articleId + ";";
-            ResultSet res = statement.executeQuery(query);
-            if (res.next()) {
-                String title = res.getString(1);
-                String summary = res.getString(2);
-                result = new Article(articleId, title, summary);
+                         + "WHERE articleID = ?;";
+            try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, articleId);
+				ResultSet res = preparedStmt.executeQuery();
+	            if (res.next()) {
+	                String title = res.getString(1);
+	                String summary = res.getString(2);
+	                result = new Article(articleId, title, summary);
+	            }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -1056,12 +1096,15 @@ public class RetrieveDatabase extends Database {
 
             String query = "SELECT P.publishedArticleID, P.articleID, A.TITLE, A.SUMMARY "
                          + "FROM PUBLISHEDARTICLES P, ARTICLES A "
-                         + "WHERE P.ARTICLEID = A.ARTICLEID AND edID = " + edId + ";";
-            ResultSet res = statement.executeQuery(query);
-            while (res.next()) {
-                int publishedArticleId = res.getInt(1);
-                Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
-                results.add(new PublishedArticle(publishedArticleId, article));
+                         + "WHERE P.ARTICLEID = A.ARTICLEID AND edID = ?;";
+            try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, edId);
+				ResultSet res = preparedStmt.executeQuery();
+	            while (res.next()) {
+	                int publishedArticleId = res.getInt(1);
+	                Article article = new Article(res.getInt("ARTICLEID"), res.getString("TITLE"), res.getString("SUMMARY"), null);
+	                results.add(new PublishedArticle(publishedArticleId, article));
+	            }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -1084,19 +1127,22 @@ public class RetrieveDatabase extends Database {
 
             String query = "SELECT edId, month, published "
                          + "FROM EDITIONS "
-                         + "WHERE volId = " + volId + ";";
-            ResultSet res = statement.executeQuery(query);
-            while (res.next()) {
-                int edId = res.getInt(1);
-                int month = res.getInt(2);
-
-                boolean published = res.getBoolean(3);
-
-                Edition nextResult = new Edition(month, edId);
-                nextResult.setPublished(published);
-                //ArrayList<PublishedArticle> articles = getPublishedArticles(edId);
-                //nextResult.addPublishedArticles(articles);
-                results.add(nextResult);
+                         + "WHERE volId = ?;";
+            try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, volId);
+				ResultSet res = preparedStmt.executeQuery();
+	            while (res.next()) {
+	                int edId = res.getInt(1);
+	                int month = res.getInt(2);
+	
+	                boolean published = res.getBoolean(3);
+	
+	                Edition nextResult = new Edition(month, edId);
+	                nextResult.setPublished(published);
+	                //ArrayList<PublishedArticle> articles = getPublishedArticles(edId);
+	                //nextResult.addPublishedArticles(articles);
+	                results.add(nextResult);
+	            }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -1119,12 +1165,15 @@ public class RetrieveDatabase extends Database {
 
             String query = "SELECT volId, year "
                          + "FROM VOLUMES "
-                         + "WHERE issn = " + issn + ";";
-            ResultSet res = statement.executeQuery(query);
-            while (res.next()) {
-                int volNum = res.getInt(1);
-                int year = res.getInt(2);
-                results.add(new Volume(year, volNum));
+                         + "WHERE issn = ?;";
+            try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
+				preparedStmt.setInt(1, issn);
+				ResultSet res = preparedStmt.executeQuery();
+	            while (res.next()) {
+	                int volNum = res.getInt(1);
+	                int year = res.getInt(2);
+	                results.add(new Volume(year, volNum));
+	            }
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
