@@ -89,6 +89,7 @@ public class JournalWindow {
 		frmJournalWindow = new JFrame();
 		frmJournalWindow.setTitle("View Journals");
 		frmJournalWindow.setBounds(100, 100, width, height);
+		frmJournalWindow.setMinimumSize(new Dimension(width, height));
 		frmJournalWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmJournalWindow.setVisible(true);
 		

@@ -2,6 +2,7 @@ package com.publishingsystem.gui;
 
 import com.publishingsystem.mainclasses.*;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -90,6 +91,7 @@ public class RegistrationWindow {
 		frmRegistrationForm = new JFrame();
 		frmRegistrationForm.setTitle("Registration Form");
 		frmRegistrationForm.setBounds(500, 100, 653, 559);
+		frmRegistrationForm.setMinimumSize(new Dimension(653, 559));
 		
 		frmRegistrationForm.setVisible(true);
 

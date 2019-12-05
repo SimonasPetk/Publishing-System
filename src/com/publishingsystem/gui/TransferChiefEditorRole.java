@@ -79,6 +79,7 @@ public class TransferChiefEditorRole {
 		frmTransferChiefEditorRole = new JFrame();
 		frmTransferChiefEditorRole.setTitle("Transfer as chief editor");
 		frmTransferChiefEditorRole.setBounds(100, 100, width, height);
+		frmTransferChiefEditorRole.setMinimumSize(new Dimension(width, height));
 		frmTransferChiefEditorRole.setVisible(true);
 		
 		Toolkit toolkit = Toolkit.getDefaultToolkit();

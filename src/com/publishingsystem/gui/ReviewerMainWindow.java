@@ -181,6 +181,7 @@ public class ReviewerMainWindow {
 		submissionsChosenToReview = reviewer.getReviewerOfSubmissions();
 		frmReviewDashboard = new JFrame();
 		frmReviewDashboard.setBounds(100, 100, width, height);
+		frmReviewDashboard.setMinimumSize(new Dimension(width, height));
 		frmReviewDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmReviewDashboard.setVisible(true);
 

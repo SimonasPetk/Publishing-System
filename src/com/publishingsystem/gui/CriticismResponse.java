@@ -84,7 +84,8 @@ public class CriticismResponse {
 	private void initialize(AuthorMainWindow amw, ReviewerOfSubmission ros, int reviewer) {
 		frmRespondToCriticism = new JFrame();
 		frmRespondToCriticism.setTitle("Respond to Criticisms");
-		frmRespondToCriticism.setBounds(100, 100, 534, 604);
+		frmRespondToCriticism.setBounds(100, 100, 560, 620);
+		frmRespondToCriticism.setMinimumSize(new Dimension(560, 620));
 		frmRespondToCriticism.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmRespondToCriticism.setVisible(true);
 

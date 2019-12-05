@@ -122,6 +122,7 @@ public class EditorMainWindow {
 		frmDashboard = new JFrame();
 		frmDashboard.setTitle("Editor's Dashboard");
 		frmDashboard.setBounds(100, 100, width, height);
+		frmDashboard.setMinimumSize(new Dimension(width, height));
 		frmDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmDashboard.setVisible(true);
 		

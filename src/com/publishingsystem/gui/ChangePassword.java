@@ -1,5 +1,6 @@
 package com.publishingsystem.gui;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -59,6 +60,7 @@ public class ChangePassword {
 		frmChangePassword = new JFrame();
 		frmChangePassword.setTitle("Change Password");
 		frmChangePassword.setBounds(300, 300, 450, 300);
+		frmChangePassword.setMinimumSize(new Dimension(450,300));
 		frmChangePassword.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 		JLabel lblChangeYourPassword = new JLabel("Change Your Password");

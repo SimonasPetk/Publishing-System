@@ -118,11 +118,12 @@ public class ChiefMainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(Academic[] roles) {
-		int width = 1080;
+		int width = 1100;
 		int height = 740;
 		frmChiefEditorsDashboard = new JFrame();
 		frmChiefEditorsDashboard.setTitle("Chief Editor's Dashboard");
 		frmChiefEditorsDashboard.setBounds(100, 100, width, height);
+		frmChiefEditorsDashboard.setMinimumSize(new Dimension(width, height));
 		frmChiefEditorsDashboard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmChiefEditorsDashboard.setVisible(true);
 		

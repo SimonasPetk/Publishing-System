@@ -1,5 +1,6 @@
 package com.publishingsystem.gui;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FileDialog;
 
@@ -129,6 +130,7 @@ public class SubmitArticle {
 		frmSubmitAnArticle = new JFrame();
 		frmSubmitAnArticle.setTitle("Submit an Article");
 		frmSubmitAnArticle.setBounds(100, 100, 700, 552);
+		frmSubmitAnArticle.setMinimumSize(new Dimension(700, 552));
 		frmSubmitAnArticle.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {

@@ -1,5 +1,6 @@
 package com.publishingsystem.gui;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -67,6 +68,7 @@ public class AddJournal {
 		frmAddJournal = new JFrame();
 		frmAddJournal.setTitle("Add Journal");
 		frmAddJournal.setBounds(100, 100, 591, 283);
+		frmAddJournal.setMinimumSize(new Dimension(591, 283));
 		frmAddJournal.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frmAddJournal.setVisible(true);
 
