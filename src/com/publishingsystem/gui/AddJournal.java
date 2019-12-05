@@ -157,15 +157,14 @@ public class AddJournal {
 					Date now = new Date(System.currentTimeMillis());
 					Journal newJournal = new Journal(Integer.parseInt(JournalISSN), journalName, now);
 					// Register the chief editor as a chief editor
-					ArrayList<Editor> editors = new ArrayList<Editor>();
-					editors.add((Editor) roles[0]);
-					Database.registerEditors(editors);
+					
+					Editor e = (Editor) roles[0];
+					Database.registerEditor(e);
+					
 
 					// Add the editor to the journal as the chief editor
-					EditorOfJournal chief = new EditorOfJournal(newJournal, (Editor) roles[0], true);
-					// ArrayList<EditorOfJournal> editorOfNewJournal = new
-					// ArrayList<EditorOfJournal>();
-					// editorOfNewJournal.add(chief);
+					EditorOfJournal chief = new EditorOfJournal(newJournal, e, true);
+					
 					newJournal.addEditorToBoard(chief);
 
 					// Record that the editor is an editor of the new journal
