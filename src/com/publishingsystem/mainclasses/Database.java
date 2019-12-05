@@ -1095,7 +1095,8 @@ public class Database {
 			printStatements.execute("USE "+DATABASE+";");
 			printStatements.executeQuery("SELECT * FROM ACADEMICS");
 			printStatements.close();
-
+			CreateDatabase.printAllRecords("ACADEMICS");
+			CreateDatabase.printAllRecords("EDITOROFJOURNAL");
 			//removeChiefEditor(4);
 		}catch (SQLException ex) {
 			ex.printStackTrace();
