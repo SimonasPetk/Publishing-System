@@ -124,7 +124,7 @@ public class RetrieveDatabase extends Database {
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 				preparedStmt.setInt(1, eoj.getEditor().getEditorId());
 				preparedStmt.setInt(2, eoj.getJournal().getISSN());
-				preparedStmt.setString(3, eoj.getEditor().getUniversity());
+				preparedStmt.setString(3, eoj.getEditor().getUniversity().trim().toLowerCase());
 				ResultSet rs = preparedStmt.executeQuery();
 				if (rs.next()) {
 					return true;
@@ -157,7 +157,7 @@ public class RetrieveDatabase extends Database {
 			String title = "", forename = "", surname = "", emailId = "", university = "";
 
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
-				preparedStmt.setString(1, email);
+				preparedStmt.setString(1, email.toLowerCase());
 				ResultSet res = preparedStmt.executeQuery();
 				if (res.next()) {
 					academicId = res.getInt("academicID");
@@ -453,7 +453,7 @@ public class RetrieveDatabase extends Database {
 					+ "(SELECT SUBMISSIONID AS NUMR FROM REVIEWEROFSUBMISSION GROUP BY SUBMISSIONID HAVING COUNT(*) > 2)";
 			ArrayList<Submission> submissions = new ArrayList<Submission>();
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
-				preparedStmt.setString(1, r.getUniversity());
+				preparedStmt.setString(1, r.getUniversity().trim().toLowerCase());
 				preparedStmt.setInt(2, r.getReviewerId());
 				ResultSet res = preparedStmt.executeQuery();
 				while (res.next()) {
@@ -874,7 +874,7 @@ public class RetrieveDatabase extends Database {
 			statement.close();
 			String query = "SELECT academicID FROM ACADEMICS WHERE emailAddress = ?;";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
-				preparedStmt.setString(1, email);
+				preparedStmt.setString(1, email.trim().toLowerCase());
 				ResultSet res = preparedStmt.executeQuery();
 			
 				if (res.next())

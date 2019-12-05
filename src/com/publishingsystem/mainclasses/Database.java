@@ -110,7 +110,7 @@ public class Database {
 		} catch (SQLException ex) {
 			ex.printStackTrace();
 		}
-		Academic[] roles = RetrieveDatabase.getRoles(eoj.getEditor().getEmailId());
+		Academic[] roles = RetrieveDatabase.getRoles(eoj.getEditor().getEmailId().toLowerCase());
 		if (roles[0] == null && roles[1] == null && roles[2] == null) {
 			deleteAcademic(e.getAcademicId());
 		}
@@ -208,8 +208,8 @@ public class Database {
 					preparedStmt.setString(1, e.getTitle());
 					preparedStmt.setString(2, e.getForename());
 					preparedStmt.setString(3, e.getSurname());
-					preparedStmt.setString(4, e.getUniversity());
-					preparedStmt.setString(5, e.getEmailId());
+					preparedStmt.setString(4, e.getUniversity().trim().toLowerCase());
+					preparedStmt.setString(5, e.getEmailId().toLowerCase());
 					preparedStmt.setString(6, e.getHash().getHash());
 					preparedStmt.setString(7, e.getHash().getSalt());
 
@@ -284,7 +284,7 @@ public class Database {
 				boolean academicExists = false;
 				String query = "SELECT 1 FROM ACADEMICS WHERE emailAddress = ?";
 				try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
-					preparedStmt.setString(1, a.getEmailId());
+					preparedStmt.setString(1, a.getEmailId().toLowerCase());
 					ResultSet res = preparedStmt.executeQuery();
 					if (res.next())
 						academicExists = true;
@@ -297,8 +297,8 @@ public class Database {
 						preparedStmt.setString(1, a.getTitle());
 						preparedStmt.setString(2, a.getForename());
 						preparedStmt.setString(3, a.getSurname());
-						preparedStmt.setString(4, a.getUniversity());
-						preparedStmt.setString(5, a.getEmailId());
+						preparedStmt.setString(4, a.getUniversity().trim().toLowerCase());
+						preparedStmt.setString(5, a.getEmailId().toLowerCase());
 						preparedStmt.setString(6, a.getHash().getHash());
 						preparedStmt.setString(7, a.getHash().getSalt());
 
@@ -327,8 +327,8 @@ public class Database {
 					try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
 						preparedStmt.setInt(1, a.getAcademicId());
 						preparedStmt.setString(2, a.getForename() + " " + a.getSurname());
-						preparedStmt.setString(3, a.getUniversity());
-						preparedStmt.setString(4, a.getEmailId());
+						preparedStmt.setString(3, a.getUniversity().trim().toLowerCase());
+						preparedStmt.setString(4, a.getEmailId().toLowerCase());
 						preparedStmt.execute();
 
 						ResultSet rs = preparedStmt.executeQuery("select last_insert_id() as last_id from AUTHORS");
@@ -774,7 +774,7 @@ public class Database {
 			statement.close();
 			String query = "SELECT 1 FROM ACADEMICS WHERE emailAddress = ?";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
-				preparedStmt.setString(1, email.trim());
+				preparedStmt.setString(1, email.trim().toLowerCase());
 				ResultSet res = preparedStmt.executeQuery();
 				if (res.next())
 					return true;
@@ -816,7 +816,7 @@ public class Database {
 			statement.close();
 			String query = "SELECT academicID, hash, salt FROM ACADEMICS WHERE emailAddress = ?";
 			try (PreparedStatement preparedStmt = con.prepareStatement(query)) {
-				preparedStmt.setString(1, email.trim());
+				preparedStmt.setString(1, email.trim().toLowerCase());
 				ResultSet res = preparedStmt.executeQuery();
 
 				int academicID = -1;
