@@ -157,6 +157,9 @@ public class Database {
 	
 	public static void addAcademicToEditors(int editorId, int issn) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)){
+			Statement statement = con.createStatement();
+			statement.execute("USE "+DATABASE+";");
+			statement.close();
 			String query = "INSERT INTO EDITOROFJOURNAL values (" + editorId + "," + issn + ",0,0)";
 
 			try(PreparedStatement preparedStmt = con.prepareStatement(query)){

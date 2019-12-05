@@ -154,7 +154,7 @@ public class RegistrationWindow {
 
 				// Validate entered details
 				boolean validCredentials = true;
-				String errorMessage = "Names must only contain letters";
+				String errorMessage = "";
 				if (title == " " || forenames.isEmpty() || surname.isEmpty() || university.isEmpty() || email.isEmpty()
 						|| password.isEmpty()) {
 					validCredentials = false;
@@ -166,8 +166,10 @@ public class RegistrationWindow {
 					// as part of their name
 					while (validCredentials && i < characters.length) {
 						if (!Character.isLetter(characters[i]) && !(characters[i] == ' ') && !(characters[i] == '-')
-								&& !(characters[i] == '.'))
+								&& !(characters[i] == '.')) {
 							validCredentials = false;
+							errorMessage = "Names must only contain letters";
+						}
 						i++;
 					}
 					
