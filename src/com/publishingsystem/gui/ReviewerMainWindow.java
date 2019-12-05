@@ -199,28 +199,34 @@ public class ReviewerMainWindow {
 
 		JPanel panel_2 = new JPanel();
 		GroupLayout groupLayout = new GroupLayout(frmReviewDashboard.getContentPane());
-		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup().addContainerGap()
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(panel, GroupLayout.DEFAULT_SIZE, 659, Short.MAX_VALUE)
-								.addComponent(panelChosenToReview, GroupLayout.DEFAULT_SIZE, 659, Short.MAX_VALUE))
-						.addGap(18)
-						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addComponent(panelMainReview, GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
-								.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE))
-						.addContainerGap()));
-		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup().addContainerGap().addGroup(groupLayout
-						.createParallelGroup(Alignment.LEADING)
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(panel, GroupLayout.DEFAULT_SIZE, 659, Short.MAX_VALUE)
+						.addComponent(panelChosenToReview, GroupLayout.DEFAULT_SIZE, 659, Short.MAX_VALUE))
+					.addGap(18)
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addComponent(panelMainReview, GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
+						.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE))
+					.addContainerGap())
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-								.addComponent(panelChosenToReview, GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(panel, GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE))
+							.addComponent(panelChosenToReview, GroupLayout.DEFAULT_SIZE, 205, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(panel, GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE))
 						.addGroup(groupLayout.createSequentialGroup()
-								.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 256, GroupLayout.PREFERRED_SIZE)
-								.addGap(18).addComponent(panelMainReview, GroupLayout.PREFERRED_SIZE, 376,
-										GroupLayout.PREFERRED_SIZE)))
-						.addContainerGap()));
+							.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 256, GroupLayout.PREFERRED_SIZE)
+							.addGap(18)
+							.addComponent(panelMainReview, GroupLayout.PREFERRED_SIZE, 376, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap())
+		);
 		panel_2.setLayout(new BorderLayout(0, 0));
 
 		JLabel lblArticle = new JLabel("Article:");
@@ -467,11 +473,19 @@ public class ReviewerMainWindow {
 		panelChosenToReview.add(scrChosenToReview, BorderLayout.CENTER);
 		scrChosenToReview.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		panel.setLayout(new BorderLayout(0, 0));
-
-		lblArticleListToChoose = new JLabel("Number of articles to review remaining : " + numReviewsToBeDone);
-		panel.add(lblArticleListToChoose, BorderLayout.NORTH);
-		lblArticleListToChoose.setToolTipText("");
-		lblArticleListToChoose.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JPanel panel_6 = new JPanel();
+		panel.add(panel_6, BorderLayout.NORTH);
+		panel_6.setLayout(new BorderLayout(0, 0));
+		
+				lblArticleListToChoose = new JLabel("Number of articles to review remaining : " + numReviewsToBeDone);
+				panel_6.add(lblArticleListToChoose);
+				lblArticleListToChoose.setToolTipText("");
+				lblArticleListToChoose.setFont(new Font("Tahoma", Font.PLAIN, 20));
+				
+				JLabel lblForEachArticle = new JLabel("For each article you have submitted the author team has to review 3 articles");
+				lblForEachArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
+				panel_6.add(lblForEachArticle, BorderLayout.SOUTH);
 
 		JScrollPane scrSubmitted = new JScrollPane();
 		panel.add(scrSubmitted, BorderLayout.CENTER);

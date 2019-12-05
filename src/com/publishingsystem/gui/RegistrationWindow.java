@@ -92,6 +92,14 @@ public class RegistrationWindow {
 		frmRegistrationForm.setBounds(500, 100, 653, 559);
 		
 		frmRegistrationForm.setVisible(true);
+		
+		frmRegistrationForm.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				new JournalWindow(null);
+				frmRegistrationForm.dispose();
+			}
+		});
 
 		JLabel lblYourTitle = new JLabel("Title:");
 		lblYourTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
