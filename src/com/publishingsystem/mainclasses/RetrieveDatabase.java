@@ -298,6 +298,30 @@ public class RetrieveDatabase extends Database {
 		return null;
 
 	}
+	
+	public static int numChosenReviewsByReviewer(int reviewerID) {
+		try (Connection con = DriverManager.getConnection(CONNECTION)) {
+			Statement statement = con.createStatement();
+			statement.execute("USE " + DATABASE + ";");
+			statement.close();
+			int numChosen = 0;
+			String query = "SELECT SUBMISSIONID FROM REVIEWEROFSUBMISSION WHERE REVIEWERID = ?";
+			try (PreparedStatement preparedStmt2 = con.prepareStatement(query)) {
+				preparedStmt2.setInt(1, reviewerID);
+				ResultSet rs = preparedStmt2.executeQuery();
+				while(rs.next()) {
+					numChosen++;
+				}
+				return numChosen;
+			}catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+		}catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return -1;
+	}
+	
 
 	public static void checkReviewsForAuthor(AuthorOfArticle aoa) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {

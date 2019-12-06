@@ -120,8 +120,18 @@ public class LoginScreen {
 							JOptionPane.showMessageDialog(null, "No account found by this email", "Login", 0);
 							Database.deleteAcademic(RetrieveDatabase.getAcademicIdByEmail(email));
 						}
-						else
+						else {
+							if(userRoles[2] != null) {
+								Reviewer reviewer = (Reviewer)userRoles[2];
+								int numChosen = RetrieveDatabase.numChosenReviewsByReviewer(reviewer.getReviewerId());
+								int numToDo = RetrieveDatabase.getNumberOfReviewsToBeDone(reviewer.getReviewerId());
+								if(numChosen == 0 && numToDo == 0) {
+									userRoles[2] = null;
+									Database.deleteReviewer(reviewer.getReviewerId());
+								}
+							}
 							new JournalWindow(userRoles);
+						}
 						frmLogInScreen.dispose();
 					} else
 						JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
