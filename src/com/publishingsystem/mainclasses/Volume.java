@@ -11,14 +11,14 @@ public class Volume {
 	private final static int minEditions = 4;
 	
 	public Volume(int year, int volumeId) {
-	    this.editions = RetrieveDatabase.getEditions(volumeId);
+	    this.editions = new ArrayList<Edition>();
 		this.year = year;
 		this.volumeNumber = -1;
 		this.volumeId = volumeId;
 		this.journal = null;
 	}
 	public Volume(int year, int volumeNumber, int volumeId) {
-	    this.editions = RetrieveDatabase.getEditions(volumeId);
+	    this.editions = new ArrayList<Edition>();
 		this.year = year;
 		this.volumeNumber = volumeNumber;
 		this.volumeId = volumeId;
@@ -66,6 +66,10 @@ public class Volume {
 
 	public Journal getJournal() {
 		return journal;
+	}
+	
+	public void setEditions(ArrayList<Edition> editions) {
+		this.editions = editions;
 	}
 	
 	
