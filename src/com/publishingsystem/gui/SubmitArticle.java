@@ -210,7 +210,8 @@ public class SubmitArticle {
 				if (f.length > 0) {
 					pdfPath = fd.getFiles()[0].getAbsolutePath();
 					try {
-						PDDocument.load(new File(pdfPath));
+						PDDocument document = PDDocument.load(new File(pdfPath));
+						document.close();
 					}catch(Exception ex) {
 						pdfPath = null;
 						JOptionPane.showMessageDialog(null, "Please upload only PDF files", "Error in submission", 0);

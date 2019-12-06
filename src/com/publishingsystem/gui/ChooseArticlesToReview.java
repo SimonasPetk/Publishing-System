@@ -156,7 +156,7 @@ public class ChooseArticlesToReview {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				ArrayList<Submission> selectedSubmissions = new ArrayList<Submission>();
-				int numToBeDone = RetrieveDatabase.getNumberOfReviewsToBeDone(reviewer.getReviewerId())
+				int numToBeDone = RetrieveDatabase.getNumberOfReviewsToBeDone(reviewer.getReviewerId());
 				for (int row = 0; row < tblToReview.getRowCount(); row++) {
 					if (tblToReview.getValueAt(row, 2).toString() == "true") {
 						selectedSubmissions.add(submissionsToReview.get(row));
