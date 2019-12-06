@@ -239,10 +239,10 @@ public class AuthorMainWindow {
 									document.close();
 									PDF revisedPDF = new PDF(-1, new java.sql.Date(Calendar.getInstance().getTime().getTime()), s);
 									Database.addRevisedSubmission(revisedPDF, PDFConverter.getByteArrayFromFile(pdfPath), PDFConverter.getNumPagesFromFile(pdfPath));
-									JOptionPane.showMessageDialog(null, "PDF successfully uploaded", "Success in submission", 0);
+									JOptionPane.showMessageDialog(null, "PDF successfully uploaded", "Success in submission", 1);
 								}catch(Exception ex) {
 									pdfPath = null;
-									JOptionPane.showMessageDialog(null, "Please upload only PDF files", "Error in submission", 1);
+									JOptionPane.showMessageDialog(null, "Please upload only PDF files", "Error in submission", 0);
 								}
 							} else {
 								JOptionPane.showMessageDialog(null, "Try again, PDF did not upload", "Error in submission", 0);
