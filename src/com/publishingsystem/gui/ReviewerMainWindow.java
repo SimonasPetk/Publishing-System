@@ -129,6 +129,7 @@ public class ReviewerMainWindow {
 			submissionString[3] = r == null ? "" : (r.responsesRecieved() ? "Yes" : "No");
 			submissionString[4] = RetrieveDatabase.getNumPDF(s.getSubmissionId()) == 2 ? "Yes" : "No";
 			str_model.addRow(submissionString);
+			counter++;
 		}
 	}
 
