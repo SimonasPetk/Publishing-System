@@ -12,11 +12,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 
 public class Database {
-//	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
-//	protected static final String DATABASE = "team022";
+	protected static final String CONNECTION = "jdbc:mysql://stusql.dcs.shef.ac.uk/?user=team022&password=6b78cf2f";
+	protected static final String DATABASE = "team022";
 
-	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=simonass";
-	protected static final String DATABASE = "publishing_system";
+//	protected static final String CONNECTION = "jdbc:mysql://localhost:3306/publishing_system?user=root&password=password";
+//	protected static final String DATABASE = "publishing_system";
 
 	public static String getConnectionName() {
 		return CONNECTION;
@@ -1103,7 +1103,7 @@ public class Database {
 		System.out.println();
 		
 		CreateDatabase.printAllRecords("PUBLISHEDARTICLES");
-		CreateDatabase.printAllRecords("EDITIONS");
+		System.out.print(addPublishedArticle(1,1));
 
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
