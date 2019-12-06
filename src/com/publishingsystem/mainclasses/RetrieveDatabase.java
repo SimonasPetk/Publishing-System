@@ -287,7 +287,8 @@ public class RetrieveDatabase extends Database {
 						}
 					}
 				}
-				roles[2] = reviewer;
+				if(reviewer.getReviewerOfSubmissions().size() > 0)
+					roles[2] = reviewer;
 			} catch (SQLException ex) {
 				ex.printStackTrace();
 			}
