@@ -47,7 +47,6 @@ public class Journal {
 	}
 	
 	public void addVolume(Volume v) {
-	    v.setJournal(this);
 		this.volumes.add(v);
 	}
 

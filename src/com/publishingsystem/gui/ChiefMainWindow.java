@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
 
 import com.publishingsystem.mainclasses.Role;
 import com.publishingsystem.mainclasses.Verdict;
+import com.publishingsystem.mainclasses.Volume;
 import com.publishingsystem.mainclasses.Academic;
 import com.publishingsystem.mainclasses.Database;
 import com.publishingsystem.mainclasses.Edition;
@@ -96,19 +97,32 @@ public class ChiefMainWindow {
 	public void refreshEditionTable() {
 		DefaultTableModel model = ((DefaultTableModel) editionTable.getModel());
 		model.setRowCount(0);
-		int volId = -1;
-		int volNum = 0;
 		for (int i = 0; i < editions.size(); i++) {
 			Edition edition = editions.get(i);
-			int edVolId = edition.getVolume().getVolumeId();
-			if(volId != edVolId) {
-				volId = edVolId;
-				volNum++;
+			ArrayList<Volume> volumes = RetrieveDatabase.getVolumes(edition.getVolume().getJournal().getISSN());
+			ArrayList<Edition> editions = RetrieveDatabase.getEditions(edition.getVolume().getVolumeId());
+			
+			int volNum = -1;
+			int vol = 1;
+			for(Volume v : volumes) {
+				if(v.getVolumeId() == edition.getVolume().getVolumeId()) {
+					volNum = vol;
+				}
+				vol++;
 			}
 			
+			int edNum = -1;
+			int ed = 1;
+			for(Edition e : editions) {
+				if(e.getEditionId() == edition.getEditionId()) {
+					edNum = ed;
+				}
+				ed++;
+			}
+
 			String[] editionString = new String[3];
 			editionString[0] = String.valueOf(volNum);
-			editionString[1] = String.valueOf(i+1);
+			editionString[1] = String.valueOf(edNum);
 			editionString[2] = String.valueOf(edition.getArticles().size());
 			model.addRow(editionString);
 		}

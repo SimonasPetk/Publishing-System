@@ -95,7 +95,9 @@ public class RetrieveDatabase extends Database {
 					for(int i = 0; i < pubA; i++) {
 						e.addPublishedArticle(new PublishedArticle(-1, new Article(-1, null, null, null), null, null));
 					}
-					e.setVolume(new Volume(-1, res.getInt("VOLID")));
+					Volume v = new Volume(-1, res.getInt("VOLID"));
+					v.setJournal(new Journal(issn, null, null));
+					e.setVolume(v);
 					editions.add(e);
 				}
 				return editions;
@@ -107,6 +109,7 @@ public class RetrieveDatabase extends Database {
 		}
 		return null;
 	}
+	
 	public static boolean editorOfJournalHasClash(EditorOfJournal eoj) {
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
