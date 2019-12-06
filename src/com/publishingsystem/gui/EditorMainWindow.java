@@ -184,70 +184,57 @@ public class EditorMainWindow {
 		            // check if article should be accepted
 		            int[] verdictCount = getVerdictCount(finalVerdicts);
 		            if (verdictCount[0] > 0 && verdictCount[3] == 0) {
-		                // 2 Strong Accept + NOT Strong Reject = accept
-		                  // Strong Accept, Strong Accept, Strong Accept
-		                  // Strong Accept, Strong Accept, Weak Accept
-		                  // Strong Accept, Strong Accept, Weak Reject
-		            	JOptionPane.showMessageDialog(null, "Submission has received Strong Accept and has been Accepted.", "Accepted", 1);
+		                // At least 1 Strong Accept and no Strong Rejects = Accept
 		                acceptSubmission(selectedSubmission);
+	                    JOptionPane.showMessageDialog(null, "Submission has received Strong Accept and has been Accepted.", "Accepted", 1);
 		                remove = true;
 		            } else if (verdictCount[3] > 0 && verdictCount[0] == 0) {
-		                // 2 Strong Reject + NOT Strong Accept = reject
-		                  // Strong Reject, Strong Reject, Weak Accept
-		                  // Strong Reject, Strong Reject, Weak Reject
-		                  // Strong Reject, Strong Reject, Strong Reject
-		                JOptionPane.showMessageDialog(null, "Submission has received Strong Rejects and has been rejected.", "Rejected", 1);
+		                // At least 1 Strong Reject and no Strong Accepts = Reject
 		                Database.rejectSubmission(selectedSubmission);
+	                    JOptionPane.showMessageDialog(null, "Submission has received Strong Rejects and has been rejected.", "Rejected", 1);
 		                remove = true;
-		            }else if (verdictCount[0] > 0 && verdictCount[3] > 0) {
-		                // at least 1 strong accept and 1 strong reject + any = discuss
-		                    // Strong Accept, Strong Reject, Strong Accept
-		                    // Strong Accept, Strong Reject, Weak Accept
-		                    // Strong Accept, Strong Reject, Weak Reject
-		                    // Strong Accept, Strong Reject, Strong Reject
-		                
-		                // editor must make a decision to accept/reject the article or cancel processing of the submission now
-		                String[] options = {"Accept", "Reject", "Cancel"};
+		            } else if (verdictCount[0] > 0 && verdictCount[3] > 0) {
+		                // At least 1 Strong Accept and 1 Strong Reject = Manual Decision
+		                // Editor must make a decision to accept/reject the article or cancel processing of the submission now
+		                String[] options = {"Accept", "Reject", "Postpone Judgement"};
 		                int selectedFunction = JOptionPane.showOptionDialog(null, 
 		                        "Cannot automatically calculate whether the article should be accepted or rejected. Please make a decision.", 
 		                        "No Decision",
 		                        JOptionPane.INFORMATION_MESSAGE, 0, null, options, options[0]);
-		                System.out.println(selectedFunction);
 		                if (selectedFunction == 0) {
-		                	
 		                    // editor has selected to accept the submission
-		                    JOptionPane.showMessageDialog(null, "Submission has been Accepted.", "Accepted", 1);
 		                    acceptSubmission(selectedSubmission);
+	                        JOptionPane.showMessageDialog(null, "Submission has been Accepted.", "Accepted", 1);
 		                    remove = true;
 		                } else if (selectedFunction == 1) {
 		                    // editor has selected to reject the submission
-		                    JOptionPane.showMessageDialog(null, "Submission has been rejected.", "Rejected", 1);
 		                    Database.rejectSubmission(selectedSubmission);
+		                    JOptionPane.showMessageDialog(null, "Submission has been rejected.", "Rejected", 1);
 		                    remove = true;
 		                }
-		            }else {
-		                // no strong, only weak = majority decision
-	  	                    // weak accept, weak reject, weak accept
-	                        // weak accept, weak reject, weak reject
-		                if (verdictCount[1] > verdictCount[2]) {
+		            } else {
+		                // no strong verdicts, only weak verdicts = majority decision
+	  	                if (verdictCount[1] > verdictCount[2]) {
 		                    // 2 weak accepts, 1 weak reject = accept
-		                	JOptionPane.showMessageDialog(null, "Submission has received more Weak Accepts than Weak Rejects and has been Accepted.", "Accepted", 1);
 		                    acceptSubmission(selectedSubmission);
+	                        JOptionPane.showMessageDialog(null, "Submission has received more Weak Accepts than Weak Rejects and has been Accepted.", "Accepted", 1);
 		                    remove = true;
 		                } else {
 		                    // 1 weak accept, 2 weak rejects = reject
-		                    JOptionPane.showMessageDialog(null, "Submission has received more Weak Rejects than Weak Accepts and has been rejected.", "Rejected", 1);
 		                    Database.rejectSubmission(selectedSubmission);
+		                    JOptionPane.showMessageDialog(null, "Submission has received more Weak Rejects than Weak Accepts and has been rejected.", "Rejected", 1);
 		                    remove = true;
 		                }
 		            }
+		            
 		            if(remove) {
 		            	allSubmissions.remove(selectedSubmissionRow);
 		            	selectedSubmissionRow = -1;
 		            	refreshEditorTable();
 		            }
-	        	}else
+	        	} else {
 	        		JOptionPane.showMessageDialog(null, "No submission selected.", "Error", 0);
+	        	}
 	        }
 	    });
 		btnAcceptArticle.setFont(new Font("Tahoma", Font.PLAIN, 15));
@@ -534,9 +521,5 @@ public class EditorMainWindow {
 	    // add submission to database as published article
 	    int paID = Database.addPublishedArticle(edId, s.getArticle().getArticleId());
 	    Database.acceptSubmission(s);
-	    System.out.println(paID);
-	    
-	    // display message to user
-	    JOptionPane.showMessageDialog(null, "Submission has been accepted and will be published soon.", "Success", 1);
 	}
 }
