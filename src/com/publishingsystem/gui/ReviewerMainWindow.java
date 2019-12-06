@@ -248,15 +248,18 @@ public class ReviewerMainWindow {
 						ReviewerOfSubmission ros = submissionsChosenToReview.get(submissionRowSelectedToReview);
 						Submission s = ros.getSubmission();
 						ArrayList<byte[]> versions = RetrieveDatabase.getPDF(s.getSubmissionId());
+						int version = 1;
 						for (byte[] pdf : versions) {
 							JFileChooser f = new JFileChooser();
+							f.setDialogTitle("Downloading version "+version);
 							f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+							f.setFont(new Font("Tahoma", Font.PLAIN, 15));
 							f.showSaveDialog(null);
-							System.out.println(f.getCurrentDirectory());
-							System.out.println(f.getSelectedFile());
+							
 							OutputStream out = new FileOutputStream(f.getSelectedFile() + ".pdf");
 							out.write(pdf); // PDF ID
 							out.close();
+							version++;
 						}
 					} catch (FileNotFoundException fnf) {
 
@@ -297,6 +300,7 @@ public class ReviewerMainWindow {
 		panel_4.add(lblTitle, gbc_lblTitle);
 
 		JTextArea textAreaArticleTitle = new JTextArea();
+		textAreaArticleTitle.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		textAreaArticleTitle.setEditable(false);
 		textAreaArticleTitle.setLineWrap(true);
 		GridBagConstraints gbc_textAreaArticleTitle = new GridBagConstraints();
@@ -316,6 +320,7 @@ public class ReviewerMainWindow {
 		panel_4.add(lblArticleSummary, gbc_lblArticleSummary);
 
 		JTextArea textAreaArticleSummary = new JTextArea();
+		textAreaArticleSummary.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		textAreaArticleSummary.setEditable(false);
 		textAreaArticleSummary.setLineWrap(true);
 		GridBagConstraints gbc_textAreaArticleSummary = new GridBagConstraints();
@@ -382,6 +387,7 @@ public class ReviewerMainWindow {
 		panel_review.setLayout(gbl_panelChosenToReview);
 
 		JLabel lblSummary = new JLabel("Summary");
+		lblSummary.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GridBagConstraints gbc_lblSummary = new GridBagConstraints();
 		gbc_lblSummary.fill = GridBagConstraints.BOTH;
 		gbc_lblSummary.insets = new Insets(0, 0, 5, 0);
@@ -399,6 +405,7 @@ public class ReviewerMainWindow {
 		panel_review.add(textAreaReviewSummary, gbc_textArea_2);
 
 		JLabel lblTypingErrors = new JLabel("Typing Errors");
+		lblTypingErrors.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		GridBagConstraints gbc_lblTypingErrors = new GridBagConstraints();
 		gbc_lblTypingErrors.fill = GridBagConstraints.BOTH;
 		gbc_lblTypingErrors.insets = new Insets(0, 0, 5, 0);
@@ -407,6 +414,7 @@ public class ReviewerMainWindow {
 		panel_review.add(lblTypingErrors, gbc_lblTypingErrors);
 
 		JTextArea textAreaTypoErrors = new JTextArea();
+		textAreaTypoErrors.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		textAreaTypoErrors.setEditable(false);
 		GridBagConstraints gbc_textArea_1 = new GridBagConstraints();
 		gbc_textArea_1.insets = new Insets(0, 0, 5, 0);
@@ -536,6 +544,7 @@ public class ReviewerMainWindow {
 					boolean answered = true;
 					for (Criticism c : review.getCriticisms()) {
 						JLabel lbll = new JLabel("Criticism " + criticisms);
+						lbll.setFont(new Font("Tahoma", Font.PLAIN, 15));
 						GridBagConstraints gbc_lbll = new GridBagConstraints();
 						gbc_lbll.fill = GridBagConstraints.BOTH;
 						gbc_lbll.insets = new Insets(0, 0, 5, 0);
@@ -544,6 +553,7 @@ public class ReviewerMainWindow {
 						panel_3.add(lbll, gbc_lbll);
 
 						JTextArea editorPaneCriticism = new JTextArea();
+						editorPaneCriticism.setFont(new Font("Tahoma", Font.PLAIN, 15));
 						editorPaneCriticism.setLineWrap(true);
 						editorPaneCriticism.setEditable(false);
 						editorPaneCriticism.setText(c.getCriticism());
@@ -555,6 +565,7 @@ public class ReviewerMainWindow {
 						panel_3.add(editorPaneCriticism, gbc_editorPaneCriticism);
 
 						JLabel lblL = new JLabel("Answer");
+						lblL.setFont(new Font("Tahoma", Font.PLAIN, 15));
 						GridBagConstraints gbc_lblL = new GridBagConstraints();
 						gbc_lblL.fill = GridBagConstraints.BOTH;
 						gbc_lblL.insets = new Insets(0, 0, 5, 0);
@@ -564,6 +575,7 @@ public class ReviewerMainWindow {
 
 						String answer = c.getAnswer();
 						JTextArea editorPaneAnswer = new JTextArea();
+						editorPaneAnswer.setFont(new Font("Tahoma", Font.PLAIN, 15));
 						editorPaneAnswer.setLineWrap(true);
 						editorPaneAnswer.setEditable(false);
 						editorPaneAnswer.setText(answer == null ? "No answer" : answer);
