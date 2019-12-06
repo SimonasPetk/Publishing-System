@@ -1103,7 +1103,6 @@ public class Database {
 		System.out.println();
 		
 		CreateDatabase.printAllRecords("PUBLISHEDARTICLES");
-		System.out.print(addPublishedArticle(1,1));
 
 		try (Connection con = DriverManager.getConnection(CONNECTION)) {
 			Statement statement = con.createStatement();
