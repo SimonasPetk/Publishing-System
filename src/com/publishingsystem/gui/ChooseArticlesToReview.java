@@ -156,6 +156,7 @@ public class ChooseArticlesToReview {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				ArrayList<Submission> selectedSubmissions = new ArrayList<Submission>();
+				int numToBeDone = RetrieveDatabase.getNumberOfReviewsToBeDone(reviewer.getReviewerId())
 				for (int row = 0; row < tblToReview.getRowCount(); row++) {
 					if (tblToReview.getValueAt(row, 2).toString() == "true") {
 						selectedSubmissions.add(submissionsToReview.get(row));
@@ -163,9 +164,9 @@ public class ChooseArticlesToReview {
 					}
 				}
 				if (selectedSubmissions.size() == 0) {
-					JOptionPane.showMessageDialog(null, "Please select at most 3 submissions to review",
+					JOptionPane.showMessageDialog(null, "Please select at most "+numToBeDone+" submissions to review",
 							"Error in selecting submission", 0);
-				} else if (selectedSubmissions.size() < 4) {
+				} else if (selectedSubmissions.size() <= numToBeDone) {
 					Database.selectSubmissionsToReview(reviewer, selectedSubmissions, articleId);
 					for (Submission s : selectedSubmissions) {
 						rmw.addSubmissionToReview(s);
@@ -173,7 +174,7 @@ public class ChooseArticlesToReview {
 					rmw.refreshTables();
 					articlesToReview.dispose();
 				} else {
-					JOptionPane.showMessageDialog(null, "Too many submissions selected.\n Select at most 3 submissions",
+					JOptionPane.showMessageDialog(null, "Too many submissions selected.\n Select at most "+numToBeDone+" submissions",
 							"Error in reviewing submission", 0);
 				}
 			}

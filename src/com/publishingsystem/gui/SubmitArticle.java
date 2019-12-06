@@ -15,6 +15,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.LayoutStyle.ComponentPlacement;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+
 import javax.swing.SwingConstants;
 
 import com.publishingsystem.mainclasses.Academic;
@@ -206,7 +209,12 @@ public class SubmitArticle {
 
 				if (f.length > 0) {
 					pdfPath = fd.getFiles()[0].getAbsolutePath();
-					System.out.println(pdfPath);
+					try {
+						PDDocument.load(new File(pdfPath));
+					}catch(Exception ex) {
+						pdfPath = null;
+						JOptionPane.showMessageDialog(null, "Please upload only PDF files", "Error in submission", 0);
+					}
 					lblPdfIsNot.setText("PDF is successfully uploaded");
 				} else {
 					lblPdfIsNot.setText("Try Again! PDF did not upload!");
