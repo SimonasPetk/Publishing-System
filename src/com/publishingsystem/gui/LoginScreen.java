@@ -116,7 +116,12 @@ public class LoginScreen {
 
 						// Open next window
 						Academic[] userRoles = RetrieveDatabase.getRoles(email);
-						new JournalWindow(userRoles);
+						if(userRoles[0] == null && userRoles[1] == null && userRoles[2] == null) {
+							JOptionPane.showMessageDialog(null, "No account found by this email", "Login", 0);
+							Database.deleteAcademic(RetrieveDatabase.getAcademicIdByEmail(email));
+						}
+						else
+							new JournalWindow(userRoles);
 						frmLogInScreen.dispose();
 					} else
 						JOptionPane.showMessageDialog(null, "Incorrect email or password", "Login", 0);
